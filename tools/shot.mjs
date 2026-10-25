@@ -8,7 +8,7 @@ const [url, out, w = "420", h = "900", full = "0"] = process.argv.slice(2);
 const CHROME = process.env.CHROME || "/home/sprite/.cache/xiaohongshu-mcp/browser/148.0.7778.215/browser/chrome";
 const port = process.env.PORT ? +process.env.PORT : 9333 + Math.floor(Math.random() * 500);
 const prof = mkdtempSync(join(tmpdir(), "shot-"));
-const ch = process.env.PORT ? { kill() {} } : spawn(CHROME, ["--headless=new", "--no-sandbox", "--disable-gpu", "--hide-scrollbars",
+const ch = process.env.PORT ? { kill() {} } : spawn(CHROME, ["--headless=new", "--no-sandbox", "--disable-gpu", "--hide-scrollbars", "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--disable-dev-shm-usage",
   `--remote-debugging-port=${port}`, `--user-data-dir=${prof}`, "about:blank"], { stdio: "ignore" });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const kill = () => { try { ch.kill("SIGKILL"); } catch {} };

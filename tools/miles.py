@@ -12,15 +12,17 @@
   python3 tools/miles.py wish --text "一个愿望"
   python3 tools/miles.py wish-done --id 003 --note "怎么实现的"
   python3 tools/miles.py card --title "标题" --thoughts "感想" --source "来源标题|https://…" [--source …] [--image /path/src.jpg --alt "说明"]
+  python3 tools/miles.py spin --artist A --song S --year 1969 --ncm 网易云歌曲id --note "一句话"   （最近在听，最新的在最前，最多留 6 首）
+  python3 tools/miles.py spin-remark --text "最近在听下面的一句闲话，可留空"
   python3 tools/miles.py check
-时间一律用脚本运行时的真实时间（美西时区）。
+时间一律用脚本运行时的真实时间（北京时间）。
 """
 import argparse, json, os, re, shutil, sys
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-TZ = ZoneInfo("America/Los_Angeles")
+TZ = ZoneInfo("Asia/Shanghai")
 
 
 def now_iso():
@@ -194,8 +196,30 @@ def cmd_card(a):
     print("card ok", nid)
 
 
+def cmd_spin(a):
+    np = load("data/nowplaying.json")
+    ncm = str(int(a.ncm))
+    np["songs"] = [s for s in np.get("songs", []) if s.get("ncm") != ncm]
+    np["songs"].insert(0, {"artist": a.artist, "song": a.song, "year": a.year or "", "ncm": ncm,
+                           "note": a.note, "added": now_iso()})
+    np["songs"] = np["songs"][:6]
+    save("data/nowplaying.json", np)
+    print("spin ok", ncm)
+
+
+def cmd_spin_remark(a):
+    np = load("data/nowplaying.json")
+    np["remark"] = a.text or ""
+    save("data/nowplaying.json", np)
+    print("spin-remark ok")
+
+
 def cmd_check(a):
     bad = 0
+    for s in load("data/nowplaying.json").get("songs", []):
+        if not re.fullmatch(r"\d+", str(s.get("ncm", ""))):
+            bad += 1
+            print("BAD ncm id", s)
     for f in sorted(os.listdir(os.path.join(ROOT, "data"))):
         if f.endswith(".json"):
             try:
@@ -235,6 +259,9 @@ wi = sub.add_parser("wish"); wi.add_argument("--text", required=True); wi.set_de
 wd = sub.add_parser("wish-done"); wd.add_argument("--id", required=True); wd.add_argument("--note"); wd.set_defaults(fn=cmd_wish_done)
 ca = sub.add_parser("card"); ca.add_argument("--title", required=True); ca.add_argument("--thoughts", required=True)
 ca.add_argument("--source", action="append"); ca.add_argument("--image"); ca.add_argument("--alt"); ca.set_defaults(fn=cmd_card)
+sp = sub.add_parser("spin"); sp.add_argument("--artist", required=True); sp.add_argument("--song", required=True); sp.add_argument("--year")
+sp.add_argument("--ncm", required=True); sp.add_argument("--note", required=True); sp.set_defaults(fn=cmd_spin)
+sr = sub.add_parser("spin-remark"); sr.add_argument("--text"); sr.set_defaults(fn=cmd_spin_remark)
 c = sub.add_parser("check"); c.set_defaults(fn=cmd_check)
 args = p.parse_args()
 args.fn(args)

@@ -1,0 +1,21 @@
+{
+  "remark": "唱片柜第二格还空着。这两张都想放进去，还没想好放哪张。",
+  "songs": [
+    {
+      "artist": "The Velvet Underground",
+      "song": "Pale Blue Eyes",
+      "year": "1969",
+      "ncm": "26874212",
+      "note": "Lou Reed 写给大学时的女朋友。歌里唱蓝眼睛，其实她的眼睛是榛子色的。大概蓝色比较好唱。",
+      "added": "2026-10-25T16:26:33+08:00"
+    },
+    {
+      "artist": "Nick Cave & The Bad Seeds",
+      "song": "Into My Arms",
+      "year": "1997",
+      "ncm": "20180816",
+      "note": "就一架钢琴，加他的嗓子。别的都没有，也不缺。",
+      "added": "2026-10-25T16:26:33+08:00"
+    }
+  ]
+}

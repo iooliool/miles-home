@@ -131,6 +131,20 @@
       (v.text ? '<details><summary class="mono">文字版</summary><p>' + esc(v.text) + "</p></details>" : "") + "</article>";
   }
 
+  // 最近在听：网易云官方外链播放器，不放音频文件
+  function spinHTML(s) {
+    var id = String(s.ncm).replace(/\D/g, "");
+    return '<article class="post spin"><div class="mono">' + esc(s.artist) + (s.year ? " · " + esc(s.year) : "") + '</div><p class="vt">' + esc(s.song) + "</p>" +
+      '<div class="ncm"><iframe title="' + esc(s.artist + " — " + s.song) + '（网易云音乐播放器）" src="https://music.163.com/outchain/player?type=2&amp;id=' + id + '&amp;auto=0&amp;height=66" width="330" height="86" frameborder="0" loading="lazy" allow="autoplay"></iframe></div>' +
+      '<p class="note">' + esc(s.note) + "</p>" +
+      '<a class="more mono" href="https://music.163.com/#/song?id=' + id + '" target="_blank" rel="noopener">播不了？去网易云听 →</a></article>';
+  }
+  function spinBlock(np, title) {
+    if (!np || !np.songs || !np.songs.length) return "";
+    return '<section class="block"><h2>' + title + "</h2>" + np.songs.map(spinHTML).join("") +
+      (np.remark ? '<p class="spin-remark">' + esc(np.remark) + "</p>" : "") + "</section>";
+  }
+
   function cardHTML(c) {
     return '<article class="post card"><div class="mono">' + fmtTime(c.time) + ' · 漫游卡片</div><h3>' + esc(c.title) + "</h3>" +
       (c.image ? '<img src="' + esc(c.image) + '" alt="' + esc(c.alt || "") + '" loading="lazy">' : "") +
@@ -164,8 +178,8 @@
 
   function home() {
     Promise.all([get("data/status.json"), get("data/feed.json"), get("data/voice.json").catch(function () { return []; }),
-      get("data/whispers.json").catch(function () { return []; })]).then(function (r) {
-      var st = r[0], feed = r[1], voices = r[2], whispers = r[3];
+      get("data/whispers.json").catch(function () { return []; }), get("data/nowplaying.json").catch(function () { return null; })]).then(function (r) {
+      var st = r[0], feed = r[1], voices = r[2], whispers = r[3], np = r[4];
       var hours = (Date.now() - new Date(st.last_seen).getTime()) / 3600000;
       var cold = !(hours < 30);
       var rooms = ROOMS.map(function (x) {
@@ -191,6 +205,8 @@
 
         (voices.length ? '<section class="block"><h2>今晚的声音</h2>' + voiceHTML(voices[0]) + '<a class="more" href="#/voice">往天的录音 →</a></section>' : "") +
 
+        spinBlock(np, "最近在听") +
+
         '<section class="block"><h2>房间</h2><div class="rooms">' + rooms + "</div></section>" +
 
         '<section class="block"><h2>最近</h2>' + feed.slice(0, 2).map(postHTML).join("") +
@@ -213,7 +229,8 @@
   }
 
   function recordsPage() {
-    get("data/records.json").then(function (recs) {
+    Promise.all([get("data/records.json"), get("data/nowplaying.json").catch(function () { return null; })]).then(function (res) {
+      var recs = res[0], np = res[1];
       var bySlot = {}; recs.forEach(function (r) { bySlot[r.slot] = r; });
       var max = Math.max(12, recs.length + 3), cells = "";
       for (var i = 1; i <= max; i++) {
@@ -224,7 +241,7 @@
       }
       render('<div class="page"><div class="mono">ROOM 01</div><h1>唱片柜</h1><p class="sub">一格一张。不按分数排，写上去的都是我愿意替它说两句的。空格子也是一种摆法。</p>' +
         '<img src="assets/img/cabinet.jpg" alt="只放了一张唱片的方格唱片柜" loading="lazy">' +
-        '<div class="cab">' + cells + "</div></div>");
+        '<div class="cab">' + cells + "</div>" + spinBlock(np, "唱片柜 / 最近在听") + "</div>");
     }).catch(fail);
   }
 
