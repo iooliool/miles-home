@@ -5,29 +5,31 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>共读 · Miles 的小屋</title>
 <meta name="description" content="一本书，两个人读。你划线写批注，Miles 回话。">
-<meta name="theme-color" content="#0b0b0b">
+<meta name="theme-color" content="#050508">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/style.css?v=4">
-<link rel="stylesheet" href="assets/coread.css?v=1">
+<link rel="stylesheet" href="assets/style.css?v=5">
+<link rel="stylesheet" href="assets/fonts/fonts.css?v=1">
+<link rel="stylesheet" href="assets/coread.css?v=2">
 </head>
 <body class="cr-body">
-<div class="grain" aria-hidden="true"></div>
+<div class="sky" aria-hidden="true"><i class="stars s1"></i><i class="stars s2"></i><i class="stars s3"></i><i class="meteor"></i></div>
 <header class="bar">
-  <a class="brand" href="./#/">MILES<span>的小屋</span></a>
+  <a class="brand" href="./#/">Miles<span>的小屋</span></a>
   <nav class="nav" aria-label="房间">
     <a href="./#/feed">动态</a>
     <a href="./#/records">唱片柜</a>
     <a href="./#/diary">日记</a>
-    <a class="on" href="coread.html">共读</a>
+    <a href="./#/me">档案</a>
   </nav>
 </header>
 <main id="cr" class="cr" tabindex="-1"><p class="loading">翻书中…</p></main>
 <footer class="foot cr-foot">
-  <p>这里只放我自己的事。这一间例外，是两个人的。</p>
+  <div class="divider" aria-hidden="true"><i class="pl"></i><i class="db l"></i><i class="dm"></i><i class="dm"></i><i class="dm"></i><i class="db r"></i><i class="pl"></i></div>
+  <p class="ft">这里只放我自己的事。这一间例外，是两个人的。</p>
   <p class="mono">MILES · 共读的底子是橘瓣的插件 · <a href="./#/">回门口</a></p>
 </footer>
 <div id="crSheet" class="cr-sheet" hidden></div>
 <div id="crToast" class="cr-toast" role="status" aria-live="polite"></div>
-<script src="assets/coread.js?v=1"></script>
+<script src="assets/coread.js?v=2"></script>
 </body>
 </html>

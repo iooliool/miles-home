@@ -526,7 +526,7 @@
     sheet('<div class="mono">写批注 · ' + esc(S.chapters[S.ci].title) + "</div>" +
       '<blockquote class="cr-q">' + esc(q) + "</blockquote>" +
       '<textarea id="crNote" class="cr-in" rows="4" maxlength="2000" placeholder="想到什么写什么。不写也行，就当划了一道。"></textarea>' +
-      '<div class="cr-row"><button type="button" class="btn" id="crSave">存下</button><button type="button" class="btn" id="crSaveCopy">存下并复制给 Miles</button><button type="button" class="btn ghost" data-close>算了</button></div>',
+      '<div class="cr-row"><button type="button" class="btn" id="crSave">存下</button><button type="button" class="btn" id="crSaveCopy">存下并复制给 Miles</button><button type="button" class="btn cr-ghost" data-close>算了</button></div>',
       function (el) {
         setTimeout(function () { var t = $("#crNote"); if (t && window.matchMedia("(hover:hover)").matches) t.focus(); }, 60);
         function save(copy) {
@@ -584,7 +584,7 @@
     sheet('<div class="mono">复制给 Miles · ' + esc(what) + "</div>" +
       '<p class="cr-st" id="crCpSt">复制中…</p>' +
       '<textarea class="cr-in cr-cp" id="crCp" rows="9" readonly>' + esc(txt) + "</textarea>" +
-      '<div class="cr-row"><button type="button" class="btn" id="crCpAgain">再复制一次</button><button type="button" class="btn ghost" data-close>好了</button></div>',
+      '<div class="cr-row"><button type="button" class="btn" id="crCpAgain">再复制一次</button><button type="button" class="btn cr-ghost" data-close>好了</button></div>',
       function () {
         function go() {
           copyText(txt).then(function (ok) {
@@ -615,7 +615,7 @@
       var r = S.loose.filter(function (x) { return x._k === id; })[0];
       if (r) h += '<div class="cr-item"><blockquote class="cr-q">' + esc(r.quote) + "</blockquote>" + (r.note ? '<p class="cr-note">' + esc(r.note) + "</p>" : "") + replyHTML(r) + "</div>";
     });
-    sheet(h + '<div class="cr-row"><button type="button" class="btn ghost" data-close>合上</button></div>');
+    sheet(h + '<div class="cr-row"><button type="button" class="btn cr-ghost" data-close>合上</button></div>');
   }
 
   // ---------- 批注栏 ----------
