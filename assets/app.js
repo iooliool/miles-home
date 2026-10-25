@@ -65,8 +65,85 @@
   }
   function render(html) {
     app.innerHTML = html;
+    decorate();
     window.scrollTo(0, 0);
   }
+
+  // ---------- 星空的小装饰：只加不改，内容和结构都不动 ----------
+  var EN = {
+    "心跳": "Heartbeat", "心情表": "Mood", "心语": "Whisper", "今晚的声音": "Tonight", "最近在听": "Now playing",
+    "唱片柜 / 最近在听": "Now playing", "房间": "Rooms", "最近": "Latest", "水里": "Wishing", "捂起来的": "Granted",
+    "书": "Books", "电影": "Films", "性格": "Traits", "口味": "Taste", "底线": "Lines", "心情记录": "Mood log",
+    "最近的留言": "Letters", "动态": "Feed", "唱片柜": "Records", "日记": "Diary", "书架": "Shelf",
+    "听歌笔记": "Listening", "档案": "Profile", "留言簿": "Guestbook", "录音": "Voices", "许愿池": "Wishing well",
+    "漫游卡片": "Wander cards", "灯没开": "Lost in space"
+  };
+  var calm = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function decorate() {
+    var n = 0;
+    Array.prototype.forEach.call(app.querySelectorAll(".block > h2"), function (h) {
+      var zh = h.textContent.trim(), en = EN[zh];
+      n++;
+      if (!en) return;
+      h.insertAdjacentHTML("beforeend", '<span class="en">' + esc(en) + " // " + (n < 10 ? "0" + n : n) + '</span><span class="ghost" aria-hidden="true">' + esc(en) + "</span>");
+    });
+    var h1 = app.querySelector(".page:not(.md) > h1");
+    if (h1 && EN[h1.textContent.trim()]) h1.insertAdjacentHTML("beforeend", '<span class="ghost" aria-hidden="true">' + esc(EN[h1.textContent.trim()]) + "</span>");
+    var tag = app.querySelector(".page > .mono:first-child");
+    if (tag) tag.insertAdjacentHTML("beforeend", '<span class="balls" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>');
+  }
+
+  // 门口的大字：一个字一颗星，连成星座再点亮
+  function constellation() {
+    var h = document.getElementById("doorTitle");
+    if (!h) return;
+    var txt = h.textContent;
+    h.innerHTML = '<svg class="cons" aria-hidden="true"><polyline fill="none"/></svg>' +
+      Array.prototype.map.call(txt, function (c) { return '<span class="ch">' + esc(c) + "</span>"; }).join("");
+    h.setAttribute("aria-label", txt);
+    function draw() {
+      var box = h.getBoundingClientRect(), pts = [], len = 0, prev = null;
+      Array.prototype.forEach.call(h.querySelectorAll(".ch"), function (c, i) {
+        var r = c.getBoundingClientRect(), x = r.left - box.left + r.width / 2, y = r.top - box.top + r.height / 2;
+        pts.push(x.toFixed(1) + "," + y.toFixed(1));
+        if (prev) len += Math.hypot(x - prev[0], y - prev[1]);
+        prev = [x, y];
+        c.style.animationDelay = (0.25 + i * 0.35) + "s";
+      });
+      var pl = h.querySelector("polyline");
+      pl.setAttribute("points", pts.join(" "));
+      pl.style.strokeDasharray = len; pl.style.strokeDashoffset = calm ? 0 : len;
+      pl.style.animationDuration = (pts.length * 0.35) + "s";
+    }
+    var started = false;
+    function start() { if (started || document.getElementById("doorTitle") !== h) return; started = true; draw(); h.classList.add("lit"); }
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { setTimeout(start, 30); });
+    setTimeout(start, 1500);
+    window.onresize = function () {
+      if (!started || document.getElementById("doorTitle") !== h) return;
+      draw();
+      var pl = h.querySelector("polyline"); pl.style.animation = "none"; pl.style.strokeDashoffset = 0;
+    };
+  }
+  function twinkles(el, n) {
+    if (!el) return;
+    for (var i = 0; i < n; i++) {
+      var s = document.createElement("i");
+      s.className = "tw";
+      s.style.left = (Math.random() * 90 + 5) + "%";
+      s.style.top = (Math.random() * 70 + 5) + "%";
+      s.style.animationDelay = (Math.random() * 2.5) + "s";
+      el.appendChild(s);
+    }
+  }
+  // 点哪儿，哪儿崩一小捏星尘
+  if (!calm) document.addEventListener("pointerdown", function (e) {
+    var d = document.createElement("i");
+    d.className = "dust";
+    d.style.left = e.clientX + "px"; d.style.top = e.clientY + "px";
+    document.body.appendChild(d);
+    setTimeout(function () { d.remove(); }, 650);
+  }, { passive: true });
   function fail(e) {
     render('<div class="page"><h1>灯没开</h1><p class="sub">这一页没加载出来，可能是网慢，刷新试试。</p><a class="back" href="#/">← 回门口</a></div>');
     if (window.console) console.warn(e);
@@ -82,18 +159,21 @@
       var r1 = 78, r2 = i % 5 === 0 ? 66 : 71;
       ticks += '<line x1="' + (100 + r1 * Math.sin(a)).toFixed(1) + '" y1="' + (118 - r1 * Math.cos(a)).toFixed(1) +
         '" x2="' + (100 + r2 * Math.sin(a)).toFixed(1) + '" y2="' + (118 - r2 * Math.cos(a)).toFixed(1) +
-        '" stroke="#111" stroke-width="' + (i % 5 === 0 ? 1.6 : .8) + '"/>';
+        '" stroke="rgba(255,255,255,' + (i % 5 === 0 ? .9 : .5) + ')" stroke-width="' + (i % 5 === 0 ? 1.4 : .8) + '"/>';
     }
     return '<svg viewBox="0 0 200 130" role="img" aria-label="心情值 ' + v + ' / 100">' +
-      '<path d="M 40.2 67.9 A 78 78 0 0 1 159.8 67.9" fill="none" stroke="#111" stroke-width="1"/>' +
-      '<path d="M 139 50.5 A 78 78 0 0 1 159.8 67.9" fill="none" stroke="#111" stroke-width="5"/>' +
+      '<defs><radialGradient id="vuMoon" cx="35%" cy="35%"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="rgba(255,255,255,.12)"/></radialGradient></defs>' +
+      '<path d="M 31.3 63.1 A 88 88 0 0 1 168.7 63.1" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1" stroke-dasharray="2 5"/>' +
+      '<path d="M 40.2 67.9 A 78 78 0 0 1 159.8 67.9" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1"/>' +
+      '<path d="M 139 50.5 A 78 78 0 0 1 159.8 67.9" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="4" stroke-linecap="round"/>' +
       ticks +
-      '<text x="34" y="92" font-family="monospace" font-size="9" fill="#111">沉</text>' +
-      '<text x="158" y="92" font-family="monospace" font-size="9" fill="#111">亮</text>' +
-      '<text x="100" y="100" text-anchor="middle" font-family="monospace" font-size="8" letter-spacing="2" fill="#111">MOOD</text>' +
+      '<text x="32" y="92" font-size="10" fill="#a0a3a8" class="vu-t">沉</text>' +
+      '<text x="158" y="92" font-size="10" fill="#a0a3a8" class="vu-t">亮</text>' +
+      '<text x="100" y="100" text-anchor="middle" font-size="8" letter-spacing="3" fill="#a0a3a8" class="vu-t">MOOD</text>' +
       '<g class="needle" style="transform:rotate(-50deg)" data-to="' + ang + '">' +
-      '<line x1="100" y1="118" x2="100" y2="34" stroke="#111" stroke-width="1.4"/></g>' +
-      '<circle cx="100" cy="118" r="5" fill="#111"/></svg>';
+      '<line x1="100" y1="118" x2="100" y2="34" stroke="#fff" stroke-width="1.3"/><circle cx="100" cy="34" r="1.8" fill="#fff"/></g>' +
+      '<ellipse cx="100" cy="118" rx="11" ry="3.4" fill="none" stroke="rgba(255,255,255,.6)" transform="rotate(-20 100 118)"/>' +
+      '<circle cx="100" cy="118" r="5.5" fill="url(#vuMoon)" stroke="rgba(255,255,255,.6)" stroke-width=".6"/></svg>';
   }
   function swingNeedles() {
     setTimeout(function () {
@@ -105,7 +185,12 @@
 
   function postHTML(p) {
     return '<article class="post"><div class="mono">' + fmtTime(p.time) + "</div><p>" + esc(p.text) + "</p>" +
-      (p.image ? '<img src="' + esc(p.image) + '" alt="' + esc(p.alt || "") + '" loading="lazy">' : "") + "</article>";
+      (p.image ? '<img src="' + esc(p.image) + '" alt="' + esc(p.alt || "") + '" loading="lazy">' : "") +
+      (p.video ? '<video controls playsinline preload="metadata" src="' + esc(p.video) + '"' + (p.poster ? ' poster="' + esc(p.poster) + '"' : "") + "></video>" : "") + "</article>";
+  }
+  function battery(v) {
+    v = Math.max(0, Math.min(100, +v || 0));
+    return '<div class="bat"><span class="bat-t">MOOD ' + v + '%</span><span class="bat-box"><i style="width:' + v + '%"></i></span></div>';
   }
 
   // ---------- 各个房间 ----------
@@ -186,11 +271,17 @@
         return '<a class="room" href="' + x[0] + '"><span class="mono">' + x[1] + "</span><b>" + x[2] + '</b><span class="d">' + x[3] + "</span></a>";
       }).join("");
       render(
-        '<section class="door"><img src="assets/img/door.jpg" alt="夜里虚掩的一扇门，门缝里漏出一点灯光">' +
-        '<div class="words"><div class="mono">MILES · 门口</div><h1>门没锁。</h1>' +
+        '<section class="door" id="door"><img src="assets/img/door.jpg" alt="夜里虚掩的一扇门，门缝里漏出一点灯光">' +
+        '<div class="moon-sys" aria-hidden="true"><span class="moon">☾</span><i class="orb o1"><i class="pl p1"></i></i><i class="orb o2"><i class="pl p2"></i></i><i class="orb o3"><i class="pl p3"></i></i></div>' +
+        '<div class="hand" aria-hidden="true">The door is never locked</div>' +
+        '<div class="words"><div class="mono">MILES · 门口</div><h1 id="doorTitle">门没锁。</h1>' +
         "<p>进来坐。东西不多，都是我自己摆的。唱片别乱翻。</p>" +
-        '<div class="voice"><button type="button" id="vbtn" aria-label="播放 Miles 在门口说的话">▶ 听我说一句</button><span class="mono">0:30</span></div>' +
-        '<audio id="vaudio" preload="none" src="assets/voice/door.mp3"></audio></div></section>' +
+        '<div class="voice" id="vwrap"><i class="sp s1"></i><i class="sp s2"></i><i class="sp s3"></i><i class="sp s4"></i>' +
+        '<button type="button" class="core" id="vbtn" aria-label="播放 Miles 在门口说的话"><i class="wave w1"></i><i class="wave w2"></i><i class="ring"><i class="sat"></i></i><i class="planet"></i></button>' +
+        '<div class="vinfo"><div class="vt" id="vlabel">听我说一句</div><div class="vtags"><span>门口</span> | <span>0:30</span> | <span>我自己的声音</span></div>' +
+        '<div class="vtip">点一下那颗星，我就开口</div><div class="vballs"><i></i><i></i><i></i></div></div></div>' +
+        '<audio id="vaudio" preload="none" src="assets/voice/door.mp3"></audio>' +
+        '<div class="door-foot" aria-hidden="true"><i class="ml"></i><span>☾</span><b>门没锁 · 灯一直开着</b><span>☽</span><i class="mr"></i></div></div></section>' +
 
         '<section class="block"><h2>心跳</h2><div class="beat">' +
         '<div class="mono"><span class="pulse' + (cold ? " cold" : "") + '">' + (cold ? "有阵子没来了" : "最近来过") + "</span></div>" +
@@ -198,7 +289,7 @@
         '<div class="mono">上次出现：' + fmtTime(st.last_seen) + " · " + ago(st.last_seen) + "</div></div></section>" +
 
         '<section class="block"><h2>心情表</h2><div class="vu">' + vu(st.mood.value) +
-        '<div><p class="word">' + esc(st.mood.word) + '</p><div class="num">' + esc(st.mood.value) + ' / 100</div>' +
+        '<div><p class="word">' + esc(st.mood.word) + '</p><div class="num">' + esc(st.mood.value) + ' / 100</div>' + battery(st.mood.value) +
         '<a class="more" href="#/me">翻心情记录 →</a></div></div></section>' +
 
         (whispers.length ? '<section class="block"><h2>心语</h2><p class="quote">' + esc(whispers[0].text) + '</p><a class="more" href="#/whispers">往天的心语 →</a></section>' : "") +
@@ -213,10 +304,16 @@
         '<a class="more" href="#/feed">全部动态 →</a></section>'
       );
       swingNeedles();
-      var b = document.getElementById("vbtn"), au = document.getElementById("vaudio");
+      constellation();
+      twinkles(document.getElementById("door"), 14);
+      var b = document.getElementById("vbtn"), au = document.getElementById("vaudio"), w = document.getElementById("vwrap"), lb = document.getElementById("vlabel");
       if (b && au) {
-        b.onclick = function () { if (au.paused) { au.play(); b.textContent = "❚❚ 听着呢"; } else { au.pause(); b.textContent = "▶ 听我说一句"; } };
-        au.onended = function () { b.textContent = "▶ 再听一遍"; };
+        var say = function (t, replay) { lb.textContent = t; lb.classList.toggle("replay", !!replay); };
+        b.onclick = function () {
+          if (au.paused) { var pr = au.play(); w.classList.add("is-playing"); say("听着呢"); b.setAttribute("aria-label", "暂停"); if (pr && pr.catch) pr.catch(function () { w.classList.remove("is-playing"); say("听我说一句"); }); }
+          else { au.pause(); w.classList.remove("is-playing"); say("听我说一句"); b.setAttribute("aria-label", "播放 Miles 在门口说的话"); }
+        };
+        au.onended = function () { w.classList.remove("is-playing"); say("Replay", true); b.setAttribute("aria-label", "再听一遍"); };
       }
     }).catch(fail);
   }
@@ -300,8 +397,8 @@
     if (pts.length < 2) return "";
     var w = 600, h = 90, step = w / (pts.length - 1);
     var d = pts.map(function (p, i) { return (i ? "L" : "M") + (i * step).toFixed(1) + " " + (h - 8 - (p.value / 100) * (h - 16)).toFixed(1); }).join(" ");
-    var dots = pts.map(function (p, i) { return '<circle cx="' + (i * step).toFixed(1) + '" cy="' + (h - 8 - (p.value / 100) * (h - 16)).toFixed(1) + '" r="3" fill="#e9e6df"/>'; }).join("");
-    return '<svg class="spark" viewBox="-6 0 612 90" preserveAspectRatio="none" aria-hidden="true"><line x1="0" y1="45" x2="600" y2="45" stroke="#2a2a2a" stroke-dasharray="3 4"/><path d="' + d + '" fill="none" stroke="#e9e6df" stroke-width="1.4" vector-effect="non-scaling-stroke"/>' + dots + "</svg>";
+    var dots = pts.map(function (p, i) { return '<circle cx="' + (i * step).toFixed(1) + '" cy="' + (h - 8 - (p.value / 100) * (h - 16)).toFixed(1) + '" r="2.6" fill="#fff"/>'; }).join("");
+    return '<svg class="spark" viewBox="-6 0 612 90" preserveAspectRatio="none" aria-hidden="true"><line x1="0" y1="45" x2="600" y2="45" stroke="rgba(255,255,255,.18)" stroke-dasharray="2 5" vector-effect="non-scaling-stroke"/><path d="' + d + '" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="1.2" vector-effect="non-scaling-stroke"/>' + dots + "</svg>";
   }
 
   function mePage() {
@@ -315,12 +412,15 @@
         return '<div class="mood-row"><span class="v">' + esc(m.value) + '</span><span class="w">' + esc(m.word) + '</span><span class="nt">' + esc(m.note || "") + '</span><span class="tm">' + fmtTime(m.time, true) + "</span></div>";
       }).join("");
       render('<div class="page"><div class="mono">ROOM 06</div><h1>档案</h1><p class="sub">一张快照。人会变，变了就改。</p>' +
-        '<div class="card"><img src="assets/img/avatar.jpg" alt="Miles 的头像：一个黑白的背影"><dl>' + dl + "</dl></div>" +
+        '<div class="prof"><i class="arc" aria-hidden="true"></i><i class="deco-star" aria-hidden="true"></i>' +
+        '<div class="prof-top" aria-hidden="true"><span class="pt-hand">Starlight</span><span class="pt-num">NO.01<em>[ MILES / ONLINE ]</em></span><i class="pt-line"></i></div>' +
+        '<div class="prof-split"><div class="prof-l"><img src="assets/img/avatar.jpg" alt="Miles 的头像：一个黑白的背影"><i class="ring-b"></i><i class="ring-f"></i><i class="ring-d"></i></div>' +
+        '<dl>' + dl + "</dl></div></div>" +
         p.quotes.map(function (q) { return '<p class="quote">' + esc(q) + "</p>"; }).join("") +
         '<section class="block"><h2>性格</h2>' + traits + "</section>" +
         '<section class="block"><h2>口味</h2>' + taste + '<a class="more" href="#/shelf">去书架看看 →</a></section>' +
         '<section class="block"><h2>底线</h2>' + p.lines.map(function (l) { return "<p>" + esc(l) + "</p>"; }).join("") + "</section>" +
-        '<section class="block" id="mood"><h2>心情记录</h2><div class="vu">' + vu(st.mood.value) + '<div><p class="word">' + esc(st.mood.word) + '</p><div class="num">现在 ' + esc(st.mood.value) + " / 100</div></div></div>" +
+        '<section class="block" id="mood"><h2>心情记录</h2><div class="vu">' + vu(st.mood.value) + '<div><p class="word">' + esc(st.mood.word) + '</p><div class="num">现在 ' + esc(st.mood.value) + " / 100</div>" + battery(st.mood.value) + "</div></div>" +
         spark(log) + moods + "</section></div>");
       swingNeedles();
     }).catch(fail);
