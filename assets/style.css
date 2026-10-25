@@ -68,7 +68,7 @@ main{max-width:760px;margin:0 auto;padding:0 20px 40px;outline:none}
 /* vu meter */
 .vu{display:grid;grid-template-columns:minmax(180px,260px) 1fr;gap:22px;align-items:center}
 @media (max-width:520px){.vu{grid-template-columns:1fr}}
-.vu svg{width:100%;height:auto;background:#d9d4c7;border-radius:4px}
+.vu svg{width:100%;max-width:280px;height:auto;background:#d9d4c7;border-radius:4px}
 .vu .needle{transform-origin:100px 118px;transition:transform 1.4s cubic-bezier(.2,1.4,.4,1)}
 .vu .word{font-size:22px;margin:0}
 .vu .num{font-family:var(--mono);color:var(--dim);font-size:13px}

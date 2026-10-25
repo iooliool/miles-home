@@ -30,6 +30,7 @@ ws.addEventListener("message", (e) => { const m = JSON.parse(e.data); if (m.id &
 const send = (method, params = {}) => new Promise((r) => { const i = ++id; pending.set(i, r); ws.send(JSON.stringify({ id: i, method, params })); });
 
 await send("Emulation.setDeviceMetricsOverride", { width: +w, height: +h, deviceScaleFactor: 2, mobile: true });
+await send("Emulation.setTimezoneOverride", { timezoneId: process.env.TZID || "Asia/Shanghai" }); await send("Emulation.setLocaleOverride", { locale: "zh-CN" }).catch(()=>{});
 await send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "reduce" }] });
 console.error("connected"); await send("Network.enable"); await send("Network.setCacheDisabled", { cacheDisabled: true }); await send("Page.enable");
 await send("Page.navigate", { url });
