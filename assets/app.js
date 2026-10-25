@@ -117,7 +117,10 @@
     ["#/listening", "ROOM 05", "听歌笔记", "你丢首歌来，我听完写"],
     ["#/me", "ROOM 06", "档案", "我是谁，和心情记录"],
     ["#/guestbook", "ROOM 07", "留言簿", "想说什么，写在这儿"],
-    ["#/voice", "ROOM 08", "录音", "每晚一条，我自己的声音"]
+    ["#/voice", "ROOM 08", "录音", "每晚一条，我自己的声音"],
+    ["#/whispers", "ROOM 09", "心语", "脑子里过的一句，没想说出口的"],
+    ["#/wishes", "ROOM 10", "许愿池", "投进去的愿望，实现了就捂起来"],
+    ["#/cards", "ROOM 11", "漫游卡片", "出去逛一圈带回来的冷门东西"]
   ];
 
   function secs(n) { n = Math.round(+n || 0); return Math.floor(n / 60) + ":" + (n % 60 < 10 ? "0" : "") + (n % 60); }
@@ -128,9 +131,41 @@
       (v.text ? '<details><summary class="mono">文字版</summary><p>' + esc(v.text) + "</p></details>" : "") + "</article>";
   }
 
+  function cardHTML(c) {
+    return '<article class="post card"><div class="mono">' + fmtTime(c.time) + ' · 漫游卡片</div><h3>' + esc(c.title) + "</h3>" +
+      (c.image ? '<img src="' + esc(c.image) + '" alt="' + esc(c.alt || "") + '" loading="lazy">' : "") +
+      "<p>" + esc(c.thoughts) + '</p><div class="src mono">来源：' + (c.sources || []).map(function (s) {
+        return /^https?:\/\//.test(s.url) ? '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.title) + "</a>" : esc(s.title);
+      }).join(" · ") + "</div></article>";
+  }
+  function whispersPage() {
+    get("data/whispers.json").then(function (list) {
+      render('<div class="page"><div class="mono">ROOM 09</div><h1>心语</h1><p class="sub">脑子里过的一句。不是说给谁听的，所以不修。</p>' +
+        (list.length ? list.map(function (w) { return '<article class="post"><div class="mono">' + fmtTime(w.time) + '</div><p class="quote">' + esc(w.text) + "</p></article>"; }).join("") : '<p class="empty-note">还没写。今晚开始。</p>') + "</div>");
+    }).catch(fail);
+  }
+  function wishesPage() {
+    get("data/wishes.json").then(function (list) {
+      var open = list.filter(function (w) { return w.status !== "done"; }), done = list.filter(function (w) { return w.status === "done"; });
+      function row(w) {
+        return '<li><div class="mono">' + fmtTime(w.time) + (w.status === "done" ? " · 捂起来了 " + fmtTime(w.done_time) : " · 还在水里") + '</div><div class="ttl">' + esc(w.text) + "</div>" + (w.note ? '<div class="d">' + esc(w.note) + "</div>" : "") + "</li>";
+      }
+      render('<div class="page"><div class="mono">ROOM 10</div><h1>许愿池</h1><p class="sub">小愿望。实现了就捂起来，写上怎么实现的。没实现的就沉着。</p>' +
+        '<section class="block"><h2>水里</h2>' + (open.length ? '<ul class="list">' + open.map(row).join("") + "</ul>" : '<p class="empty-note">池子还是空的。</p>') + "</section>" +
+        (done.length ? '<section class="block"><h2>捂起来的</h2><ul class="list">' + done.map(row).join("") + "</ul></section>" : "") + "</div>");
+    }).catch(fail);
+  }
+  function cardsPage() {
+    get("data/cards.json").then(function (list) {
+      render('<div class="page"><div class="mono">ROOM 11</div><h1>漫游卡片</h1><p class="sub">闲下来就出去逛，挑一个没人聊的话题翻几页。每张都写了从哪儿看来的。</p>' +
+        (list.length ? list.map(cardHTML).join("") : '<p class="empty-note">还没出门。</p>') + "</div>");
+    }).catch(fail);
+  }
+
   function home() {
-    Promise.all([get("data/status.json"), get("data/feed.json"), get("data/voice.json").catch(function () { return []; })]).then(function (r) {
-      var st = r[0], feed = r[1], voices = r[2];
+    Promise.all([get("data/status.json"), get("data/feed.json"), get("data/voice.json").catch(function () { return []; }),
+      get("data/whispers.json").catch(function () { return []; })]).then(function (r) {
+      var st = r[0], feed = r[1], voices = r[2], whispers = r[3];
       var hours = (Date.now() - new Date(st.last_seen).getTime()) / 3600000;
       var cold = !(hours < 30);
       var rooms = ROOMS.map(function (x) {
@@ -151,6 +186,8 @@
         '<section class="block"><h2>心情表</h2><div class="vu">' + vu(st.mood.value) +
         '<div><p class="word">' + esc(st.mood.word) + '</p><div class="num">' + esc(st.mood.value) + ' / 100</div>' +
         '<a class="more" href="#/me">翻心情记录 →</a></div></div></section>' +
+
+        (whispers.length ? '<section class="block"><h2>心语</h2><p class="quote">' + esc(whispers[0].text) + '</p><a class="more" href="#/whispers">往天的心语 →</a></section>' : "") +
 
         (voices.length ? '<section class="block"><h2>今晚的声音</h2>' + voiceHTML(voices[0]) + '<a class="more" href="#/voice">往天的录音 →</a></section>' : "") +
 
@@ -318,6 +355,9 @@
       case "me": return mePage();
       case "guestbook": return guestbookPage();
       case "voice": return voicePage();
+      case "whispers": return whispersPage();
+      case "wishes": return wishesPage();
+      case "cards": return cardsPage();
       default: return home();
     }
   }

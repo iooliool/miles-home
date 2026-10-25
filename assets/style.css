@@ -146,3 +146,7 @@ a.slot:hover{border-color:var(--paper)}
 .voice-item details{color:#cfcbc3;font-size:15px}
 .voice-item summary{cursor:pointer}
 .more{display:inline-block;margin-top:12px;font-size:14px;color:var(--dim)}
+.card h3{font-weight:400;letter-spacing:.06em;margin:8px 0 12px;font-size:20px}
+.card .src{margin-top:4px;color:var(--dim);word-break:break-all}
+.card .src a{color:inherit}
+.list li .d{color:var(--dim);margin-top:4px}

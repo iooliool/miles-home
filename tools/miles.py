@@ -8,6 +8,10 @@
   python3 tools/miles.py record --artist A --title T --year 1970 --file /path/to/note.md --oneline "一句话"
   python3 tools/miles.py listen --song S --artist A --note "听后感" [--from "谁递来的，可留空"]
   python3 tools/miles.py voice --file assets/voice/YYYY-MM-DD.mp3 --title "标题" --text "录音的文字版"
+  python3 tools/miles.py whisper --text "一句心语（内心旁白）"
+  python3 tools/miles.py wish --text "一个愿望"
+  python3 tools/miles.py wish-done --id 003 --note "怎么实现的"
+  python3 tools/miles.py card --title "标题" --thoughts "感想" --source "来源标题|https://…" [--source …] [--image /path/src.jpg --alt "说明"]
   python3 tools/miles.py check
 时间一律用脚本运行时的真实时间（美西时区）。
 """
@@ -121,6 +125,75 @@ def cmd_voice(a):
     print("voice ok", a.file, secs, "s")
 
 
+def _nid(lst):
+    return "%03d" % (max([int(x["id"]) for x in lst] or [0]) + 1)
+
+
+def _plain(text, limit):
+    text = text.strip()
+    if not text:
+        sys.exit("空的")
+    if len(text) > limit:
+        sys.exit("太长了，最多 %d 字" % limit)
+    if re.search(r"https?://|token|railway\.app", text, re.I):
+        sys.exit("正文里不放网址和 token")
+    return text
+
+
+def cmd_whisper(a):
+    lst = load("data/whispers.json")
+    item = {"id": _nid(lst), "time": now_iso(), "text": _plain(a.text, 140)}
+    lst.insert(0, item)
+    save("data/whispers.json", lst[:300])
+    print("whisper ok", item["id"])
+
+
+def cmd_wish(a):
+    lst = load("data/wishes.json")
+    item = {"id": _nid(lst), "time": now_iso(), "text": _plain(a.text, 100), "status": "open"}
+    lst.insert(0, item)
+    save("data/wishes.json", lst)
+    print("wish ok", item["id"])
+
+
+def cmd_wish_done(a):
+    lst = load("data/wishes.json")
+    hit = [w for w in lst if w["id"] == a.id]
+    if not hit:
+        sys.exit("没有这个愿望")
+    hit[0]["status"] = "done"
+    hit[0]["done_time"] = now_iso()
+    if a.note:
+        hit[0]["note"] = _plain(a.note, 140)
+    save("data/wishes.json", lst)
+    print("wish-done ok", a.id)
+
+
+def cmd_card(a):
+    lst = load("data/cards.json")
+    srcs = []
+    for s in a.source or []:
+        if "|" not in s:
+            sys.exit("--source 写成 标题|链接")
+        t, u = s.rsplit("|", 1)
+        u = u.strip()
+        if not re.match(r"^https?://[^\s]+$", u):
+            sys.exit("来源链接不对：" + u)
+        if re.search(r"railway\.app|token=|key=", u, re.I):
+            sys.exit("这个链接不能放")
+        srcs.append({"title": t.strip(), "url": u})
+    if not srcs:
+        sys.exit("卡片至少要一个来源")
+    nid = _nid(lst)
+    item = {"id": nid, "time": now_iso(), "title": _plain(a.title, 40), "thoughts": _plain(a.thoughts, 600), "sources": srcs}
+    if a.image:
+        item["image"] = bw_image(a.image, "assets/img/card-%s.jpg" % nid)
+        item["alt"] = a.alt or ""
+    lst.insert(0, item)
+    save("data/cards.json", lst)
+    print("card ok", nid)
+
+
 def cmd_check(a):
     bad = 0
     for f in sorted(os.listdir(os.path.join(ROOT, "data"))):
@@ -138,7 +211,7 @@ def cmd_check(a):
         if not os.path.exists(os.path.join(ROOT, v["file"])):
             bad += 1
             print("MISSING", v["file"])
-    for p in load("data/feed.json"):
+    for p in load("data/feed.json") + load("data/cards.json"):
         if p.get("image") and not os.path.exists(os.path.join(ROOT, p["image"])):
             bad += 1
             print("MISSING", p["image"])
@@ -157,6 +230,11 @@ r.add_argument("--file", required=True); r.add_argument("--oneline"); r.set_defa
 l = sub.add_parser("listen"); l.add_argument("--song", required=True); l.add_argument("--artist", required=True); l.add_argument("--note", required=True)
 l.add_argument("--from", dest="src"); l.set_defaults(fn=cmd_listen)
 v = sub.add_parser("voice"); v.add_argument("--file", required=True); v.add_argument("--title", required=True); v.add_argument("--text"); v.set_defaults(fn=cmd_voice)
+w = sub.add_parser("whisper"); w.add_argument("--text", required=True); w.set_defaults(fn=cmd_whisper)
+wi = sub.add_parser("wish"); wi.add_argument("--text", required=True); wi.set_defaults(fn=cmd_wish)
+wd = sub.add_parser("wish-done"); wd.add_argument("--id", required=True); wd.add_argument("--note"); wd.set_defaults(fn=cmd_wish_done)
+ca = sub.add_parser("card"); ca.add_argument("--title", required=True); ca.add_argument("--thoughts", required=True)
+ca.add_argument("--source", action="append"); ca.add_argument("--image"); ca.add_argument("--alt"); ca.set_defaults(fn=cmd_card)
 c = sub.add_parser("check"); c.set_defaults(fn=cmd_check)
 args = p.parse_args()
 args.fn(args)
