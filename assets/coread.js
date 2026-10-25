@@ -123,7 +123,7 @@
   }
   function allBooks() {
     S.local = LS.get("coread:local", []);
-    return S.data.books.map(function (b) { return { key: "r:" + b.id, title: b.title, author: b.author, note: b.note, file: b.file, src: "repo" }; })
+    return S.data.books.map(function (b) { return { key: "r:" + b.id, title: b.title, author: b.author, note: b.note, file: b.file, lock: !!b.lock, src: "repo" }; })
       .concat(S.local.map(function (b) { return { key: "l:" + b.title, title: b.title, chars: b.chars, added: b.added, src: "local" }; }));
   }
   function repliesFor(title) { return S.data.replies.filter(function (r) { return r.book === title && r.reply; }); }
@@ -156,8 +156,9 @@
     var lastBook = last && books.filter(function (b) { return b.key === last; })[0];
     function row(b) {
       var n = LS.get("coread:ann:" + b.key, []).length, r = repliesFor(b.title).length;
-      var meta = [b.author, b.src === "local" ? (b.chars ? Math.round(b.chars / 1000) + " 千字" : "") : "", n ? n + " 条批注" : "", r ? "我回了 " + r + " 条" : ""].filter(Boolean).join(" · ");
-      return '<li class="cr-book"><a href="#b/' + encodeURIComponent(b.key) + '"><div class="ttl">《' + esc(b.title) + '》</div>' +
+      var open = b.lock && LS.get("coread:open:" + b.key, false);
+      var meta = [b.author, b.lock ? (open ? "这台设备上开过锁了" : "上了锁") : "", b.src === "local" ? (b.chars ? Math.round(b.chars / 1000) + " 千字" : "") : "", n ? n + " 条批注" : "", r ? "我回了 " + r + " 条" : ""].filter(Boolean).join(" · ");
+      return '<li class="cr-book' + (b.lock ? " cr-locked" + (open ? " cr-opened" : "") : "") + '"><a href="#b/' + encodeURIComponent(b.key) + '"><div class="ttl">《' + esc(b.title) + '》' + (b.lock ? lockIcon(open) : "") + "</div>" +
         (meta ? '<div class="mono">' + esc(meta) + "</div>" : "") + (b.note ? '<div class="d">' + esc(b.note) + "</div>" : "") + "</a>" +
         (b.src === "local" ? '<button type="button" class="cr-del mono" data-del="' + esc(b.title) + '">拿走</button>' : "") + "</li>";
     }
@@ -227,25 +228,102 @@
     }, function () { toast("浏览器存不下这本书"); });
   }
 
+  // ---------- 带锁的书：AES-GCM 密文，口令用 PBKDF2 派生钥匙，解开后只存在这台设备 ----------
+  function lockIcon(open) {
+    return '<svg class="cr-lockico" viewBox="0 0 16 18" aria-label="' + (open ? "开过锁" : "带锁") + '" role="img"><rect x="2" y="8" width="12" height="9" rx="1.5"/>' +
+      (open ? '<path d="M5 8V5.2a3 3 0 0 1 5.8-1.1"/>' : '<path d="M5 8V5.2a3 3 0 0 1 6 0V8"/>') + '<path d="M8 11.6v2.2"/></svg>';
+  }
+  function lockedBooks() { return allBooks().filter(function (x) { return x.lock; }); }
+  function unlockOne(b, pw) {
+    // 成功给正文；口令不对抛 { wrong: true }；别的毛病照常抛
+    return fetch(b.file + "?v=" + Math.floor(Date.now() / 3600000)).then(function (r) {
+      if (!r.ok) throw new Error(r.status); return r.arrayBuffer();
+    }).then(function (buf) {
+      var u = new Uint8Array(buf);
+      if (u.length < 52 || String.fromCharCode(u[0], u[1], u[2], u[3]) !== "MLK1") throw new Error("bad file");
+      var it = ((u[4] << 24) >>> 0) + (u[5] << 16) + (u[6] << 8) + u[7];
+      var salt = u.slice(8, 24), iv = u.slice(24, 36), ct = u.slice(36);
+      var sub = window.crypto.subtle;
+      return sub.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveKey"]).then(function (base) {
+        return sub.deriveKey({ name: "PBKDF2", salt: salt, iterations: it, hash: "SHA-256" }, base, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+      }).then(function (key) {
+        return sub.decrypt({ name: "AES-GCM", iv: iv }, key, ct).then(null, function () { throw { wrong: true }; });
+      }).then(function (plain) { return new TextDecoder("utf-8").decode(plain); });
+    }).then(function (text) {
+      return textPut(b.key, text).then(function () { LS.set("coread:open:" + b.key, true); return text; });
+    });
+  }
+  function lockPage(b) {
+    document.body.classList.remove("cr-reading");
+    view = cols = null;
+    app.innerHTML = '<div class="page cr-lockpage"><div class="mono">LOCKED</div><h1>《' + esc(b.title) + "》</h1>" +
+      '<p class="sub">这本上了锁。' + (b.author ? esc(b.author) + "的书，" : "") + "还在版权期，不能明着摆出来。口令我跟你说过。</p>" +
+      '<div class="cr-lockbig" aria-hidden="true">' + lockIcon(false) + "</div>" +
+      '<form class="cr-lockform" id="crLockF" autocomplete="off"><label class="mono" for="crPw">口令</label>' +
+      '<input id="crPw" class="cr-in" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" placeholder="输一次，这台设备就记住了">' +
+      '<button type="submit" class="btn cr-unlock-go" id="crUnlock">开锁</button></form>' +
+      '<p class="cr-st cr-lockst" id="crLockSt" role="status" aria-live="polite"></p>' +
+      '<p class="cr-small">开了以后书只存在这台设备的浏览器里。换手机、换浏览器或者清了浏览器数据，要再输一次。</p>' +
+      '<a class="back" href="#">← 回书架</a></div>';
+    window.scrollTo(0, 0);
+    var f = $("#crLockF"), inp = $("#crPw"), st = $("#crLockSt"), go = $("#crUnlock"), busy = false;
+    if (window.matchMedia("(hover:hover)").matches) inp.focus();
+    inp.oninput = function () { st.textContent = ""; st.classList.remove("bad"); };
+    f.onsubmit = function (e) {
+      e.preventDefault();
+      if (busy) return;
+      var pw = (inp.value || "").replace(/^[\s\u3000]+|[\s\u3000]+$/g, "");
+      if (pw.normalize) pw = pw.normalize("NFC");
+      if (!pw) { st.textContent = "先输口令。"; return; }
+      if (!window.crypto || !window.crypto.subtle || !window.TextDecoder) { st.textContent = "这个浏览器开不了锁，换 Safari 或 Chrome 试试。"; st.classList.add("bad"); return; }
+      busy = true; go.disabled = true; go.textContent = "开锁中…"; st.classList.remove("bad"); st.textContent = "在对口令，要一两秒。";
+      unlockOne(b, pw).then(function () {
+        // 同一个口令顺手把别的带锁的书也开了，省得再输
+        var others = lockedBooks().filter(function (x) { return x.key !== b.key && !LS.get("coread:open:" + x.key, false); });
+        return Promise.all(others.map(function (x) { return unlockOne(x, pw).then(function () { return 1; }, function () { return 0; }); }));
+      }).then(function (got) {
+        var n = got.reduce(function (s, x) { return s + x; }, 0);
+        toast(n ? "开了。另外 " + n + " 本同一个口令，也一起开了" : "开了");
+        if (location.hash === "#b/" + encodeURIComponent(b.key)) openBook(b.key); else location.hash = "#b/" + encodeURIComponent(b.key);
+      }, function (err) {
+        busy = false; go.disabled = false; go.textContent = "开锁";
+        st.classList.add("bad");
+        st.textContent = err && err.wrong ? "口令不对。再想想，想不起来就问我。" : "书没下载下来，网不好的话再试一次。";
+        if (err && err.wrong) { f.classList.remove("cr-shake"); void f.offsetWidth; f.classList.add("cr-shake"); inp.select(); }
+      });
+    };
+  }
+
   // ---------- 打开一本书 ----------
   function openBook(key) {
     var b = allBooks().filter(function (x) { return x.key === key; })[0];
     if (!b) { toast("书架上没有这本"); location.hash = ""; return; }
     app.innerHTML = '<p class="loading">翻书中…</p>';
+    if (b.lock) {
+      textGet(b.key).then(function (t) {
+        if (t == null) { LS.del("coread:open:" + b.key); lockPage(b); return; }
+        showBook(b, t);
+      }, function () { lockPage(b); });
+      return;
+    }
     var p = b.src === "repo"
       ? fetch(b.file + "?v=" + Math.floor(Date.now() / 3600000)).then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
       : textGet(b.key);
     p.then(function (text) {
       if (text == null) throw new Error("没找到");
-      S.book = b; S.chapters = splitChapters(text); S.anns = loadAnns(b); S.checked = {};
-      LS.set("coread:last", b.key);
-      var pos = LS.get("coread:pos:" + b.key, null);
-      S.ci = pos && pos.ci < S.chapters.length ? pos.ci : 0;
-      readerShell();
-      loadChapter(S.ci, pos ? { k: pos.k } : { page: 0 });
+      showBook(b, text);
     }).catch(function () {
       app.innerHTML = '<div class="page"><h1>书没打开</h1><p class="sub">可能是网慢，也可能这台设备上已经没有这本书了。</p><a class="back" href="#">← 回书架</a></div>';
     });
+  }
+
+  function showBook(b, text) {
+    S.book = b; S.chapters = splitChapters(text); S.anns = loadAnns(b); S.checked = {};
+    LS.set("coread:last", b.key);
+    var pos = LS.get("coread:pos:" + b.key, null);
+    S.ci = pos && pos.ci < S.chapters.length ? pos.ci : 0;
+    readerShell();
+    loadChapter(S.ci, pos ? { k: pos.k } : { page: 0 });
   }
 
   function readerShell() {

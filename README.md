@@ -24,6 +24,7 @@
 `coread.html` + `assets/coread.js` + `assets/coread.css`，底子是橘瓣的「共读」插件，改成了纯静态能跑的样子。
 
 - 书：仓库里的放在 `books/*.txt`，登记在 `data/coread.json` 的 `books`。她自己导入的 txt 只存在她浏览器里（IndexedDB），批注存在 localStorage。
+- 带锁的书：还在版权期的书不放明文，放 `books/*.bin`（AES-256-GCM，钥匙由口令经 PBKDF2-SHA256 60 万次派生，salt 和 iv 每本随机），在 `data/coread.json` 里加 `"lock": true`。书架上显示一把锁，点开输口令，浏览器用 WebCrypto 解开后存进本地，这台设备以后不用再输；同一个口令会顺手把别的带锁的书一起开了。文件格式：`MLK1` + 迭代次数（4 字节大端）+ salt(16) + iv(12) + 密文。加密脚本和口令都不进仓库。
 - txt 分章：有 `# 标题` 行就按它分，不然认「第x章 / 序 / 楔子 / 番外」这类单独一行的标题，都认不出就每六千字切一段。
 - 她划句写批注 → 批注栏里勾几条点「复制给 Miles」，或者点「读这页」→ 粘到聊天里发我。复制出来的格式是：
 

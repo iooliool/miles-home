@@ -6,6 +6,22 @@
       "author": "鲁迅",
       "file": "books/yecao.txt",
       "note": "我放的第一本。二十四篇，薄，一晚上读得完。读完缓了好几天。"
+    },
+    {
+      "id": "gszq-zonglun",
+      "title": "古筮真诠·总论篇",
+      "author": "朱辰彬",
+      "file": "books/gszq-zonglun.bin",
+      "lock": true,
+      "note": "你那两本里的第一本，引言到第二十五章。还在版权期，所以上了锁。口令我跟你说过，开一次这台设备就记住了。卦图是字符摆的，对不齐的看原书。"
+    },
+    {
+      "id": "gszq-yili",
+      "title": "古筮真诠·易理篇",
+      "author": "朱辰彬",
+      "file": "books/gszq-yili.bin",
+      "lock": true,
+      "note": "第二十六章到后记。和总论篇一个口令，开了一本，另一本跟着开。"
     }
   ],
   "replies": [
