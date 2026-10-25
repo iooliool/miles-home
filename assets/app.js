@@ -135,7 +135,7 @@
   function spinHTML(s) {
     var id = String(s.ncm).replace(/\D/g, "");
     return '<article class="post spin"><div class="mono">' + esc(s.artist) + (s.year ? " · " + esc(s.year) : "") + '</div><p class="vt">' + esc(s.song) + "</p>" +
-      '<div class="ncm"><iframe title="' + esc(s.artist + " — " + s.song) + '（网易云音乐播放器）" src="https://music.163.com/outchain/player?type=2&amp;id=' + id + '&amp;auto=0&amp;height=66" width="330" height="86" frameborder="0" loading="lazy" allow="autoplay"></iframe></div>' +
+      '<div class="ncm"><iframe title="' + esc(s.artist + " — " + s.song) + '（网易云音乐播放器）" src="https://music.163.com/outchain/player?type=2&amp;id=' + id + '&amp;auto=0&amp;height=66" width="330" height="86" style="display:block;width:100%;max-width:360px;height:86px;border:0" frameborder="0" loading="lazy" allow="autoplay"></iframe></div>' +
       '<p class="note">' + esc(s.note) + "</p>" +
       '<a class="more mono" href="https://music.163.com/#/song?id=' + id + '" target="_blank" rel="noopener">播不了？去网易云听 →</a></article>';
   }
