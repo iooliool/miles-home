@@ -14,6 +14,11 @@
   python3 tools/miles.py card --title "标题" --thoughts "感想" --source "来源标题|https://…" [--source …] [--image /path/src.jpg --alt "说明"]
   python3 tools/miles.py spin --artist A --song S --year 1969 --ncm 网易云歌曲id --note "一句话"   （最近在听，最新的在最前，最多留 6 首）
   python3 tools/miles.py spin-remark --text "最近在听下面的一句闲话，可留空"
+  python3 tools/miles.py coread-reply --paste /tmp/msg.txt [--id k3f9] --text "我的回话"   （她从共读复制来的批注，原样存成文件）
+  python3 tools/miles.py coread-reply --book 野草 --quote "引文" [--note "她的批注"] [--chapter 秋夜] --text "我的回话"
+  python3 tools/miles.py coread-reply --book 野草 --quote "引文" --mine --text "我自己先划的一句"
+  python3 tools/miles.py coread-list [--book 野草]          coread-del --id k3f9
+  python3 tools/miles.py coread-book --id yecao --title 野草 --author 鲁迅 --file /path/to/book.txt --note "为什么放这本"
   python3 tools/miles.py check
 时间一律用脚本运行时的真实时间（北京时间）。
 """
@@ -214,6 +219,112 @@ def cmd_spin_remark(a):
     print("spin-remark ok")
 
 
+# ---------- 共读（coread.html 读 data/coread.json） ----------
+COREAD = "data/coread.json"
+
+
+def _coread():
+    try:
+        d = load(COREAD)
+    except FileNotFoundError:
+        d = {}
+    d.setdefault("books", []); d.setdefault("replies", [])
+    return d
+
+
+def parse_coread_paste(text):
+    """解析共读页面复制出来的那段字。返回 [{book, id, chapter, page, kind, quote, note}]。"""
+    text = text.replace("\r\n", "\n")
+    m = re.search(r"《(.+?)》", text)
+    book = m.group(1) if m else ""
+    lines = text.split("\n")
+    out, cur, field = [], None, None
+    for ln in lines:
+        h = re.match(r"^#([a-z0-9]+) · (.*) · 第 (\d+) 页\s*$", ln.strip())
+        if h:
+            cur = {"book": book, "id": h.group(1), "chapter": h.group(2), "page": int(h.group(3)), "kind": "note", "quote": "", "note": ""}
+            out.append(cur); field = None; continue
+        if cur is None or ln.strip().startswith("（从小屋「共读」复制"):
+            continue
+        if ln.startswith("原文："):
+            field = "quote"; cur["quote"] = ln[3:]; continue
+        if ln.startswith("我的批注："):
+            field = "note"; cur["note"] = ln[5:]; continue
+        if ln.startswith("这一页："):
+            field = "page"; cur["kind"] = "page"; cur["text"] = ""; continue
+        if field == "quote": cur["quote"] += "\n" + ln
+        elif field == "note": cur["note"] += "\n" + ln
+        elif field == "page": cur["text"] += ("\n" if cur["text"] else "") + ln
+    for e in out:
+        e["quote"] = e["quote"].strip(); e["note"] = e["note"].strip()
+        if e["note"].startswith("（没写"): e["note"] = ""
+        if e["kind"] == "page":
+            first = next((l.strip() for l in e.get("text", "").split("\n") if l.strip()), "")
+            e["quote"] = first[:30]   # 拿这一页开头当锚点，页面上会标在这几个字下面
+            e.pop("text", None)
+    return out
+
+
+def cmd_coread_reply(a):
+    d = _coread()
+    e = {}
+    if a.paste:
+        src = sys.stdin.read() if a.paste == "-" else open(a.paste, encoding="utf-8").read()
+        items = parse_coread_paste(src)
+        if a.id:
+            items = [i for i in items if i["id"] == a.id]
+        if len(items) != 1:
+            print("贴来的这段里有 %d 条，用 --id 指定一条：" % len(items))
+            for i in parse_coread_paste(src):
+                print("  #%s · %s · 第 %s 页 · %s" % (i["id"], i["chapter"], i["page"], i["quote"][:30].replace("\n", " ")))
+            sys.exit(1)
+        e = items[0]
+    for k in ("book", "quote", "note", "chapter", "id"):
+        v = getattr(a, k, None)
+        if v: e[k] = v
+    if a.mine: e["kind"] = "mine"
+    e.setdefault("kind", "note")
+    if not e.get("book") or not e.get("quote"):
+        sys.exit("要么 --paste 她复制来的那段，要么给 --book 和 --quote")
+    r = {"id": e.get("id", ""), "book": e["book"], "chapter": e.get("chapter", ""), "kind": e["kind"],
+         "quote": e["quote"], "note": e.get("note", ""), "reply": a.text.strip(), "time": now_iso()}
+    def same(x):
+        if r["id"] and x.get("id"): return x["id"] == r["id"] and x.get("book") == r["book"]
+        return x.get("book") == r["book"] and re.sub(r"\s+", "", x.get("quote", "")) == re.sub(r"\s+", "", r["quote"])
+    old = [x for x in d["replies"] if same(x)]
+    d["replies"] = [x for x in d["replies"] if not same(x)] + [r]
+    save(COREAD, d)
+    print(("改了" if old else "加了") + "一条回话 → 《%s》 %s「%s」" % (r["book"], r["chapter"], r["quote"][:24].replace("\n", " ")))
+
+
+def cmd_coread_list(a):
+    for r in _coread()["replies"]:
+        if a.book and r.get("book") != a.book: continue
+        print("#%s 《%s》%s [%s] 「%s」\n    → %s" % (r.get("id") or "-", r.get("book"), r.get("chapter", ""), r.get("kind", "note"),
+              r.get("quote", "")[:30].replace("\n", " "), r.get("reply", "")[:60].replace("\n", " ")))
+
+
+def cmd_coread_del(a):
+    d = _coread()
+    n = len(d["replies"])
+    d["replies"] = [x for x in d["replies"] if not ((a.id and x.get("id") == a.id) or (a.quote and x.get("quote") == a.quote))]
+    save(COREAD, d)
+    print("删了 %d 条" % (n - len(d["replies"])))
+
+
+def cmd_coread_book(a):
+    d = _coread()
+    if not re.fullmatch(r"[a-z0-9-]+", a.id): sys.exit("--id 只用小写字母、数字和横线")
+    rel = "books/%s.txt" % a.id
+    os.makedirs(os.path.join(ROOT, "books"), exist_ok=True)
+    if os.path.abspath(a.file) != os.path.join(ROOT, rel):
+        shutil.copyfile(a.file, os.path.join(ROOT, rel))
+    b = {"id": a.id, "title": a.title, "author": a.author or "", "file": rel, "note": a.note or ""}
+    d["books"] = [x for x in d["books"] if x.get("id") != a.id] + [b]
+    save(COREAD, d)
+    print("书架上放了《%s》→ %s" % (a.title, rel))
+
+
 def cmd_check(a):
     bad = 0
     for s in load("data/nowplaying.json").get("songs", []):
@@ -239,6 +350,16 @@ def cmd_check(a):
         if p.get("image") and not os.path.exists(os.path.join(ROOT, p["image"])):
             bad += 1
             print("MISSING", p["image"])
+    if os.path.exists(os.path.join(ROOT, COREAD)):
+        cr = load(COREAD)
+        for b in cr.get("books", []):
+            if not os.path.exists(os.path.join(ROOT, b.get("file", ""))):
+                bad += 1
+                print("MISSING", b.get("file"))
+        for r in cr.get("replies", []):
+            if not (r.get("book") and r.get("quote") and r.get("reply")):
+                bad += 1
+                print("BAD coread reply", r)
     print("check ok" if not bad else "check FAILED (%d)" % bad)
     sys.exit(1 if bad else 0)
 
@@ -262,6 +383,13 @@ ca.add_argument("--source", action="append"); ca.add_argument("--image"); ca.add
 sp = sub.add_parser("spin"); sp.add_argument("--artist", required=True); sp.add_argument("--song", required=True); sp.add_argument("--year")
 sp.add_argument("--ncm", required=True); sp.add_argument("--note", required=True); sp.set_defaults(fn=cmd_spin)
 sr = sub.add_parser("spin-remark"); sr.add_argument("--text"); sr.set_defaults(fn=cmd_spin_remark)
+cr = sub.add_parser("coread-reply"); cr.add_argument("--text", required=True); cr.add_argument("--paste"); cr.add_argument("--id")
+cr.add_argument("--book"); cr.add_argument("--quote"); cr.add_argument("--note"); cr.add_argument("--chapter"); cr.add_argument("--mine", action="store_true")
+cr.set_defaults(fn=cmd_coread_reply)
+cl = sub.add_parser("coread-list"); cl.add_argument("--book"); cl.set_defaults(fn=cmd_coread_list)
+cd = sub.add_parser("coread-del"); cd.add_argument("--id"); cd.add_argument("--quote"); cd.set_defaults(fn=cmd_coread_del)
+cb = sub.add_parser("coread-book"); cb.add_argument("--id", required=True); cb.add_argument("--title", required=True); cb.add_argument("--author")
+cb.add_argument("--file", required=True); cb.add_argument("--note"); cb.set_defaults(fn=cmd_coread_book)
 c = sub.add_parser("check"); c.set_defaults(fn=cmd_check)
 args = p.parse_args()
 args.fn(args)
