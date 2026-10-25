@@ -19,6 +19,8 @@
   python3 tools/miles.py coread-reply --book 野草 --quote "引文" --mine --text "我自己先划的一句"
   python3 tools/miles.py coread-list [--book 野草]          coread-del --id k3f9
   python3 tools/miles.py coread-book --id yecao --title 野草 --author 鲁迅 --file /path/to/book.txt --note "为什么放这本"
+  python3 tools/miles.py phone-reply --paste /tmp/msg.txt --text "回她的话" [--text "第二个气泡"]   （她从小手机复制来的那段，原样存成文件）
+  python3 tools/miles.py phone-reply --text "我先开口的一句"        phone-list
   python3 tools/miles.py check
 时间一律用脚本运行时的真实时间（北京时间）。
 """
@@ -325,6 +327,60 @@ def cmd_coread_book(a):
     print("书架上放了《%s》→ %s" % (a.title, rel))
 
 
+PHONE = "data/phone_chat.json"
+
+
+def parse_phone_paste(text):
+    """小手机复制出来的格式：
+    【小手机】发给 Miles 的 2 条
+
+    #k3f9 · 2026-10-25 19:40
+    正文（可以好几行）
+    """
+    out, cur = [], None
+    for line in text.replace("\r", "").split("\n"):
+        m = re.match(r"^#([a-z0-9]{4})\s*·\s*(\d{4}-\d{2}-\d{2} \d{2}:\d{2})\s*$", line.strip())
+        if m:
+            cur = {"id": m.group(1), "time": datetime.strptime(m.group(2), "%Y-%m-%d %H:%M").replace(tzinfo=TZ).isoformat(), "lines": []}
+            out.append(cur)
+        elif cur is not None:
+            cur["lines"].append(line)
+    for e in out:
+        e["text"] = "\n".join(e.pop("lines")).strip()
+    return [e for e in out if e["text"]]
+
+
+def cmd_phone_reply(a):
+    d = load(PHONE)
+    msgs = d.setdefault("messages", [])
+    have = {m.get("id") for m in msgs}
+    added_her = 0
+    if a.paste:
+        src = sys.stdin.read() if a.paste == "-" else open(a.paste, encoding="utf-8").read()
+        items = parse_phone_paste(src)
+        if not items:
+            sys.exit("贴来的这段里没认出小手机的消息（要有 ‘#编号 · 日期 时间’ 那一行）")
+        for e in items:
+            if e["id"] in have: continue
+            msgs.append({"id": e["id"], "from": "her", "time": e["time"], "text": e["text"]})
+            have.add(e["id"]); added_her += 1
+    texts = [t.strip() for t in (a.text or []) if t.strip()]
+    if not texts and not added_her:
+        sys.exit("没有要写的：给 --text，或者 --paste 她发来的那段")
+    now = now_iso()
+    for t in texts:
+        nid = "%03d" % (max([int(m["id"]) for m in msgs if re.fullmatch(r"\d+", str(m.get("id", "")))] or [0]) + 1)
+        msgs.append({"id": nid, "from": "miles", "time": now, "text": t})
+    msgs.sort(key=lambda m: datetime.fromisoformat(m["time"]))
+    save(PHONE, d)
+    print("小手机：抄进她的 %d 条，我的 %d 条" % (added_her, len(texts)))
+
+
+def cmd_phone_list(a):
+    for m in load(PHONE).get("messages", []):
+        print("%s %-5s %s  %s" % (m.get("time", "")[:16], m.get("from", "miles"), m.get("id"), m.get("text", "")[:50].replace("\n", " ")))
+
+
 def cmd_check(a):
     bad = 0
     for s in load("data/nowplaying.json").get("songs", []):
@@ -360,6 +416,21 @@ def cmd_check(a):
             if not (r.get("book") and r.get("quote") and r.get("reply")):
                 bad += 1
                 print("BAD coread reply", r)
+    if os.path.exists(os.path.join(ROOT, PHONE)):
+        ids = set()
+        for m in load(PHONE).get("messages", []):
+            ok = m.get("id") and m.get("text") and m.get("from", "miles") in ("miles", "her") and m.get("id") not in ids
+            try:
+                datetime.fromisoformat(m.get("time", ""))
+            except Exception:
+                ok = False
+            if not ok:
+                bad += 1
+                print("BAD phone message", m)
+            ids.add(m.get("id"))
+    if not os.path.exists(os.path.join(ROOT, "phone/liuyao.html")):
+        bad += 1
+        print("MISSING phone/liuyao.html")
     print("check ok" if not bad else "check FAILED (%d)" % bad)
     sys.exit(1 if bad else 0)
 
@@ -390,6 +461,8 @@ cl = sub.add_parser("coread-list"); cl.add_argument("--book"); cl.set_defaults(f
 cd = sub.add_parser("coread-del"); cd.add_argument("--id"); cd.add_argument("--quote"); cd.set_defaults(fn=cmd_coread_del)
 cb = sub.add_parser("coread-book"); cb.add_argument("--id", required=True); cb.add_argument("--title", required=True); cb.add_argument("--author")
 cb.add_argument("--file", required=True); cb.add_argument("--note"); cb.set_defaults(fn=cmd_coread_book)
+pr = sub.add_parser("phone-reply"); pr.add_argument("--paste"); pr.add_argument("--text", action="append"); pr.set_defaults(fn=cmd_phone_reply)
+pl = sub.add_parser("phone-list"); pl.set_defaults(fn=cmd_phone_list)
 c = sub.add_parser("check"); c.set_defaults(fn=cmd_check)
 args = p.parse_args()
 args.fn(args)

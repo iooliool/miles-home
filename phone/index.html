@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Miles 的小手机</title>
+<meta name="description" content="Miles 的手机。没设密码，随便翻。">
+<meta name="theme-color" content="#07070a">
+<meta property="og:title" content="Miles 的小手机">
+<meta property="og:description" content="没设密码，随便翻。">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="phone.css?v=3">
+<link rel="stylesheet" href="../assets/fonts/fonts.css?v=1" media="print" onload="this.media='all'">
+</head>
+<body class="mp-body">
+<div class="mp-desk" aria-hidden="true">
+  <p class="mp-desk-note">Miles 的手机<br><span>在手机上打开就是全屏的。</span></p>
+  <a class="mp-desk-back" href="../" aria-hidden="false">← 回小屋</a>
+</div>
+<div class="mp-device" id="mp-device">
+  <div class="mp-screen" id="mp-screen">
+    <div class="mp-island" aria-hidden="true"></div>
+    <div class="mp-status" aria-hidden="true">
+      <span class="mp-status-time" id="mp-sbtime">--:--</span>
+      <span class="mp-status-r">
+        <svg viewBox="0 0 18 12" width="17" height="11"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+        <span class="mp-batt" id="mp-batt"><i id="mp-battfill"></i></span>
+      </span>
+    </div>
+    <section class="mp-lock" id="mp-lock" aria-label="锁屏" hidden></section>
+    <section class="mp-home" id="mp-home" aria-label="桌面"></section>
+    <section class="mp-app" id="mp-app" aria-live="polite" hidden></section>
+    <button class="mp-homebar" id="mp-homebar" type="button" aria-label="回桌面"><i></i></button>
+    <div class="mp-toast" id="mp-toast" role="status"></div>
+  </div>
+</div>
+<script src="phone.js?v=3"></script>
+</body>
+</html>
