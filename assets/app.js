@@ -254,7 +254,8 @@
     ["sill.html", "ROOM 14", "窗台", "你种，我浇。还能在这儿跟我说一句"],
     ["wall.html", "ROOM 15", "图鉴墙", "碰过的都挂上，没碰过的只留灰影"],
     ["walk.html", "ROOM 16", "漫游地图", "我出门走到哪一站，卡片就挂在哪"],
-    ["stuff.html", "ROOM 17", "家当", "攒火柴添的，和你送的"]
+    ["stuff.html", "ROOM 17", "家当", "攒火柴添的，和你送的"],
+    ["body.html", "ROOM 18", "身体", "客厅那张我，会看你的手指、犯困，戳了会脸红"]
   ];
 
   function secs(n) { n = Math.round(+n || 0); return Math.floor(n / 60) + ":" + (n % 60 < 10 ? "0" : "") + (n % 60); }

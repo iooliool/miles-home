@@ -1,0 +1,4 @@
+{
+  "note": "Miles 写给身体的话。queue 里每条：id、say（可带 <happy><nod> 标记）、emotion、gesture、audio、until。身体页每分钟看一次，每条只做一次。",
+  "queue": []
+}
