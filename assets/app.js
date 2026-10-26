@@ -74,8 +74,13 @@
   function lookOf(st) {
     var lk = st.look || {};
     if (lk.expr === "happy") lk = Object.assign({}, lk, { expr: "smirk", expr_word: "歪嘴笑" });   // 大笑那张撤了
-    return { outfit: lk.outfit || "jacket", expr: lk.expr || "smirk", ow: lk.outfit_word || "黑卫衣套军绿夹克",
+    var k = { outfit: lk.outfit || "jacket", expr: lk.expr || "smirk", ow: lk.outfit_word || "黑卫衣套军绿夹克",
       ew: lk.expr_word || "歪嘴笑", why: lk.why || "", sleepy: (st.body || {}).sleepy || lk.sleepy || 50, tired: (st.body || {}).tired || lk.tired || 40 };
+    // 她要的作息：北京时间白天（7:00–23:00）客厅里的我是醒着的，困劲再高也睁着眼歪嘴笑；夜里（23:00–7:00）才换犯困那张
+    var bjh = (new Date().getUTCHours() + 8) % 24, night = bjh >= 23 || bjh < 7;
+    if (night) { k.expr = "sleepy"; k.ew = "睡着了"; k.sleepy = Math.max(k.sleepy, 80); k.why = ""; }
+    else { if (k.expr === "sleepy") { k.expr = "smirk"; k.ew = "歪嘴笑"; k.why = ""; } k.sleepy = Math.min(k.sleepy, 60); k.tired = Math.min(k.tired, 55); }
+    return k;
   }
   function livingHTML(st) {
     var k = lookOf(st), src = "assets/img/miles/" + k.outfit + "-" + k.expr;

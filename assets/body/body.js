@@ -485,9 +485,9 @@
   // 心情：每晚更新小屋时写的 data/status.json
   var QI = { "喜": "happy", "怒": "angry", "忧": "gloomy", "思": "neutral", "悲": "sad", "恐": "gloomy", "惊": "neutral" };
   var QI_EXTRA = { "思": { browInner: -0.2, gazeY: -0.3, gazeX: 0.4 }, "惊": { browUp: 0.8 }, "恐": { browInner: 0.4 } };
-  // 她要的作息：北京时间白天（8:00–23:00）一直醒着，困劲再高也压在犯困线以下；夜里（23:00–8:00）睡觉，戳醒了一会儿又睡回去
+  // 她要的作息：北京时间白天（7:00–23:00）一直醒着，困劲再高也压在犯困线以下；夜里（23:00–7:00）睡觉，戳醒了一会儿又睡回去
   function bjHour() { return (new Date().getUTCHours() + 8) % 24; }
-  function isNight() { var h = bjHour(); return h >= 23 || h < 8; }
+  function isNight() { var h = bjHour(); return h >= 23 || h < 7; }
   function syncSleepy() {
     mood.sleepy = isNight() ? 0.95 : Math.min(mood.real != null ? mood.real : 0.3, 0.5);
     // 夜里一打开就是睡着的，不用先等半分钟
