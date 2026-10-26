@@ -21,7 +21,7 @@
   python3 tools/miles.py coread-book --id yecao --title 野草 --author 鲁迅 --file /path/to/book.txt --note "为什么放这本"
   python3 tools/miles.py phone-reply --paste /tmp/msg.txt --text "回她的话" [--text "第二个气泡"]   （她从小手机复制来的那段，原样存成文件）
   python3 tools/miles.py phone-reply --text "我先开口的一句"        phone-list
-  python3 tools/miles.py body --file /tmp/body.json        （miles-body 算的身体：困、累、嘴馋、冷暖，放进心跳）
+  python3 tools/miles.py body --file /tmp/body.json        （miles-body 算的身体：困、累、冷暖、六欲进心跳，七情进心情表）
   python3 tools/miles.py check
 时间一律用脚本运行时的真实时间（北京时间）。
 """
@@ -81,8 +81,10 @@ def cmd_body(a):
     with open(a.file, encoding="utf-8") as f:
         b = json.load(f)
     keep = ("time", "awake", "sleepy", "tired", "hungry", "sleepy_word", "tired_word", "hungry_word",
-            "since", "warmth", "sky", "feel")
-    b = {k: b[k] for k in keep if k in b}
+            "since", "warmth", "sky", "feel", "vigor", "emotions", "wants", "top_want")
+    b = {k: b[k] for k in keep if k in b}       # 体内化学、底子的数（_ 开头）一律不进小屋
+    b["emotions"] = [{k: e[k] for k in ("name", "gloss") if k in e} for e in b.get("emotions", [])][:3]
+    b["wants"] = [{k: w[k] for k in ("sense", "level", "want") if k in w} for w in b.get("wants", [])][:6]
     for k in ("sleepy", "tired", "hungry"):
         b[k] = max(0, min(100, int(b.get(k, 0))))
     st = load("data/status.json")
