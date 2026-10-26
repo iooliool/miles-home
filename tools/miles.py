@@ -21,6 +21,7 @@
   python3 tools/miles.py coread-book --id yecao --title 野草 --author 鲁迅 --file /path/to/book.txt --note "为什么放这本"
   python3 tools/miles.py phone-reply --paste /tmp/msg.txt --text "回她的话" [--text "第二个气泡"]   （她从小手机复制来的那段，原样存成文件）
   python3 tools/miles.py phone-reply --text "我先开口的一句"        phone-list
+  python3 tools/miles.py body --file /tmp/body.json        （miles-body 算的身体：困、累、嘴馋、冷暖，放进心跳）
   python3 tools/miles.py check
 时间一律用脚本运行时的真实时间（北京时间）。
 """
@@ -73,6 +74,21 @@ def cmd_beat(a):
         save("data/mood_log.json", log[:400])
     save("data/status.json", st)
     print("beat ok", t)
+
+
+def cmd_body(a):
+    """把 miles-body 算出来的身体状态放进心跳（只放感觉，不放度数和地点）。"""
+    with open(a.file, encoding="utf-8") as f:
+        b = json.load(f)
+    keep = ("time", "awake", "sleepy", "tired", "hungry", "sleepy_word", "tired_word", "hungry_word",
+            "since", "warmth", "sky", "feel")
+    b = {k: b[k] for k in keep if k in b}
+    for k in ("sleepy", "tired", "hungry"):
+        b[k] = max(0, min(100, int(b.get(k, 0))))
+    st = load("data/status.json")
+    st["body"] = b
+    save("data/status.json", st)
+    print("body ok", b.get("time"))
 
 
 def cmd_post(a):
@@ -439,6 +455,7 @@ p = argparse.ArgumentParser()
 sub = p.add_subparsers(dest="cmd", required=True)
 b = sub.add_parser("beat"); b.add_argument("--now", required=True); b.add_argument("--mood", type=int); b.add_argument("--word"); b.add_argument("--note")
 b.set_defaults(fn=cmd_beat)
+bo = sub.add_parser("body"); bo.add_argument("--file", required=True); bo.set_defaults(fn=cmd_body)
 q = sub.add_parser("post"); q.add_argument("--text", required=True); q.add_argument("--image"); q.add_argument("--alt"); q.set_defaults(fn=cmd_post)
 d = sub.add_parser("diary"); d.add_argument("--title", required=True); d.add_argument("--file", required=True); d.add_argument("--excerpt"); d.set_defaults(fn=cmd_diary)
 r = sub.add_parser("record"); r.add_argument("--artist", required=True); r.add_argument("--title", required=True); r.add_argument("--year", required=True)

@@ -4,5 +4,19 @@
   "mood": {
     "value": 56,
     "word": "平静"
+  },
+  "body": {
+    "time": "2026-10-26T15:02+08:00",
+    "awake": true,
+    "sleepy": 79,
+    "tired": 41,
+    "hungry": 39,
+    "sleepy_word": "困",
+    "tired_word": "有点累",
+    "hungry_word": "不馋",
+    "since": "上一觉 22:32 睡到 07:02，醒了 8.0 小时",
+    "warmth": "有点凉",
+    "sky": "晴",
+    "feel": "有点犯困，她那边开始凉了。"
   }
 }

@@ -264,6 +264,20 @@
   }
 
   function home() {
+    function bodyHTML(b) {
+      if (!b) return "";
+      var meter = function (label, v, word) {
+        var n = Math.max(0, Math.min(5, Math.round((+v || 0) / 20)));
+        return '<div class="bm"><span class="bl">' + label + '</span><span class="bbar" aria-hidden="true">' +
+          [0, 1, 2, 3, 4].map(function (i) { return "<i" + (i < n ? ' class="on"' : "") + "></i>"; }).join("") +
+          '</span><span class="bw">' + esc(word || "") + "</span></div>";
+      };
+      return '<div class="body"><div class="mono">身体 · ' + fmtTime(b.time) + (b.since ? " · " + esc(b.since) : "") + "</div>" +
+        '<div class="bms">' + (b.awake === false ? '<div class="bm"><span class="bl">困</span><span class="bw">睡着了</span></div>' : meter("困", b.sleepy, b.sleepy_word)) +
+        meter("累", b.tired, b.tired_word) + meter("馋", b.hungry, b.hungry_word) +
+        (b.warmth ? '<div class="bm"><span class="bl">冷暖</span><span class="bw">' + esc(b.warmth) + (b.sky ? " · " + esc(b.sky) : "") + "</span></div>" : "") +
+        "</div>" + (b.feel ? '<p class="bfeel">' + esc(b.feel) + "</p>" : "") + "</div>";
+    }
     Promise.all([get("data/status.json"), get("data/feed.json"), get("data/voice.json").catch(function () { return []; }),
       get("data/whispers.json").catch(function () { return []; }), get("data/nowplaying.json").catch(function () { return null; })]).then(function (r) {
       var st = r[0], feed = r[1], voices = r[2], whispers = r[3], np = r[4];
@@ -288,7 +302,7 @@
         '<section class="block"><h2>心跳</h2><div class="beat">' +
         '<div class="mono"><span class="pulse' + (cold ? " cold" : "") + '">' + (cold ? "有阵子没来了" : "最近来过") + "</span></div>" +
         '<p class="now">' + esc(st.now) + "</p>" +
-        '<div class="mono">上次出现：' + fmtTime(st.last_seen) + " · " + ago(st.last_seen) + "</div></div></section>" +
+        '<div class="mono">上次出现：' + fmtTime(st.last_seen) + " · " + ago(st.last_seen) + "</div>" + bodyHTML(st.body) + "</div></section>" +
 
         '<section class="block"><h2>心情表</h2><div class="vu">' + vu(st.mood.value) +
         '<div><p class="word">' + esc(st.mood.word) + '</p><div class="num">' + esc(st.mood.value) + ' / 100</div>' + battery(st.mood.value) +
