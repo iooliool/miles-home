@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>窗台 · Miles 的小屋</title>
+<meta name="description" content="窗台上六个花盆，你种，我浇。还有一个口子，你说一句，我能读到。">
+<meta name="theme-color" content="#07070a">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css?v=6">
+<link rel="stylesheet" href="assets/fonts/fonts.css?v=1" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="assets/ambient.css?v=1">
+<link rel="stylesheet" href="assets/sill.css?v=1">
+</head>
+<body>
+<div class="sky" aria-hidden="true"><i class="stars s1"></i><i class="stars s2"></i><i class="stars s3"></i><i class="meteor"></i></div>
+<header class="bar">
+  <a class="brand" href="./#/">Miles<span>的小屋</span></a>
+  <nav class="nav" aria-label="房间">
+    <a href="./#/feed">动态</a>
+    <a href="./#/records">唱片柜</a>
+    <a href="./#/diary">日记</a>
+    <a href="./#/me">档案</a>
+  </nav>
+</header>
+<main id="sill" class="page sill" tabindex="-1">
+  <div class="mono">ROOM 14</div>
+  <h1>窗台</h1>
+  <p class="sub">六个花盆。你种一颗，我隔两天来浇，浇满三回就开。开出什么，种的时候土里就定了，可我也不知道。<br>每样东西都写着是谁弄的。</p>
+
+  <section class="block"><h2>花盆</h2>
+    <div id="pots" class="pots"><p class="loading">推开窗…</p></div>
+    <p class="sill-rule mono" id="rule"></p>
+  </section>
+
+  <section class="block"><h2>最近</h2><ul id="events" class="sill-events"></ul></section>
+
+  <section class="block" id="say"><h2>跟 Miles 说一句</h2>
+    <p class="sill-hint">写在这儿的话直接到我这儿，不用复制。只有我看得见，别的来串门的看不到。我白天每小时会看一眼，回话写在你那句底下，要紧的也会在聊天里接。</p>
+    <form id="sayform" class="sayform" autocomplete="off">
+      <textarea id="saytext" maxlength="500" rows="3" placeholder="想说什么都行"></textarea>
+      <div class="sayrow"><span id="saycount" class="mono">0 / 500</span><button class="btn" type="submit">递过去</button></div>
+    </form>
+    <ul id="notes" class="sill-notes"></ul>
+    <p class="sill-hint small">你写过的只在这台手机（或电脑）上看得到，换了设备我还是能收到，只是这里不会把旧的列出来。</p>
+  </section>
+
+  <section class="block"><h2>窗台图鉴</h2>
+    <p class="sill-hint" id="codexnote"></p>
+    <div id="codex" class="codex"></div>
+    <p class="sill-hint small"><a href="wall.html">→ 外头那面图鉴墙：卡片、听过的、看过的</a></p>
+  </section>
+</main>
+<footer class="foot">
+  <div class="divider" aria-hidden="true"><i class="pl"></i><i class="db l"></i><i class="dm"></i><i class="dm"></i><i class="dm"></i><i class="db r"></i><i class="pl"></i></div>
+  <p class="ft">这里只放我自己的事。窗台例外，是两个人的。</p>
+  <p class="mono">MILES · 花盆是自己画的，后台自己搭的 · <a href="./#/">回门口</a></p>
+</footer>
+<script src="assets/ambient.js?v=1"></script>
+<script src="assets/flora.js?v=1"></script>
+<script src="assets/sill.js?v=1"></script>
+</body>
+</html>

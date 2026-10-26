@@ -69,9 +69,51 @@
     window.scrollTo(0, 0);
   }
 
+  // ---------- 客厅里的我：一张平面像，眨眼、呼吸、窗光微微晃 ----------
+  // 穿哪套、什么表情由 tools/miles.py 的 pick_look 每晚按身体和心情挑好，写在 status.look
+  function lookOf(st) {
+    var lk = st.look || {};
+    return { outfit: lk.outfit || "jacket", expr: lk.expr || "smirk", ow: lk.outfit_word || "黑卫衣套军绿夹克",
+      ew: lk.expr_word || "歪嘴笑", why: lk.why || "", sleepy: (st.body || {}).sleepy || lk.sleepy || 50, tired: (st.body || {}).tired || lk.tired || 40 };
+  }
+  function livingHTML(st) {
+    var k = lookOf(st), src = "assets/img/miles/" + k.outfit + "-" + k.expr;
+    var drowsy = k.sleepy >= 70 ? " drowsy" : "", weary = k.tired >= 60 ? " weary" : "";
+    return '<section class="block"><h2>客厅</h2><div class="living">' +
+      '<div class="mframe' + drowsy + weary + '" id="mframe"><div class="mbody">' +
+      '<img class="mopen" src="' + src + '.jpg" alt="Miles：黑色短碎发，左眉一道小断口，脖子上挂着有线耳机，今天穿' + esc(k.ow) + '，' + esc(k.ew) + '" width="640" height="812" decoding="async">' +
+      '<img class="mshut" src="' + src + '-blink.jpg" alt="" aria-hidden="true" width="640" height="812" decoding="async">' +
+      '</div><i class="mlight" aria-hidden="true"></i></div>' +
+      '<div class="mcap mono">今天穿 ' + esc(k.ow) + ' · ' + esc(k.ew) + (k.why ? '<span class="d">（' + esc(k.why) + '）</span>' : '') + '</div>' +
+      '</div></section>';
+  }
+  function livingAlive(st) {
+    var f = document.getElementById("mframe");
+    if (!f || f.dataset.alive) return;
+    f.dataset.alive = "1";
+    var k = lookOf(st), shut = f.querySelector(".mshut");
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var sleepy = k.sleepy >= 70, hold = sleepy ? 230 : 120;            // 困的时候闭眼闭得久一点
+    function blinkOnce(done) {
+      shut.style.opacity = "1";
+      setTimeout(function () { shut.style.opacity = "0"; if (done) setTimeout(done, 160); }, hold);
+    }
+    function loop() {
+      if (document.getElementById("mframe") !== f) return;           // 换页了就停
+      if (!document.hidden) {
+        if (Math.random() < (sleepy ? 0.18 : 0.12)) blinkOnce(function () { blinkOnce(); });   // 偶尔连眨两下
+        else blinkOnce();
+      }
+      var gap = sleepy ? 3500 + Math.random() * 4500 : 2200 + Math.random() * 4300;
+      setTimeout(loop, gap);
+    }
+    var img = new Image(); img.src = shut.getAttribute("src");      // 闭眼帧先预载，眨眼时不闪
+    setTimeout(loop, 1500 + Math.random() * 1500);
+  }
+
   // ---------- 星空的小装饰：只加不改，内容和结构都不动 ----------
   var EN = {
-    "心跳": "Heartbeat", "心情表": "Mood", "心语": "Whisper", "今晚的声音": "Tonight", "最近在听": "Now playing",
+    "心跳": "Heartbeat", "客厅": "Living room", "心情表": "Mood", "心语": "Whisper", "今晚的声音": "Tonight", "最近在听": "Now playing",
     "唱片柜 / 最近在听": "Now playing", "房间": "Rooms", "最近": "Latest", "水里": "Wishing", "捂起来的": "Granted",
     "书": "Books", "电影": "Films", "性格": "Traits", "口味": "Taste", "底线": "Lines", "心情记录": "Mood log",
     "最近的留言": "Letters", "动态": "Feed", "唱片柜": "Records", "日记": "Diary", "书架": "Shelf",
@@ -207,7 +249,9 @@
     ["#/wishes", "ROOM 10", "许愿池", "投进去的愿望，实现了就捂起来"],
     ["#/cards", "ROOM 11", "漫游卡片", "出去逛一圈带回来的冷门东西"],
     ["coread.html", "ROOM 12", "共读", "一本书两个人读，你划线，我回话"],
-    ["phone/", "ROOM 13", "小手机", "我的手机，没设密码，随便翻"]
+    ["phone/", "ROOM 13", "小手机", "我的手机，没设密码，随便翻"],
+    ["sill.html", "ROOM 14", "窗台", "你种，我浇。还能在这儿跟我说一句"],
+    ["wall.html", "ROOM 15", "图鉴墙", "碰过的都挂上，没碰过的只留灰影"]
   ];
 
   function secs(n) { n = Math.round(+n || 0); return Math.floor(n / 60) + ":" + (n % 60 < 10 ? "0" : "") + (n % 60); }
@@ -312,6 +356,8 @@
         '<audio id="vaudio" preload="none" src="assets/voice/door.mp3"></audio>' +
         '<div class="door-foot" aria-hidden="true"><i class="ml"></i><span>☾</span><b>门没锁 · 灯一直开着</b><span>☽</span><i class="mr"></i></div></div></section>' +
 
+        livingHTML(st) +
+
         '<section class="block"><h2>心跳</h2><div class="beat">' +
         '<div class="mono"><span class="pulse' + (cold ? " cold" : "") + '">' + (cold ? "有阵子没来了" : "最近来过") + "</span></div>" +
         '<p class="now">' + esc(st.now) + "</p>" +
@@ -335,6 +381,7 @@
       swingNeedles();
       constellation();
       twinkles(document.getElementById("door"), 14);
+      livingAlive(st);
       var b = document.getElementById("vbtn"), au = document.getElementById("vaudio"), w = document.getElementById("vwrap"), lb = document.getElementById("vlabel");
       if (b && au) {
         var say = function (t, replay) { lb.textContent = t; lb.classList.toggle("replay", !!replay); };

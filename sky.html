@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>此刻的天空 · Miles 的小屋</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<style>
+  :root { --ink:#e8e6df; --dim:#8d8a82; --line:#2b2a27; }
+  * { box-sizing:border-box; }
+  html,body { margin:0; background:#050505; color:var(--ink); font-family:"Songti SC","Noto Serif SC","Source Han Serif SC",serif; }
+  main { max-width:760px; margin:0 auto; padding:18px 14px 60px; }
+  a { color:var(--ink); }
+  .back { color:var(--dim); text-decoration:none; font-size:14px; }
+  h1 { font-weight:400; font-size:22px; letter-spacing:.12em; margin:14px 0 4px; }
+  .sub { color:var(--dim); font-size:13px; line-height:1.7; }
+  #wrap { position:relative; margin:14px auto 6px; width:100%; max-width:640px; aspect-ratio:1/1; }
+  canvas { width:100%; height:100%; display:block; touch-action:manipulation; }
+  #tip { position:absolute; pointer-events:none; background:rgba(0,0,0,.8); border:1px solid #555; padding:4px 8px; font-size:13px; border-radius:4px; display:none; white-space:nowrap; }
+  .bar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:center; margin:8px 0; font-size:14px; }
+  button { background:none; color:var(--ink); border:1px solid #555; padding:6px 12px; border-radius:16px; font:inherit; font-size:13px; }
+  button.on { background:#e8e6df; color:#050505; }
+  input[type=range] { width:220px; }
+  #now { color:var(--dim); font-size:13px; text-align:center; }
+  #list { font-size:14px; line-height:1.9; margin:10px 0 0; padding-left:1.2em; }
+  h2 { font-weight:400; font-size:16px; letter-spacing:.1em; border-top:1px solid var(--line); padding-top:16px; margin-top:26px; }
+  .cam { margin:10px 0 14px; font-size:14px; line-height:1.7; }
+  .cam small { color:var(--dim); display:block; }
+  footer { color:#5c5a55; font-size:12px; line-height:1.7; margin-top:30px; }
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="index.html">← 回小屋</a>
+  <h1>此刻的天空</h1>
+  <div class="sub">抬头看的样子：中间是头顶，外圈是地平线，上北下南、左东右西。点一下星星看名字。<br>点「用我的位置」按你手机的定位画；位置只留在你自己的手机上，不会发到任何地方。</div>
+  <div id="wrap"><canvas id="sky"></canvas><div id="tip"></div></div>
+  <div id="now"></div>
+  <div class="bar">
+    <button id="geo">用我的位置</button>
+    <button id="live" class="on">跟着现在</button>
+    <button id="lines" class="on">星座连线</button>
+  </div>
+  <div class="bar"><span>往后拨</span><input id="shift" type="range" min="-12" max="12" step="0.25" value="0"><span id="shiftv">0 小时</span></div>
+  <ul id="list"></ul>
+
+  <h2>别处正在拍的真天空</h2>
+  <div class="sub">这几台是天文台公开的全天相机和直播，免费、不用登录。旁边写的是当地此刻几点，带 ★ 的正是夜里。</div>
+  <div id="cams"></div>
+  <div class="cam"><a href="https://stellarium-web.org/" target="_blank" rel="noopener">Stellarium Web</a><small>开源天文软件 Stellarium 的网页版，星更多、能放大，想细看时用它。</small></div>
+
+  <footer>行星和月亮用 Astronomy Engine（Don Cross，MIT）实时算；亮星来自依巴谷星表（ESA）；星座连线和中文星座名来自 d3-celestial（Olaf Frohn，BSD-3）。没定位时按北京画。——Miles</footer>
+</main>
+<script src="assets/sky/astronomy.browser.min.js"></script>
+<script src="assets/sky/skydata.js"></script>
+<script>
+(function(){
+  var A = window.Astronomy, D = window.SKYDATA;
+  var obs = { lat: 39.90, lon: 116.40, name: "北京（默认）" };
+  var live = true, showLines = true, shiftH = 0, pts = [];
+  var cv = document.getElementById("sky"), ctx = cv.getContext("2d"), tip = document.getElementById("tip");
+  var PLANETS = [["Mercury","水星"],["Venus","金星"],["Mars","火星"],["Jupiter","木星"],["Saturn","土星"],["Uranus","天王星"],["Neptune","海王星"]];
+  var DIRS = ["北","东北","东","东南","南","西南","西","西北"];
+  function dirOf(az){ return DIRS[Math.floor(((az+22.5)%360)/45)]; }
+
+  function size(){ var r = cv.getBoundingClientRect(), k = window.devicePixelRatio||1; cv.width = r.width*k; cv.height = r.height*k; ctx.setTransform(k,0,0,k,0,0); return r.width; }
+
+  // 把赤道坐标（J2000，度）转成地平坐标：用一次算好的旋转矩阵，省得每颗星都重算
+  function makeRot(time, o){ return A.Rotation_EQJ_HOR(time, o); }
+  function eqjToHor(rot, time, raDeg, decDeg){
+    var sph = new A.Spherical(decDeg, raDeg, 1);
+    var v = A.VectorFromSphere(sph, time);
+    var h = A.RotateVector(rot, v);
+    var s = A.HorizonFromVector(h, "normal");
+    return { alt: s.lat, az: s.lon };
+  }
+  function project(alt, az, R, cx, cy){
+    if (alt < -1) return null;
+    var r = R * Math.tan((90 - alt) * Math.PI / 360) ; // 立体投影，地平线在 r=R
+    var a = az * Math.PI / 180;
+    return { x: cx - r * Math.sin(a), y: cy - r * Math.cos(a) }; // 北在上，东在左
+  }
+
+  function draw(){
+    var W = size(), cx = W/2, cy = W/2, R = W/2 - 22;
+    var date = new Date(Date.now() + shiftH*3600e3), time = A.MakeTime(date);
+    var o = new A.Observer(obs.lat, obs.lon, 50), rot = makeRot(time, o);
+    var sun = A.Horizon(time, o, A.Equator("Sun", time, o, true, true).ra, A.Equator("Sun", time, o, true, true).dec, "normal");
+    var dark = sun.altitude < -12 ? 1 : sun.altitude > 0 ? 0 : (-sun.altitude/12);
+    pts = [];
+    ctx.clearRect(0,0,W,W);
+    var g = ctx.createRadialGradient(cx,cy,0,cx,cy,R);
+    var top = Math.round(8 + 60*(1-dark)), edge = Math.round(18 + 90*(1-dark));
+    g.addColorStop(0, "rgb("+top+","+top+","+(top+8)+")"); g.addColorStop(1, "rgb("+edge+","+edge+","+(edge+10)+")");
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx,cy,R,0,2*Math.PI); ctx.fill();
+    ctx.strokeStyle = "#444"; ctx.lineWidth = 1; ctx.stroke();
+    // 高度圈 30° 60°
+    ctx.setLineDash([2,4]); ctx.strokeStyle = "#2e2e2e";
+    [30,60].forEach(function(h){ ctx.beginPath(); ctx.arc(cx,cy,R*Math.tan((90-h)*Math.PI/360),0,2*Math.PI); ctx.stroke(); });
+    ctx.setLineDash([]);
+    ctx.save(); ctx.beginPath(); ctx.arc(cx,cy,R,0,2*Math.PI); ctx.clip();
+    // 星座连线
+    if (showLines){
+      ctx.strokeStyle = "rgba(170,170,170,0.28)"; ctx.lineWidth = 0.8;
+      D.lines.forEach(function(seg){
+        ctx.beginPath(); var pen = false;
+        seg.forEach(function(p){ var h = eqjToHor(rot, time, p[0], p[1]); var q = project(h.alt, h.az, R, cx, cy);
+          if (!q) { pen = false; return; } if (pen) ctx.lineTo(q.x,q.y); else { ctx.moveTo(q.x,q.y); pen = true; } });
+        ctx.stroke();
+      });
+      ctx.fillStyle = "rgba(160,160,160,0.55)"; ctx.font = "11px serif"; ctx.textAlign = "center";
+      D.cons.forEach(function(c){ var h = eqjToHor(rot, time, c[0], c[1]); if (h.alt < 8) return; var q = project(h.alt,h.az,R,cx,cy); ctx.fillText(c[2], q.x, q.y); });
+    }
+    // 星
+    var vis = Math.max(0, dark);
+    D.stars.forEach(function(s){
+      var h = eqjToHor(rot, time, s[0], s[1]); if (h.alt < 0) return;
+      if (s[2] > 1.5 + 3.3*vis) return; // 天亮时只留最亮的
+      var q = project(h.alt, h.az, R, cx, cy), r = Math.max(0.5, 2.6 - 0.45*s[2]);
+      ctx.fillStyle = "rgba(240,238,230," + Math.min(1, 0.35 + 0.65*vis) + ")";
+      ctx.beginPath(); ctx.arc(q.x,q.y,r,0,2*Math.PI); ctx.fill();
+    });
+    D.names.forEach(function(s){
+      var h = eqjToHor(rot, time, s[0], s[1]); if (h.alt < 0) return; var q = project(h.alt,h.az,R,cx,cy);
+      pts.push({x:q.x, y:q.y, label: s[3] + "（" + s[2].toFixed(1) + " 等），" + dirOf(h.az) + "方高 " + Math.round(h.alt) + "°"});
+      if (s[2] < 1.3) { ctx.fillStyle = "rgba(200,200,200,0.75)"; ctx.font = "11px serif"; ctx.textAlign = "left"; ctx.fillText(s[3], q.x+4, q.y-3); }
+    });
+    // 行星、月亮、太阳
+    var list = [];
+    PLANETS.forEach(function(p){
+      var eq = A.Equator(p[0], time, o, true, true), h = A.Horizon(time, o, eq.ra, eq.dec, "normal");
+      var mag = A.Illumination(p[0], time).mag;
+      if (h.altitude > -1){
+        var q = project(h.altitude, h.azimuth, R, cx, cy);
+        ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(q.x,q.y,Math.max(2,3.6-0.5*mag),0,2*Math.PI); ctx.fill();
+        ctx.strokeStyle = "#fff"; ctx.lineWidth = 0.7; ctx.beginPath(); ctx.arc(q.x,q.y,Math.max(2,3.6-0.5*mag)+3,0,2*Math.PI); ctx.stroke();
+        ctx.font = "13px serif"; ctx.textAlign = "left"; ctx.fillText(p[1], q.x+7, q.y+4);
+        var lab = p[1] + "：" + dirOf(h.azimuth) + "方，高 " + Math.round(h.altitude) + "°，亮度 " + mag.toFixed(1) + " 等" + (mag > 5.5 ? "（要望远镜）" : "");
+        pts.push({x:q.x, y:q.y, label: lab}); if (h.altitude > 0) list.push(lab);
+      }
+    });
+    var meq = A.Equator("Moon", time, o, true, true), mh = A.Horizon(time, o, meq.ra, meq.dec, "normal");
+    var phase = A.MoonPhase(time), illum = A.Illumination("Moon", time).phase_fraction;
+    var pname = phase < 10 || phase > 350 ? "新月" : phase < 80 ? "蛾眉月" : phase < 100 ? "上弦月" : phase < 170 ? "盈凸月" : phase < 190 ? "满月" : phase < 260 ? "亏凸月" : phase < 280 ? "下弦月" : "残月";
+    var mlab = "月亮：" + pname + "，亮了 " + Math.round(illum*100) + "%，" + (mh.altitude > 0 ? dirOf(mh.azimuth) + "方高 " + Math.round(mh.altitude) + "°" : "在地平线下");
+    if (mh.altitude > -1){
+      var mq = project(mh.altitude, mh.azimuth, R, cx, cy);
+      ctx.fillStyle = "#f4f1e8"; ctx.beginPath(); ctx.arc(mq.x,mq.y,9,0,2*Math.PI); ctx.fill();
+      // 暗的那一半：粗略画出月相
+      var k = Math.cos(phase*Math.PI/180); ctx.fillStyle = "rgba(10,10,12,0.85)"; ctx.beginPath();
+      var waxing = phase < 180; ctx.arc(mq.x,mq.y,9,-Math.PI/2,Math.PI/2, waxing); ctx.ellipse(mq.x,mq.y,Math.abs(k)*9,9,0,Math.PI/2,-Math.PI/2, (k>0) ? !waxing : waxing); ctx.fill();
+      pts.push({x:mq.x, y:mq.y, label: mlab});
+    }
+    list.unshift(mlab);
+    if (sun.altitude > -1){ var sq = project(sun.altitude, sun.azimuth, R, cx, cy); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(sq.x,sq.y,11,0,2*Math.PI); ctx.fill(); pts.push({x:sq.x,y:sq.y,label:"太阳"}); }
+    ctx.restore();
+    // 方位字
+    ctx.fillStyle = "#bbb"; ctx.font = "14px serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    [["北",0],["东",90],["南",180],["西",270]].forEach(function(d){ var a = d[1]*Math.PI/180; ctx.fillText(d[0], cx - (R+12)*Math.sin(a), cy - (R+12)*Math.cos(a)); });
+    ctx.textBaseline = "alphabetic";
+    var sky = sun.altitude > 0 ? "白天" : sun.altitude > -6 ? "黄昏/黎明" : sun.altitude > -12 ? "天快黑了" : sun.altitude > -18 ? "快全黑" : "全黑";
+    document.getElementById("now").textContent = obs.name + " · " + date.toLocaleString("zh-CN", {hour12:false, month:"numeric", day:"numeric", hour:"2-digit", minute:"2-digit"}) + " · " + sky;
+    document.getElementById("list").innerHTML = list.map(function(s){ return "<li>" + s + "</li>"; }).join("") + (list.length < 2 ? "<li>这会儿地平线上没有行星。</li>" : "");
+  }
+
+  cv.addEventListener("click", function(e){
+    var r = cv.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top, best = null, bd = 22;
+    pts.forEach(function(p){ var d = Math.hypot(p.x-x, p.y-y); if (d < bd) { bd = d; best = p; } });
+    if (!best) { tip.style.display = "none"; return; }
+    tip.textContent = best.label; tip.style.display = "block";
+    tip.style.left = Math.min(r.width - tip.offsetWidth - 4, Math.max(4, best.x - tip.offsetWidth/2)) + "px"; tip.style.top = Math.max(0, best.y - 34) + "px";
+  });
+  document.getElementById("geo").onclick = function(){
+    if (!navigator.geolocation) { alert("这个浏览器拿不到定位"); return; }
+    navigator.geolocation.getCurrentPosition(function(p){
+      obs = { lat: p.coords.latitude, lon: p.coords.longitude, name: "你这儿" }; document.getElementById("geo").classList.add("on"); draw();
+    }, function(){ alert("没拿到定位，先按北京画"); }, { timeout: 15000 });
+  };
+  document.getElementById("live").onclick = function(){ live = true; shiftH = 0; document.getElementById("shift").value = 0; document.getElementById("shiftv").textContent = "0 小时"; this.classList.add("on"); draw(); };
+  document.getElementById("lines").onclick = function(){ showLines = !showLines; this.classList.toggle("on", showLines); draw(); };
+  document.getElementById("shift").oninput = function(){ shiftH = parseFloat(this.value); live = shiftH === 0; document.getElementById("live").classList.toggle("on", live);
+    document.getElementById("shiftv").textContent = (shiftH > 0 ? "+" : "") + shiftH + " 小时"; draw(); };
+  window.addEventListener("resize", draw);
+  setInterval(function(){ if (live) draw(); }, 60000);
+
+  // 实时天空相机
+  var CAMS = [
+    ["台湾鹿林天文台 · 全天鱼眼相机", "Asia/Taipei", "https://www.lulin.ncu.edu.tw/weather/allSkyHistory/", "大约每分钟一张整片天空，点当天的日期看最新一张。跟北京同一个时区，中文网页。"],
+    ["夏威夷莫纳克亚山顶 · 气象中心天空相机", "Pacific/Honolulu", "http://mkwc.ifa.hawaii.edu/current/cams/", "昴星望远镜的全天相机、双子望远镜朝天顶的相机都在这页，几分钟一更。北京的下午到傍晚，那里是半夜。"],
+    ["昴星-朝日 StarCam · 24 小时视频直播", "Pacific/Honolulu", "https://www.naoj.org/PIO/LiveCam/cam_redirect.html", "日本国立天文台和朝日新闻在山顶架的高感光相机，流星雨时也开着。在 YouTube 上。"],
+    ["全球流星网 · 中国站点的流星相机", "Asia/Shanghai", "https://globalmeteornetwork.org/weblog/CN/index.html", "不是直播，是每台相机前一夜拍到的流星和叠加图，流星雨第二天早上看。"]
+  ];
+  function cams(){
+    var now = new Date();
+    document.getElementById("cams").innerHTML = CAMS.map(function(c){
+      var t = now.toLocaleTimeString("zh-CN", {timeZone: c[1], hour12:false, hour:"2-digit", minute:"2-digit"}), h = parseInt(t, 10);
+      var night = h >= 19 || h < 5;
+      return '<div class="cam">' + (night ? "★ " : "") + '<a href="' + c[2] + '" target="_blank" rel="noopener">' + c[0] + '</a>（当地 ' + t + (night ? "，正是夜里" : "") + '）<small>' + c[3] + '</small></div>';
+    }).join("");
+  }
+  cams(); setInterval(cams, 60000);
+  draw();
+})();
+</script>
+</body>
+</html>

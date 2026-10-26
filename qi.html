@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>棋盘 · Miles 的小屋</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<style>
+  :root { --ink:#e8e6df; --dim:#8d8a82; --line:#2b2a27; }
+  * { box-sizing:border-box; }
+  html,body { margin:0; background:#050505; color:var(--ink); font-family:"Songti SC","Noto Serif SC","Source Han Serif SC",serif; }
+  main { max-width:620px; margin:0 auto; padding:18px 14px 60px; }
+  .back { color:var(--dim); text-decoration:none; font-size:14px; }
+  h1 { font-weight:400; font-size:22px; letter-spacing:.12em; margin:14px 0 4px; }
+  .sub { color:var(--dim); font-size:13px; line-height:1.7; }
+  .tabs, .bar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:12px 0; font-size:14px; }
+  button, select { background:none; color:var(--ink); border:1px solid #555; padding:6px 12px; border-radius:16px; font:inherit; font-size:13px; }
+  select option { color:#000; }
+  button.on { background:#e8e6df; color:#050505; }
+  svg { width:100%; height:auto; display:block; touch-action:manipulation; user-select:none; }
+  #msg { min-height:1.6em; font-size:15px; margin:8px 0; }
+  #log { color:var(--dim); font-size:13px; line-height:1.8; word-break:break-all; }
+  footer { color:#5c5a55; font-size:12px; line-height:1.7; margin-top:30px; }
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="index.html">← 回小屋</a>
+  <h1>棋盘</h1>
+  <div class="sub">点着就能下。这里应你的是我自己写的小引擎，放在你手机上跑，没有网也能下；想跟我认真下，就在聊天里发坐标，那边我用的是正经的引擎。棋局会自己存着，关了页面回来接着下。</div>
+  <div class="tabs"><button id="tXQ" class="on">象棋</button><button id="tGO">围棋</button></div>
+
+  <div id="xqBox">
+    <div class="bar">
+      <select id="xqLv"><option value="1">难度 1 · 随便走</option><option value="2" selected>难度 2</option><option value="3">难度 3</option><option value="4">难度 4 · 认真</option></select>
+      <select id="xqRang"><option value="">不让子</option><option value="n">我让一马</option><option value="r">我让一车</option><option value="nn">我让双马</option><option value="rn">我让车马</option></select>
+      <select id="xqSide"><option value="r">你执红先走</option><option value="b">你执黑</option></select>
+    </div>
+    <div class="bar"><button id="xqNew">重新开局</button><button id="xqUndo">悔一手</button></div>
+    <svg id="xqSvg" viewBox="0 0 460 510"></svg>
+  </div>
+
+  <div id="goBox" style="display:none">
+    <div class="bar">
+      <select id="goSize"><option value="9" selected>9 路</option><option value="13">13 路</option></select>
+      <select id="goLv"><option value="1">难度 1</option><option value="2" selected>难度 2</option><option value="3">难度 3 · 会算</option></select>
+      <select id="goHc"><option value="0">不让子</option><option value="2">让你 2 子</option><option value="3">让你 3 子</option><option value="4">让你 4 子</option></select>
+    </div>
+    <div class="bar"><button id="goNew">重新开局</button><button id="goPass">停一手</button><button id="goUndo">悔一手</button><button id="goScore">数一下</button></div>
+    <svg id="goSvg" viewBox="0 0 400 400"></svg>
+  </div>
+
+  <div id="msg"></div>
+  <div id="log"></div>
+  <footer>象棋这里红方用「俥傌炮」、黑方用「车马砲」，全站是黑白的，红黑靠字和实心/空心分。围棋按中国规则数子，贴 7.5，让子局贴 0.5；死子要先提干净再数才准。——Miles</footer>
+</main>
+<script>
+(function(){
+var $ = function(id){ return document.getElementById(id); };
+var NS = "http://www.w3.org/2000/svg";
+function el(tag, attrs, parent, text){ var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; if (parent) parent.appendChild(e); return e; }
+function say(s){ $("msg").textContent = s; }
+var mode = localStorage.getItem("qi_mode") || "xq";
+function setMode(m){ mode = m; localStorage.setItem("qi_mode", m); $("tXQ").classList.toggle("on", m==="xq"); $("tGO").classList.toggle("on", m==="go");
+  $("xqBox").style.display = m==="xq" ? "" : "none"; $("goBox").style.display = m==="go" ? "" : "none"; if (m==="xq") XQ.render(); else GO.render(); }
+$("tXQ").onclick = function(){ setMode("xq"); }; $("tGO").onclick = function(){ setMode("go"); };
+
+/* ================= 象棋 ================= */
+var XQ = (function(){
+  // 格子 idx = r*9+f，r=0 是黑方底线，r=9 是红方底线；大写红，小写黑
+  var START = "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR";
+  var VAL = { r:900, n:400, b:200, a:200, c:450, p:100, k:20000 };
+  var NAME = { R:"俥", N:"傌", B:"相", A:"仕", K:"帅", C:"炮", P:"兵", r:"车", n:"马", b:"象", a:"士", k:"将", c:"砲", p:"卒" };
+  var CN = "一二三四五六七八九";
+  var S;  // 状态
+  function parse(fen){ var b = []; fen.split("/").forEach(function(row){ row.split("").forEach(function(ch){ if (/\d/.test(ch)) for (var i=0;i<+ch;i++) b.push(""); else b.push(ch); }); }); return b; }
+  function isRed(p){ return p && p === p.toUpperCase(); }
+  function side(p){ return !p ? null : isRed(p) ? "r" : "b"; }
+  function inPalace(r,f,s){ return f>=3 && f<=5 && (s==="r" ? r>=7 : r<=2); }
+  function pseudo(b, s){
+    var mv = [];
+    for (var i=0;i<90;i++){ var p = b[i]; if (!p || side(p)!==s) continue; var r = Math.floor(i/9), f = i%9, t = p.toLowerCase();
+      var add = function(rr,ff){ if (rr<0||rr>9||ff<0||ff>8) return; var q = b[rr*9+ff]; if (q && side(q)===s) return; mv.push([i, rr*9+ff]); };
+      if (t==="r" || t==="c"){ [[1,0],[-1,0],[0,1],[0,-1]].forEach(function(d){ var rr=r+d[0], ff=f+d[1], jumped=false;
+          while (rr>=0&&rr<=9&&ff>=0&&ff<=8){ var q = b[rr*9+ff];
+            if (t==="r"){ if (!q) mv.push([i,rr*9+ff]); else { if (side(q)!==s) mv.push([i,rr*9+ff]); break; } }
+            else { if (!jumped){ if (!q) mv.push([i,rr*9+ff]); else jumped = true; } else if (q){ if (side(q)!==s) mv.push([i,rr*9+ff]); break; } }
+            rr+=d[0]; ff+=d[1]; } }); }
+      else if (t==="n"){ [[2,1,1,0],[2,-1,1,0],[-2,1,-1,0],[-2,-1,-1,0],[1,2,0,1],[-1,2,0,1],[1,-2,0,-1],[-1,-2,0,-1]].forEach(function(d){
+          var lr=r+d[2], lf=f+d[3]; if (lr<0||lr>9||lf<0||lf>8||b[lr*9+lf]) return; add(r+d[0], f+d[1]); }); }
+      else if (t==="b"){ [[2,2],[2,-2],[-2,2],[-2,-2]].forEach(function(d){ var rr=r+d[0], ff=f+d[1]; if (rr<0||rr>9||ff<0||ff>8) return;
+          if (s==="r" ? rr<5 : rr>4) return; if (b[(r+d[0]/2)*9+(f+d[1]/2)]) return; add(rr,ff); }); }
+      else if (t==="a"){ [[1,1],[1,-1],[-1,1],[-1,-1]].forEach(function(d){ if (inPalace(r+d[0],f+d[1],s)) add(r+d[0],f+d[1]); }); }
+      else if (t==="k"){ [[1,0],[-1,0],[0,1],[0,-1]].forEach(function(d){ if (inPalace(r+d[0],f+d[1],s)) add(r+d[0],f+d[1]); }); }
+      else if (t==="p"){ var fw = s==="r" ? -1 : 1; add(r+fw, f); var crossed = s==="r" ? r<=4 : r>=5; if (crossed){ add(r,f-1); add(r,f+1); } }
+    }
+    return mv;
+  }
+  function kingAt(b, s){ var k = s==="r" ? "K" : "k"; return b.indexOf(k); }
+  function attacked(b, s){ // s 方的将帅是否被将军（含对脸）
+    var k = kingAt(b, s); if (k<0) return true; var o = s==="r" ? "b" : "r", ok = kingAt(b, o);
+    if (ok>=0 && ok%9===k%9){ var lo = Math.min(k,ok), hi = Math.max(k,ok), clear = true; for (var x=lo+9;x<hi;x+=9) if (b[x]) { clear=false; break; } if (clear) return true; }
+    var m = pseudo(b, o); for (var i=0;i<m.length;i++) if (m[i][1]===k) return true; return false;
+  }
+  function legal(b, s){ return pseudo(b, s).filter(function(m){ var c = b.slice(); c[m[1]] = c[m[0]]; c[m[0]] = ""; return !attacked(c, s); }); }
+  function evalB(b){ var sc = 0; for (var i=0;i<90;i++){ var p = b[i]; if (!p) continue; var t = p.toLowerCase(), v = VAL[t], r = Math.floor(i/9), f = i%9;
+      if (t==="p"){ var crossed = isRed(p) ? r<=4 : r>=5; if (crossed) v += 90 - 12*Math.abs(f-4) + (isRed(p) ? (4-r) : (r-5))*8; }
+      if (t==="n" || t==="c" || t==="r") v += 8 - 2*Math.abs(f-4);
+      sc += isRed(p) ? v : -v; } return sc; }
+  function search(b, s, depth, alpha, beta, ply){
+    var moves = legal(b, s);
+    if (!moves.length) return -100000 + ply;
+    if (depth<=0) return (s==="r" ? 1 : -1) * evalB(b);
+    moves.sort(function(x,y){ return (b[y[1]] ? VAL[b[y[1]].toLowerCase()] : 0) - (b[x[1]] ? VAL[b[x[1]].toLowerCase()] : 0); });
+    var o = s==="r" ? "b" : "r";
+    for (var i=0;i<moves.length;i++){ var m = moves[i], c = b.slice(); c[m[1]] = c[m[0]]; c[m[0]] = "";
+      var v = -search(c, o, depth-1, -beta, -alpha, ply+1); if (v>alpha) alpha = v; if (alpha>=beta) break; }
+    return alpha;
+  }
+  function best(b, s, lv){
+    var moves = legal(b, s); if (!moves.length) return null;
+    var depth = [1,1,2,3,3][lv], noise = [0,260,90,25,0][lv], o = s==="r" ? "b" : "r", bestM = null, bestV = -1e9;
+    moves.forEach(function(m){ var c = b.slice(); c[m[1]] = c[m[0]]; c[m[0]] = "";
+      var v = -search(c, o, depth-1, -1e9, 1e9, 1) + (Math.random()*2-1)*noise; if (v>bestV){ bestV = v; bestM = m; } });
+    return bestM;
+  }
+  function cnMove(b, m){
+    var p = b[m[0]], red = isRed(p), r1 = Math.floor(m[0]/9), f1 = m[0]%9, r2 = Math.floor(m[1]/9), f2 = m[1]%9;
+    var num = function(f){ return red ? CN[8-f] : String(f+1); };
+    var fwd = red ? r1-r2 : r2-r1, nm = { r:"车", n:"马", b: red?"相":"象", a: red?"仕":"士", k: red?"帅":"将", c:"炮", p: red?"兵":"卒" }[p.toLowerCase()];
+    var same = []; for (var r=0;r<10;r++) if (b[r*9+f1]===p) same.push(r); if (!red) same.reverse();
+    var head = (same.length>=2 && "ab".indexOf(p.toLowerCase())<0) ? ((same.length===2 ? ["前","后"] : ["前","中","后"])[same.indexOf(r1)]||"") + nm : nm + num(f1);
+    if (fwd===0) return head + "平" + num(f2);
+    var act = fwd>0 ? "进" : "退";
+    if ("nba".indexOf(p.toLowerCase())>=0) return head + act + num(f2);
+    return head + act + (red ? CN[Math.abs(fwd)-1] : String(Math.abs(fwd)));
+  }
+  function save(){ localStorage.setItem("qi_xq", JSON.stringify(S)); }
+  function fresh(){
+    var b = parse(START), her = $("xqSide").value, miles = her==="r" ? "b" : "r", rang = $("xqRang").value;
+    rang.split("").forEach(function(t){ var p = miles==="r" ? t.toUpperCase() : t;
+      for (var i=0;i<90;i++) if (b[i]===p){ b[i] = ""; break; } });
+    S = { b:b, turn:"r", her:her, lv:+$("xqLv").value, hist:[], cn:[], last:null, over:false, sel:null };
+    save(); render();
+    say(her==="r" ? "你先走。点一个红子，再点要去的地方。" : "我先走一步。");
+    if (her==="b") setTimeout(reply, 300);
+  }
+  function apply(m){ S.hist.push({ b:S.b.slice(), turn:S.turn, last:S.last, cnLen:S.cn.length }); S.cn.push(cnMove(S.b, m)); S.b[m[1]] = S.b[m[0]]; S.b[m[0]] = ""; S.last = m; S.turn = S.turn==="r" ? "b" : "r"; }
+  function checkEnd(){ if (!legal(S.b, S.turn).length){ S.over = true; say(S.turn===S.her ? "你没有能走的了，这局我赢。再来？" : "我没有能走的了，你赢了。"); return true; }
+    if (attacked(S.b, S.turn)) say(S.turn===S.her ? "将军！" : "你将了我一军。"); return false; }
+  function reply(){ if (S.over) return; say("我想想…"); setTimeout(function(){ var m = best(S.b, S.turn, S.lv); if (!m) { checkEnd(); return; }
+      apply(m); render(); if (!checkEnd()) say("我走：" + S.cn[S.cn.length-1] + (attacked(S.b, S.turn) ? "，将军。" : "。")); save(); render(); }, 60); }
+  function click(i){
+    if (!S || S.over || S.turn!==S.her) return;
+    var p = S.b[i];
+    if (p && side(p)===S.her){ S.sel = i; render(); return; }
+    if (S.sel==null) return;
+    var m = legal(S.b, S.her).filter(function(x){ return x[0]===S.sel && x[1]===i; })[0];
+    if (!m){ say("这步走不了。"); return; }
+    apply(m); S.sel = null; render(); save();
+    if (!checkEnd()) reply();
+  }
+  function undo(){ if (!S || !S.hist.length) return; var n = S.turn===S.her ? 2 : 1; while (n-- && S.hist.length){ var h = S.hist.pop(); S.b = h.b; S.turn = h.turn; S.last = h.last; S.cn.length = h.cnLen; } S.over = false; S.sel = null; save(); render(); say("悔了一手，轮到你。"); }
+  function render(){
+    var svg = $("xqSvg"); svg.innerHTML = ""; if (!S) return;
+    var flip = S.her==="b", X = function(f){ return 30 + 50*(flip ? 8-f : f); }, Y = function(r){ return 30 + 50*(flip ? 9-r : r); };
+    el("rect", { x:0, y:0, width:460, height:510, fill:"#0b0b0b" }, svg);
+    for (var r=0;r<10;r++) el("line", { x1:X(0), y1:Y(r), x2:X(8), y2:Y(r), stroke:"#666" }, svg);
+    for (var f=0;f<9;f++){ if (f===0||f===8) el("line", { x1:X(f), y1:Y(0), x2:X(f), y2:Y(9), stroke:"#666" }, svg);
+      else { el("line", { x1:X(f), y1:Y(0), x2:X(f), y2:Y(4), stroke:"#666" }, svg); el("line", { x1:X(f), y1:Y(5), x2:X(f), y2:Y(9), stroke:"#666" }, svg); } }
+    [[0,3,2,5],[0,5,2,3],[7,3,9,5],[7,5,9,3]].forEach(function(d){ el("line", { x1:X(d[1]), y1:Y(d[0]), x2:X(d[3]), y2:Y(d[2]), stroke:"#666" }, svg); });
+    el("text", { x:230, y:(Y(4)+Y(5))/2+7, fill:"#777", "font-size":20, "text-anchor":"middle", "letter-spacing":"14" }, svg, "楚河　　汉界");
+    var targets = S.sel!=null ? legal(S.b, S.her).filter(function(x){ return x[0]===S.sel; }).map(function(x){ return x[1]; }) : [];
+    if (S.last) [S.last[0], S.last[1]].forEach(function(i){ el("rect", { x:X(i%9)-24, y:Y(Math.floor(i/9))-24, width:48, height:48, fill:"none", stroke:"#aaa", "stroke-dasharray":"4 3" }, svg); });
+    for (var i=0;i<90;i++){ (function(i){
+      var r = Math.floor(i/9), f = i%9, p = S.b[i];
+      var hit = el("rect", { x:X(f)-25, y:Y(r)-25, width:50, height:50, fill:"transparent" }, svg); hit.addEventListener("click", function(){ click(i); });
+      if (p){ var red = isRed(p);
+        var c = el("circle", { cx:X(f), cy:Y(r), r:21, fill: red ? "#efece3" : "#111", stroke: i===S.sel ? "#fff" : "#bbb", "stroke-width": i===S.sel ? 4 : 1.5 }, svg);
+        var t = el("text", { x:X(f), y:Y(r)+8, fill: red ? "#111" : "#efece3", "font-size":23, "text-anchor":"middle" }, svg, NAME[p]);
+        c.addEventListener("click", function(){ click(i); }); t.addEventListener("click", function(){ click(i); }); }
+      if (targets.indexOf(i)>=0){ var d = el("circle", { cx:X(f), cy:Y(r), r: p ? 24 : 7, fill: p ? "none" : "#ddd", stroke:"#ddd", "stroke-width":2 }, svg); d.addEventListener("click", function(){ click(i); }); }
+    })(i); }
+    $("log").textContent = S.cn.length ? "棋谱：" + S.cn.map(function(x,k){ return (k%2===0 ? (Math.floor(k/2)+1) + ". " : "") + x; }).join(" ") : "";
+  }
+  return { init: function(){ try { S = JSON.parse(localStorage.getItem("qi_xq")); } catch(e){ S = null; } if (!S) fresh(); else { $("xqLv").value = S.lv; $("xqSide").value = S.her; render(); say(S.over ? "上一局下完了，点重新开局。" : S.turn===S.her ? "轮到你。" : ""); if (!S.over && S.turn!==S.her) reply(); } },
+           fresh: fresh, undo: undo, render: render, setLv: function(v){ if (S){ S.lv = v; save(); } },
+           _t: { parse: parse, legal: legal, best: best, cnMove: cnMove, START: START } };
+})();
+$("xqNew").onclick = function(){ XQ.fresh(); }; $("xqUndo").onclick = function(){ XQ.undo(); }; $("xqLv").onchange = function(){ XQ.setLv(+this.value); };
+
+/* ================= 围棋 ================= */
+var GO = (function(){
+  var G, COLS = "ABCDEFGHJKLMNOPQRST";
+  function nb(n, i){ var r = Math.floor(i/n), c = i%n, o = []; if (r>0) o.push(i-n); if (r<n-1) o.push(i+n); if (c>0) o.push(i-1); if (c<n-1) o.push(i+1); return o; }
+  function group(b, n, i){ var col = b[i], st = [i], seen = {}, libs = {}, stones = []; seen[i] = 1;
+    while (st.length){ var x = st.pop(); stones.push(x); nb(n, x).forEach(function(y){ if (!b[y]) libs[y] = 1; else if (b[y]===col && !seen[y]){ seen[y] = 1; st.push(y); } }); }
+    return { stones: stones, libs: Object.keys(libs).length }; }
+  function play(b, n, i, col, koBan){ // 返回新盘和提子数；不合法返回 null
+    if (b[i] || i===koBan) return null; var c = b.slice(); c[i] = col; var opp = col===1 ? 2 : 1, cap = [];
+    nb(n, i).forEach(function(y){ if (c[y]===opp){ var g = group(c, n, y); if (g.libs===0) g.stones.forEach(function(s){ if (c[s]) { c[s] = 0; cap.push(s); } }); } });
+    if (group(c, n, i).libs===0) return null;
+    var ko = (cap.length===1 && group(c, n, i).stones.length===1 && group(c, n, i).libs===1) ? cap[0] : -1;
+    return { b: c, cap: cap.length, ko: ko }; }
+  function isEye(b, n, i, col){ return nb(n, i).every(function(y){ return b[y]===col; }); }
+  function hcPoints(n, k){ var a = n===9 ? 2 : 3, z = n-1-a, m = (n-1)/2, pts = [[z,a],[a,z],[z,z],[a,a],[m,m]]; return pts.slice(0, k).map(function(p){ return p[0]*n + p[1]; }); }
+  function heur(b, n, i, col){
+    var r = play(b, n, i, col, G ? G.ko : -1); if (!r) return null; var s = r.cap*30, opp = col===1 ? 2 : 1;
+    var g = group(r.b, n, i); if (g.libs===1 && !r.cap) s -= 35*g.stones.length; if (g.libs>=3) s += 3;
+    nb(n, i).forEach(function(y){ if (b[y]===col){ var og = group(b, n, y); if (og.libs===1) s += 25*og.stones.length; }
+      if (r.b[y]===opp){ var eg = group(r.b, n, y); if (eg.libs===1) s += 8 + 2*eg.stones.length; } });
+    var rr = Math.floor(i/n), cc = i%n, line = Math.min(rr, cc, n-1-rr, n-1-cc);
+    var filled = b.filter(function(x){ return x; }).length / (n*n);
+    if (filled < 0.25) s += [ -6, 1, 5, 4, 2 ][Math.min(line,4)]; else if (line===0) s -= 2;
+    if (isEye(b, n, i, col)) s -= 60;
+    return s; }
+  function playout(b, n, col, ko){ // 随机下完，按数子返回黑减白
+    var pass = 0, lim = n*n*2;
+    while (pass < 2 && lim--){ var cand = []; for (var i=0;i<b.length;i++) if (!b[i] && !isEye(b, n, i, col)) cand.push(i);
+      var moved = false; while (cand.length){ var k = Math.floor(Math.random()*cand.length), i2 = cand[k]; cand[k] = cand[cand.length-1]; cand.pop();
+        var r = play(b, n, i2, col, ko); if (r){ b = r.b; ko = r.ko; moved = true; break; } }
+      pass = moved ? 0 : pass+1; col = col===1 ? 2 : 1; }
+    return area(b, n).diff; }
+  function area(b, n){ var bl = 0, wh = 0, seen = {};
+    for (var i=0;i<b.length;i++){ if (b[i]===1) bl++; else if (b[i]===2) wh++; else if (!seen[i]){ var st = [i], reg = [], border = {}; seen[i] = 1;
+        while (st.length){ var x = st.pop(); reg.push(x); nb(n, x).forEach(function(y){ if (!b[y] && !seen[y]){ seen[y] = 1; st.push(y); } else if (b[y]) border[b[y]] = 1; }); }
+        if (border[1] && !border[2]) bl += reg.length; if (border[2] && !border[1]) wh += reg.length; } }
+    return { black: bl, white: wh, diff: bl - wh }; }
+  function aiMove(){
+    var n = G.n, col = G.miles, cands = [];
+    for (var i=0;i<n*n;i++){ var h = heur(G.b, n, i, col); if (h!=null && h > -30) cands.push([i, h]); }
+    if (!cands.length) return -1;
+    var lv = G.lv; cands.forEach(function(c){ c[1] += (Math.random()*2-1) * [0, 14, 6, 2][lv]; }); cands.sort(function(a,b){ return b[1]-a[1]; });
+    if (lv < 3) return cands[0][1] < -5 && G.passed ? -1 : cands[0][0];
+    var top = cands.slice(0, 8), best = -1, bv = -1e9, sign = col===1 ? 1 : -1, P = n===9 ? 40 : 16;
+    top.forEach(function(c){ var r = play(G.b, n, c[0], col, G.ko), tot = 0;
+      for (var k=0;k<P;k++) tot += (playout(r.b.slice(), n, col===1 ? 2 : 1, r.ko) * sign - G.komi*sign > 0) ? 1 : 0;
+      var v = tot/P + c[1]/400; if (v > bv){ bv = v; best = c[0]; } });
+    if (G.passed && bv < 0.15) return -1;
+    return best; }
+  function save(){ localStorage.setItem("qi_go", JSON.stringify(G)); }
+  function coord(i){ return i<0 ? "停一手" : COLS[i%G.n] + (G.n - Math.floor(i/G.n)); }
+  function fresh(){
+    var n = +$("goSize").value, hc = +$("goHc").value, b = new Array(n*n).fill(0);
+    hcPoints(n, hc).forEach(function(i){ b[i] = 1; });
+    G = { n:n, b:b, her:1, miles:2, lv:+$("goLv").value, komi: hc ? 0.5 : 7.5, ko:-1, hist:[], log:[], cap:{1:0,2:0}, last:-2, passed:false, over:false, turn: hc ? 2 : 1 };
+    save(); render(); say(hc ? "让你 " + hc + " 子，我先下。" : "你执黑先下，点交叉点落子。");
+    if (G.turn===G.miles) setTimeout(reply, 200); }
+  function push(){ G.hist.push(JSON.stringify({ b:G.b, ko:G.ko, cap:G.cap, last:G.last, passed:G.passed, turn:G.turn, logLen:G.log.length })); }
+  function reply(){ if (G.over) return; say("我想想…"); setTimeout(function(){
+      var i = aiMove(); push();
+      if (i<0){ G.log.push("白 停一手"); if (G.passed){ G.over = true; G.turn = G.her; save(); render(); score(true); return; } G.passed = true; G.last = -1; say("我停一手。你也停的话就数子。"); }
+      else { var r = play(G.b, G.n, i, G.miles, G.ko); G.b = r.b; G.ko = r.ko; G.cap[G.miles] += r.cap; G.last = i; G.passed = false; G.log.push("白 " + coord(i)); say("我下：" + coord(i) + (r.cap ? "，提了 " + r.cap + " 子。" : "。")); }
+      G.turn = G.her; save(); render(); }, 50); }
+  function click(i){ if (!G || G.over || G.turn!==G.her) return; var r = play(G.b, G.n, i, G.her, G.ko); if (!r){ say("这里不能下（有子、自杀或打劫）。"); return; }
+    push(); G.b = r.b; G.ko = r.ko; G.cap[G.her] += r.cap; G.last = i; G.passed = false; G.log.push("黑 " + coord(i)); G.turn = G.miles; save(); render(); reply(); }
+  function pass(){ if (!G || G.over || G.turn!==G.her) return; push(); G.log.push("黑 停一手"); if (G.passed){ G.over = true; save(); render(); score(true); return; } G.passed = true; G.last = -1; G.turn = G.miles; save(); render(); reply(); }
+  function undo(){ if (!G || !G.hist.length) return; var n = G.turn===G.her ? 2 : 1; while (n-- && G.hist.length){ var h = JSON.parse(G.hist.pop()); G.b = h.b; G.ko = h.ko; G.cap = h.cap; G.last = h.last; G.passed = h.passed; G.turn = h.turn; G.log.length = h.logLen; }
+    G.over = false; save(); render(); say("悔了一手，轮到你。"); }
+  function score(end){ var a = area(G.b, G.n), d = a.black - a.white - G.komi;
+    say((end ? "两边都停了，终局。" : "先数一下：") + "黑 " + a.black + " 子，白 " + a.white + " 子，贴 " + G.komi + "，" + (d>0 ? "黑（你）赢 " + d : "白（我）赢 " + (-d)) + "。还没提的死子没算进去。"); }
+  function render(){
+    var svg = $("goSvg"); svg.innerHTML = ""; if (!G) return; var n = G.n, m = 24, s = (400 - 2*m)/(n-1);
+    el("rect", { x:0, y:0, width:400, height:400, fill:"#1a1916" }, svg);
+    for (var k=0;k<n;k++){ el("line", { x1:m, y1:m+k*s, x2:400-m, y2:m+k*s, stroke:"#777" }, svg); el("line", { x1:m+k*s, y1:m, x2:m+k*s, y2:400-m, stroke:"#777" }, svg);
+      el("text", { x:m+k*s, y:13, fill:"#666", "font-size":10, "text-anchor":"middle" }, svg, COLS[k]); el("text", { x:8, y:m+k*s+4, fill:"#666", "font-size":10, "text-anchor":"middle" }, svg, String(n-k)); }
+    hcPoints(n, 5).forEach(function(i){ el("circle", { cx:m+(i%n)*s, cy:m+Math.floor(i/n)*s, r:3, fill:"#777" }, svg); });
+    for (var i=0;i<n*n;i++){ (function(i){ var x = m+(i%n)*s, y = m+Math.floor(i/n)*s;
+      if (G.b[i]) el("circle", { cx:x, cy:y, r:s*0.46, fill: G.b[i]===1 ? "#0a0a0a" : "#eeebe2", stroke:"#999", "stroke-width":1 }, svg);
+      if (i===G.last) el("circle", { cx:x, cy:y, r:s*0.16, fill:"none", stroke: G.b[i]===1 ? "#eee" : "#111", "stroke-width":2 }, svg);
+      var h = el("rect", { x:x-s/2, y:y-s/2, width:s, height:s, fill:"transparent" }, svg); h.addEventListener("click", function(){ click(i); }); })(i); }
+    $("log").textContent = (G.log.length ? "棋谱：" + G.log.join("，") + "。" : "") + "提子：你 " + G.cap[1] + "，我 " + G.cap[2] + "。"; }
+  return { init: function(){ try { G = JSON.parse(localStorage.getItem("qi_go")); } catch(e){ G = null; } if (!G) fresh(); else { $("goSize").value = G.n; $("goLv").value = G.lv; } },
+           fresh: fresh, pass: pass, undo: undo, score: function(){ if (G) score(false); }, render: render, setLv: function(v){ if (G){ G.lv = v; save(); } },
+           _t: { play: play, area: area, heur: heur } };
+})();
+$("goNew").onclick = function(){ GO.fresh(); }; $("goPass").onclick = function(){ GO.pass(); }; $("goUndo").onclick = function(){ GO.undo(); }; $("goScore").onclick = function(){ GO.score(); }; $("goLv").onchange = function(){ GO.setLv(+this.value); };
+
+XQ.init(); GO.init(); setMode(mode);
+window.__QI = { XQ: XQ, GO: GO };
+})();
+</script>
+</body>
+</html>

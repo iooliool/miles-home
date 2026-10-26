@@ -66,5 +66,15 @@
       }
     ],
     "top_want": "香"
+  },
+  "look": {
+    "time": "2026-10-26T18:26:37+08:00",
+    "outfit": "jacket",
+    "expr": "happy",
+    "outfit_word": "黑卫衣套军绿夹克",
+    "expr_word": "笑开了",
+    "why": "有点凉",
+    "sleepy": 69,
+    "tired": 44
   }
 }

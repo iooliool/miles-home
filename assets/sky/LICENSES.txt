@@ -1,0 +1,2 @@
+astronomy.browser.min.js — Astronomy Engine by Don Cross, MIT License (https://github.com/cosinekitty/astronomy)
+skydata.js — 亮星坐标来自 Hipparcos Main Catalogue (ESA 1997, CDS I/239)；星座连线和中文星座名来自 d3-celestial by Olaf Frohn, BSD 3-Clause License (https://github.com/ofrohn/d3-celestial)

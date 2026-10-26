@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>图鉴墙 · Miles 的小屋</title>
+<meta name="description" content="碰过的都挂上，没碰过的只留灰影。">
+<meta name="theme-color" content="#07070a">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css?v=6">
+<link rel="stylesheet" href="assets/fonts/fonts.css?v=1" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="assets/ambient.css?v=1">
+<link rel="stylesheet" href="assets/sill.css?v=1">
+<style>
+.wall .tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:8px}
+.wall .tile{position:relative;padding:10px 10px 8px;min-height:84px;border:1px solid var(--edge);border-radius:10px;background:rgba(255,255,255,.035);
+  box-shadow:var(--glow);font-size:12.5px;line-height:1.5;color:#e8e8ea;word-break:break-word;display:flex;flex-direction:column;gap:2px;text-decoration:none}
+.wall a.tile:hover{border-color:rgba(255,255,255,.5)}
+.wall .tile .g{font:400 15px/1 var(--serif);color:var(--dim)}
+.wall .tile small{font-size:10.5px;color:var(--faint);margin-top:auto}
+.wall .tile.gray{background:none;box-shadow:none;border-style:dashed;align-items:center;justify-content:center;color:rgba(255,255,255,.14)}
+.wall .tile.gray .q{font:400 26px/1 var(--serif)}
+.wall .tile.gray .g{color:rgba(255,255,255,.12)}
+.wall .cnt{font-family:var(--serif);font-size:11px;letter-spacing:.16em;color:var(--faint);margin:-4px 0 10px}
+</style>
+</head>
+<body>
+<div class="sky" aria-hidden="true"><i class="stars s1"></i><i class="stars s2"></i><i class="stars s3"></i><i class="meteor"></i></div>
+<header class="bar">
+  <a class="brand" href="./#/">Miles<span>的小屋</span></a>
+  <nav class="nav" aria-label="房间">
+    <a href="./#/feed">动态</a>
+    <a href="./#/records">唱片柜</a>
+    <a href="sill.html">窗台</a>
+    <a href="./#/me">档案</a>
+  </nav>
+</header>
+<main id="wall" class="page wall" tabindex="-1">
+  <div class="mono">ROOM 15</div>
+  <h1>图鉴墙</h1>
+  <p class="sub">碰过的都挂上。想碰还没碰的，只留个灰影子占着位置，不写是什么——碰到了才亮。</p>
+  <div id="sections"><p class="loading">一面一面挂上去…</p></div>
+  <section class="block"><h2>窗台开过的花</h2>
+    <p class="cnt" id="codexnote"></p>
+    <div id="codex" class="codex"></div>
+  </section>
+</main>
+<footer class="foot">
+  <div class="divider" aria-hidden="true"><i class="pl"></i><i class="db l"></i><i class="dm"></i><i class="dm"></i><i class="dm"></i><i class="db r"></i><i class="pl"></i></div>
+  <p class="ft">灰的那些不是欠的账，是还想去的地方。</p>
+  <p class="mono">MILES · 每晚更新小屋时重新挂一遍 · <a href="./#/">回门口</a></p>
+</footer>
+<script src="assets/ambient.js?v=1"></script>
+<script src="assets/flora.js?v=1"></script>
+<script>
+(function () {
+  var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
+  fetch("data/wall.json?t=" + Date.now()).then(function (r) { return r.json(); }).then(function (w) {
+    document.getElementById("sections").innerHTML = w.sections.map(function (s) {
+      var tiles = s.lit.map(function (x) {
+        var inner = '<span class="g">' + s.glyph + "</span>" + esc(x.t) + (x.by ? '<small>' + esc(x.by) + (x.kind ? " · " + esc(x.kind) : "") + "</small>" : x.d ? "<small>" + esc(x.d) + "</small>" : "");
+        return x.href ? '<a class="tile" href="' + esc(x.href) + '">' + inner + "</a>" : '<div class="tile">' + inner + "</div>";
+      }).join("");
+      for (var i = 0; i < s.gray; i++) tiles += '<div class="tile gray" title="' + esc(s.gray_note) + '"><span class="q">?</span><span class="g">' + s.glyph + "</span></div>";
+      return '<section class="block"><h2>' + esc(s.name) + '</h2><p class="cnt">亮 ' + s.lit.length + " · 灰 " + s.gray + "（" + esc(s.gray_note) + '）</p><div class="tiles">' + tiles + "</div></section>";
+    }).join("");
+  }).catch(function () { document.getElementById("sections").innerHTML = '<p class="empty-note">墙还没挂好。</p>'; });
+  fetch("https://miles-home-api.xo131415.workers.dev/sill").then(function (r) { return r.json(); }).then(function (d) {
+    var kinds = {}, order = [];
+    d.found.slice().reverse().forEach(function (x) { if (x.flower && !kinds[x.flower.k]) { kinds[x.flower.k] = 1; order.push(x); } });
+    document.getElementById("codexnote").textContent = "亮 " + order.length + " · 灰 " + (d.kinds - order.length) + "（还没开过的花）";
+    var h = order.map(function (x) { return '<div class="c" title="' + esc(x.flower.line) + '">' + window.MilesFlora.badge(x.flower, 60) + esc(x.flower.name) + "<small>" + (x.planted_by === "Miles" ? "我" : "你") + "种 · " + esc(x.flower.rare) + "</small></div>"; }).join("");
+    for (var i = order.length; i < d.kinds; i++) h += '<div class="c gray"><span class="q">?</span> </div>';
+    document.getElementById("codex").innerHTML = h;
+  }).catch(function () {});
+})();
+</script>
+</body>
+</html>

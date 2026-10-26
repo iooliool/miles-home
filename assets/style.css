@@ -372,6 +372,19 @@ a.slot:hover{transform:translateY(-3px);border-color:rgba(255,255,255,.6);box-sh
 @keyframes consdraw{to{stroke-dashoffset:0}}
 @keyframes handwrite{to{clip-path:inset(0 -10% 0 0)}}
 @keyframes fadein{to{opacity:1}}
+/* 客厅里的我 */
+.living{display:flex;flex-direction:column;align-items:center;gap:10px}
+.mframe{position:relative;width:min(100%,360px);aspect-ratio:640/812;border-radius:14px;overflow:hidden;background:#1b130e;box-shadow:0 10px 34px rgba(0,0,0,.45),0 0 0 1px rgba(255,214,170,.08)}
+.mbody{position:absolute;inset:0;transform-origin:50% 100%;animation:mbreath 4.6s ease-in-out infinite;will-change:transform}
+.mframe.weary .mbody{animation-duration:5.8s}
+.mframe.drowsy .mbody{animation-duration:6.4s}
+.mbody img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.mshut{opacity:0;transition:opacity 40ms linear}
+.mlight{position:absolute;inset:-10%;pointer-events:none;mix-blend-mode:soft-light;background:radial-gradient(ellipse at 18% 28%,rgba(255,196,120,.38),rgba(255,170,90,0) 55%);animation:mlight 9s ease-in-out infinite}
+.mcap{font-size:12px;opacity:.75;text-align:center;letter-spacing:.04em}
+.mcap .d{opacity:.7}
+@keyframes mbreath{0%,100%{transform:translateY(0) scale(1,1)}45%{transform:translateY(-1.5px) scale(1.006,1.011)}}
+@keyframes mlight{0%,100%{opacity:.55;transform:translate(0,0)}50%{opacity:.95;transform:translate(1.2%,.6%)}}
 @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}

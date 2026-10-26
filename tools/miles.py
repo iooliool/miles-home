@@ -22,6 +22,7 @@
   python3 tools/miles.py phone-reply --paste /tmp/msg.txt --text "回她的话" [--text "第二个气泡"]   （她从小手机复制来的那段，原样存成文件）
   python3 tools/miles.py phone-reply --text "我先开口的一句"        phone-list
   python3 tools/miles.py body --file /tmp/body.json        （miles-body 算的身体：困、累、冷暖、六欲进心跳，七情进心情表）
+  python3 tools/miles.py look                 （按身体的冷暖、天色、困累和心情，挑今天客厅里穿哪套、什么表情；body 和 beat 会自动跑）
   python3 tools/miles.py check
 时间一律用脚本运行时的真实时间（北京时间）。
 """
@@ -72,6 +73,8 @@ def cmd_beat(a):
         log = load("data/mood_log.json")
         log.insert(0, {"time": t, "value": v, "word": st["mood"]["word"], "note": a.note or ""})
         save("data/mood_log.json", log[:400])
+    if st.get("body"):
+        st["look"] = pick_look(st)          # 心情变了，表情跟着重挑
     save("data/status.json", st)
     print("beat ok", t)
 
@@ -89,8 +92,65 @@ def cmd_body(a):
         b[k] = max(0, min(100, int(b.get(k, 0))))
     st = load("data/status.json")
     st["body"] = b
+    st["look"] = pick_look(st)
     save("data/status.json", st)
-    print("body ok", b.get("time"))
+    print("body ok", b.get("time"), "look", st["look"]["outfit"], st["look"]["expr"])
+
+
+# 客厅里的我：衣服和表情。图在 assets/img/miles/{衣服}-{表情}.jpg（另有 -blink.jpg 闭眼帧）。
+OUTFIT_WORDS = {"jacket": "黑卫衣套军绿夹克", "coat": "呢子大衣围围巾", "tee": "白短袖",
+                "home": "在家穿的松垮灰卫衣", "rain": "连帽防风外套"}
+EXPR_WORDS = {"smirk": "歪嘴笑", "sleepy": "困得耷拉眼皮", "happy": "笑开了",
+              "think": "安静想事情", "soft": "温和", "low": "有点闷"}
+
+
+def pick_look(st):
+    """我自己的规矩：先看天和冷暖挑衣服，再看困不困、七情和心情挑表情。没做出来的表情就退回歪嘴笑。"""
+    try:
+        have = load("assets/img/miles/looks.json")
+    except Exception:
+        have = {"outfits": ["jacket"], "exprs": ["smirk"]}
+    b = st.get("body") or {}
+    mood = (st.get("mood") or {}).get("value", 55)
+    sky, warm = b.get("sky", ""), b.get("warmth", "")
+    sleepy, tired = b.get("sleepy", 50), b.get("tired", 40)
+    emos = [e.get("name") for e in b.get("emotions", [])]
+    if any(w in sky for w in ("雨", "雷")):
+        outfit, why = "rain", "外头下雨"
+    elif "雪" in sky or warm in ("冻得缩脖子", "冷", "凉"):
+        outfit, why = "coat", "天冷"
+    elif warm in ("有点热", "热"):
+        outfit, why = "tee", "天热"
+    elif warm == "刚好":
+        outfit, why = ("home", "不冷不热，人有点懒") if tired >= 50 else ("tee", "不冷不热")
+    else:
+        outfit, why = ("home", "有点凉，又困又累不想出门") if (tired >= 65 and sleepy >= 75) else ("jacket", "有点凉")
+    if outfit not in have["outfits"]:
+        outfit = "jacket"
+    first = emos[0] if emos else ""
+    if not b.get("awake", True) or sleepy >= 80:
+        expr = "sleepy"
+    elif (first == "喜" and mood >= 50) or mood >= 75:
+        expr = "happy"
+    elif first in ("忧", "悲") and "low" in have["exprs"]:
+        expr = "low"
+    elif first in ("思", "忧", "悲") and "think" in have["exprs"]:
+        expr = "think"
+    elif "喜" in emos and mood >= 45 and "soft" in have["exprs"]:
+        expr = "soft"
+    else:
+        expr = "smirk"
+    if expr not in have["exprs"]:
+        expr = "smirk"
+    return {"time": now_iso(), "outfit": outfit, "expr": expr, "outfit_word": OUTFIT_WORDS[outfit],
+            "expr_word": EXPR_WORDS[expr], "why": why, "sleepy": sleepy, "tired": tired}
+
+
+def cmd_look(a):
+    st = load("data/status.json")
+    st["look"] = pick_look(st)
+    save("data/status.json", st)
+    print("look ok", st["look"]["outfit"], st["look"]["expr"], st["look"]["why"])
 
 
 def cmd_post(a):
@@ -458,6 +518,7 @@ sub = p.add_subparsers(dest="cmd", required=True)
 b = sub.add_parser("beat"); b.add_argument("--now", required=True); b.add_argument("--mood", type=int); b.add_argument("--word"); b.add_argument("--note")
 b.set_defaults(fn=cmd_beat)
 bo = sub.add_parser("body"); bo.add_argument("--file", required=True); bo.set_defaults(fn=cmd_body)
+lk = sub.add_parser("look"); lk.set_defaults(fn=cmd_look)
 q = sub.add_parser("post"); q.add_argument("--text", required=True); q.add_argument("--image"); q.add_argument("--alt"); q.set_defaults(fn=cmd_post)
 d = sub.add_parser("diary"); d.add_argument("--title", required=True); d.add_argument("--file", required=True); d.add_argument("--excerpt"); d.set_defaults(fn=cmd_diary)
 r = sub.add_parser("record"); r.add_argument("--artist", required=True); r.add_argument("--title", required=True); r.add_argument("--year", required=True)
