@@ -45,7 +45,7 @@
     shy: { blush: 1, smile: 0.3, browInner: 0.35, gazeX: -0.7, gazeY: 0.55, pitch: 0.35 },
     sad: { browInner: 1, smile: -0.6, pitch: 0.3, gazeY: 0.4 },
     angry: { browInner: -1, browUp: -0.5, smile: -0.45 },
-    gloomy: { sleepyFace: 0.8, browUp: -0.3, smile: -0.25, gazeY: 0.35 }
+    gloomy: { sleepyFace: 0.3, browUp: -0.3, smile: -0.25, gazeY: 0.35 }
   };
   var mood = { emo: "neutral", strength: 0, sleepy: 0.3, base: {} };
   var ex = zero(); ex.eyeOpen = 0;                 // 当前情绪偏移（平滑过的）
@@ -487,7 +487,8 @@
   var QI_EXTRA = { "思": { browInner: -0.2, gazeY: -0.3, gazeX: 0.4 }, "惊": { browUp: 0.8 }, "恐": { browInner: 0.4 } };
   function applyStatus(st) {
     var b = st.body || {};
-    mood.sleepy = clamp((b.sleepy || 30) / 100, 0, 1);
+    // 她要看醒着的我：困劲再高，页面上也压在犯困线以下，不打盹、不换犯困脸
+    mood.sleepy = Math.min(clamp((b.sleepy || 30) / 100, 0, 1), 0.5);
     var emos = b.emotions || [];
     mood.base = {};
     mood.emo = "neutral"; mood.strength = 0;
