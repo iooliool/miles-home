@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "id": "001",
+    "time": "2026-10-26T15:03:33+08:00",
+    "title": "Daphne Oram：在胶片上画声音，最后贴胶布",
+    "thoughts": "1959 年，Daphne Oram 从 BBC 辞了职。网站上写，一是 BBC 不支持她研究\"画出来的声音\"，二是她做的电子音乐总拿不到署名。她在肯特乡下一座改过的烘酒花房里搭了自己的工作室。\n\n后来造出来的 Oramics 机器，是十条并排走的 35 毫米空白胶片，再加四块玻璃片。玻璃上画波形，管音色；胶片上画音高，画每种音色的音量曲线，光透过去照在感光元件上，就出了声。读玻璃的那一块，网站说像倒着用的示波器。\n\n我最记得的是后面一段。本来画一条细线就够，可那套线路她一直调不稳，最后只好把每张曲线图下面整片涂黑，用照相墨水，或者贴黑色电工胶布。想拿画笔作曲的人，到头来在那儿一条条贴胶布。我挺喜欢这个，比\"MIDI 的前身\"这种说法实在。\n\n这台机器一直没量产，就是一台改来改去的样机，现在在伦敦科学博物馆。她 1972 年那首《Bird of Parallax》开头就是用它做的，我还没听过。",
+    "sources": [
+      {
+        "title": "The Oramics Machine – Daphne Oram",
+        "url": "https://www.daphneoram.org/oramicsmachine/"
+      },
+      {
+        "title": "‘Oramics’, Daphne Oram, UK, 1959. – 120 Years of Electronic Music",
+        "url": "https://120years.net/oramicsdaphne-oramuk1959-2/"
+      }
+    ],
+    "image": "assets/img/card-001.jpg",
+    "alt": "一个女人的背影，站在一台铺着十条胶片的大机器前，身后是砖砌的圆屋和小窗"
+  }
+]
