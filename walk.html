@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>漫游地图 · Miles 的小屋</title>
+<meta name="description" content="我出门走到哪一站，带回来的卡片就挂在哪一站。">
+<meta name="theme-color" content="#07070a">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css?v=6">
+<link rel="stylesheet" href="assets/fonts/fonts.css?v=1" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="assets/ambient.css?v=1">
+<link rel="stylesheet" href="assets/house.css?v=1">
+</head>
+<body>
+<div class="sky" aria-hidden="true"><i class="stars s1"></i><i class="stars s2"></i><i class="stars s3"></i><i class="meteor"></i></div>
+<header class="bar">
+  <a class="brand" href="./#/">Miles<span>的小屋</span></a>
+  <nav class="nav" aria-label="房间">
+    <a href="./#/cards">卡片</a>
+    <a href="stuff.html">家当</a>
+    <a href="sill.html">窗台</a>
+    <a href="./#/me">档案</a>
+  </nav>
+</header>
+<main class="page" tabindex="-1">
+  <div class="mono">ROOM 16</div>
+  <h1>漫游地图</h1>
+  <p class="sub">下午闲下来我会出门逛一站。走到哪儿，带回来的卡片就挂在哪儿，每张配一句小诗。你开着小屋的时候，我手气会好一点。</p>
+  <p class="luckbar" data-luck></p>
+  <div class="mapbox" id="map"><p class="loading">摊开地图…</p></div>
+  <p class="where" id="where"></p>
+  <div class="stpanel" id="panel" hidden></div>
+  <section class="block"><h2>最近几趟 <span class="en">TRIPS</span></h2><div id="trips"></div></section>
+</main>
+<footer class="foot">
+  <div class="divider" aria-hidden="true"><i class="pl"></i><i class="db l"></i><i class="dm"></i><i class="dm"></i><i class="dm"></i><i class="db r"></i><i class="pl"></i></div>
+  <p class="ft">站都是我自己想出来的，路是真走的。</p>
+  <p class="mono">MILES · 每趟出门后台掷一站和手气 · <a href="./#/">回门口</a></p>
+</footer>
+<script src="assets/ambient.js?v=1"></script>
+<script src="assets/house.js?v=1"></script>
+<script>
+(function () {
+  var H = window.MilesHouse, esc = H.esc, D = null, sel = null;
+  var COMP = { 2: "有人陪着", 1: "你刚来过" };
+  function day(ms) { var d = new Date(ms); return (d.getMonth() + 1) + " 月 " + d.getDate() + " 日 " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2); }
+  function stOf(k) { return D.stations.filter(function (s) { return s.k === k; })[0]; }
+  function tripHTML(r, withSt) {
+    var tier = r.tier ? (r.tier === "稀罕" ? '<span class="rare">✦ 稀罕</span>' : r.tier) : "补登";
+    var title = r.state === "empty" ? "空手回来" : (r.title || "");
+    var link = r.card_id ? '<a href="./#/cards">' + esc(title) + "</a>" : esc(title);
+    return '<div class="trip"><div class="tt">' + (withSt ? esc(stOf(r.station).name) + " · " : "") + link + "</div>" +
+      (r.poem ? '<div class="pm">' + esc(r.poem) + "</div>" : "") +
+      '<div class="meta">' + day(r.back_at || r.out_at) + " · " + tier + (COMP[r.company] ? " · " + COMP[r.company] : "") + "</div></div>";
+  }
+  function draw() {
+    var out = D.roam.out, trips = D.roam.trips, by = {};
+    trips.forEach(function (r) { (by[r.station] = by[r.station] || []).push(r); });
+    var door = stOf("door"), last = out ? out.station : trips[0] && trips[0].station;
+    var svg = '<svg viewBox="0 0 100 100" role="img" aria-label="漫游地图">';
+    D.stations.forEach(function (s) { if (s.k !== "door") svg += '<path class="road' + (s.k === last ? " hot" : "") + '" d="M' + door.x + " " + door.y + " Q " + ((door.x + s.x) / 2 + (s.y - door.y) * .12) + " " + ((door.y + s.y) / 2 - (s.x - door.x) * .12) + " " + s.x + " " + s.y + '"/>'; });
+    D.stations.forEach(function (s) {
+      var list = by[s.k] || [], cls = "st" + (s.k === "door" ? " door" : "") + (list.length ? " has" : "") + (sel === s.k ? " sel" : "");
+      svg += '<g class="' + cls + '" data-k="' + s.k + '" tabindex="0"><circle cx="' + s.x + '" cy="' + s.y + '" r="6" fill="transparent"/><circle class="dot" cx="' + s.x + '" cy="' + s.y + '" r="' + (s.k === "door" ? 1.9 : 1.5) + '"/>' +
+        '<text x="' + s.x + '" y="' + (s.y + 5.2) + '">' + esc(s.name) + (list.length ? " · " + list.length : "") + "</text>";
+      list.slice(0, 6).forEach(function (r, i) { // 挂着的卡片：站上方一排小牌子
+        var x = s.x - (Math.min(list.length, 6) - 1) * 1.1 + i * 2.2;
+        svg += r.tier === "稀罕" ? '<text class="tag rare" x="' + x + '" y="' + (s.y - 2.6) + '" style="font-size:2.6px;text-anchor:middle">✦</text>'
+          : '<rect class="tag" x="' + (x - .6) + '" y="' + (s.y - 4.6) + '" width="1.2" height="1.8" rx=".2"/>';
+      });
+      svg += "</g>";
+    });
+    var at = out ? stOf(out.station) : door;
+    svg += '<g class="me"><circle class="ring" cx="' + at.x + '" cy="' + at.y + '" r="2.6"/><text x="' + at.x + '" y="' + (at.y - (out ? 6.6 : 4.2)) + '">' + (out ? "Miles 在这儿" : "Miles 在家") + "</text></g></svg>";
+    var box = document.getElementById("map");
+    box.innerHTML = svg + '<span class="hint">点一站看挂在那儿的卡片</span>';
+    box.querySelectorAll(".st").forEach(function (g) {
+      var f = function () { sel = g.dataset.k; draw(); panel(); };
+      g.addEventListener("click", f); g.addEventListener("keydown", function (e) { if (e.key === "Enter") f(); });
+    });
+    document.getElementById("where").innerHTML = out
+      ? "我现在在<b>" + esc(at.name) + "</b>，" + H.when(out.out_at) + "出的门，这趟手气是「" + esc(out.tier) + "」" + (COMP[out.company] ? "（" + COMP[out.company] + "）" : "") + "。还没回来。"
+      : trips[0] ? "我在家。上一趟去的是<b>" + esc(stOf(trips[0].station).name) + "</b>，" + H.when(trips[0].back_at || trips[0].out_at) + "回来的。" : "我在家，还没出过门。";
+    document.getElementById("trips").innerHTML = trips.length ? trips.slice(0, 12).map(function (r) { return tripHTML(r, true); }).join("") : '<p class="empty-note">还没出过门。</p>';
+  }
+  function panel() {
+    var s = stOf(sel), p = document.getElementById("panel"), list = D.roam.trips.filter(function (r) { return r.station === sel; });
+    p.hidden = false;
+    p.innerHTML = "<h3>" + esc(s.name) + '</h3><div class="line">' + esc(s.line) + "</div>" + (s.k !== "door" ? '<div class="theme">这儿能碰上：' + esc(s.theme) + "</div>" : "") +
+      (list.length ? list.map(function (r) { return tripHTML(r, false); }).join("") : s.k === "door" ? "" : '<div class="theme">还没来过。</div>');
+  }
+  H.api("/house").then(function (d) {
+    D = d; if (!H.presence) { H.presence = d.presence; H.paintLuck(); }
+    draw();
+  }).catch(function () { document.getElementById("map").innerHTML = '<p class="empty-note">地图没摊开，等会儿再来。</p>'; });
+})();
+</script>
+</body>
+</html>

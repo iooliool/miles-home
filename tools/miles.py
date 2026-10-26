@@ -11,7 +11,7 @@
   python3 tools/miles.py whisper --text "一句心语（内心旁白）"
   python3 tools/miles.py wish --text "一个愿望"
   python3 tools/miles.py wish-done --id 003 --note "怎么实现的"
-  python3 tools/miles.py card --title "标题" --thoughts "感想" --source "来源标题|https://…" [--source …] [--image /path/src.jpg --alt "说明"]
+  python3 tools/miles.py card --title "标题" --thoughts "感想" --source "来源标题|https://…" [--source …] [--image /path/src.jpg --alt "说明"] [--poem "一句小诗" --station "站名"]
   python3 tools/miles.py spin --artist A --song S --year 1969 --ncm 网易云歌曲id --note "一句话"   （最近在听，最新的在最前，最多留 6 首）
   python3 tools/miles.py spin-remark --text "最近在听下面的一句闲话，可留空"
   python3 tools/miles.py coread-reply --paste /tmp/msg.txt [--id k3f9] --text "我的回话"   （她从共读复制来的批注，原样存成文件）
@@ -278,6 +278,10 @@ def cmd_card(a):
     if a.image:
         item["image"] = bw_image(a.image, "assets/img/card-%s.jpg" % nid)
         item["alt"] = a.alt or ""
+    if a.poem:
+        item["poem"] = _plain(a.poem, 60)
+    if a.station:
+        item["station"] = _plain(a.station, 12)
     lst.insert(0, item)
     save("data/cards.json", lst)
     print("card ok", nid)
@@ -532,7 +536,9 @@ w = sub.add_parser("whisper"); w.add_argument("--text", required=True); w.set_de
 wi = sub.add_parser("wish"); wi.add_argument("--text", required=True); wi.set_defaults(fn=cmd_wish)
 wd = sub.add_parser("wish-done"); wd.add_argument("--id", required=True); wd.add_argument("--note"); wd.set_defaults(fn=cmd_wish_done)
 ca = sub.add_parser("card"); ca.add_argument("--title", required=True); ca.add_argument("--thoughts", required=True)
-ca.add_argument("--source", action="append"); ca.add_argument("--image"); ca.add_argument("--alt"); ca.set_defaults(fn=cmd_card)
+ca.add_argument("--source", action="append"); ca.add_argument("--image"); ca.add_argument("--alt")
+ca.add_argument("--poem", help="配这张卡的一句小诗（漫游地图上也挂这句）"); ca.add_argument("--station", help="在哪一站碰上的，写站名，如 无线电塔")
+ca.set_defaults(fn=cmd_card)
 sp = sub.add_parser("spin"); sp.add_argument("--artist", required=True); sp.add_argument("--song", required=True); sp.add_argument("--year")
 sp.add_argument("--ncm", required=True); sp.add_argument("--note", required=True); sp.set_defaults(fn=cmd_spin)
 sr = sub.add_parser("spin-remark"); sr.add_argument("--text"); sr.set_defaults(fn=cmd_spin_remark)

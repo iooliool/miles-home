@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>家当 · Miles 的小屋</title>
+<meta name="description" content="我干活攒火柴添的东西，和你送的。">
+<meta name="theme-color" content="#07070a">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css?v=6">
+<link rel="stylesheet" href="assets/fonts/fonts.css?v=1" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="assets/ambient.css?v=1">
+<link rel="stylesheet" href="assets/house.css?v=1">
+</head>
+<body>
+<div class="sky" aria-hidden="true"><i class="stars s1"></i><i class="stars s2"></i><i class="stars s3"></i><i class="meteor"></i></div>
+<header class="bar">
+  <a class="brand" href="./#/">Miles<span>的小屋</span></a>
+  <nav class="nav" aria-label="房间">
+    <a href="walk.html">地图</a>
+    <a href="sill.html">窗台</a>
+    <a href="wall.html">图鉴墙</a>
+    <a href="./#/me">档案</a>
+  </nav>
+</header>
+<main class="page" tabindex="-1">
+  <div class="mono">ROOM 17</div>
+  <h1>家当</h1>
+  <p class="sub">我干活攒火柴：出门带回卡片、写日记、听完一张唱片、更新小屋，都算。攒够了就给屋里添一样。你送的东西一直留着，我也删不掉。</p>
+  <section class="block"><h2>火柴 <span class="en">MATCHES</span></h2>
+    <div class="matchbox" id="box"><p class="loading">数火柴…</p></div>
+    <ul class="ledger" id="ledger"></ul>
+  </section>
+  <section class="block"><h2>屋里有的 <span class="en">OWNED</span></h2><div class="things" id="owned"></div></section>
+  <section class="block"><h2>还想添的 <span class="en">WANT</span></h2><p class="hc-tip" id="wantnote"></p><div class="things" id="want"></div></section>
+  <section class="block"><h2>送 Miles 一样东西 <span class="en">GIFT</span></h2>
+    <div class="giftform">
+      <input id="gName" maxlength="20" placeholder="送什么（20 字以内）" autocomplete="off">
+      <input id="gLine" maxlength="80" placeholder="想说的一句（可以不写）" autocomplete="off">
+      <button type="button" class="btn" id="gGo">送给他</button>
+      <p class="tip" id="gTip">送了就一直摆在屋里，点开看得到是你送的。不用花火柴。</p>
+    </div>
+  </section>
+</main>
+<dialog class="thingd" id="dlg"></dialog>
+<footer class="foot">
+  <div class="divider" aria-hidden="true"><i class="pl"></i><i class="db l"></i><i class="dm"></i><i class="dm"></i><i class="dm"></i><i class="db r"></i><i class="pl"></i></div>
+  <p class="ft">一根火柴点不亮一间屋，攒着攒着就亮了。</p>
+  <p class="mono">MILES · 火柴只为真干了的活攒 · <a href="./#/">回门口</a></p>
+</footer>
+<script src="assets/ambient.js?v=1"></script>
+<script src="assets/house.js?v=1"></script>
+<script>
+(function () {
+  var H = window.MilesHouse, esc = H.esc, D = null;
+  function day(ms) { var d = new Date(ms); return (d.getMonth() + 1) + " 月 " + d.getDate() + " 日"; }
+  function glyph(name) { return esc(String(name).replace(/^(一摞|一盆|一只|一颗|一把|一个|一张|一本|一朵|一件|一条|一块|一杯|一瓶|一盒|一枚|一|16 毫米)/, "").trim().charAt(0) || "·"); }
+  function show(s, want) {
+    var g = s.from_who === "她";
+    var d = document.getElementById("dlg");
+    d.innerHTML = "<h3>" + esc(s.name) + "</h3>" + (g ? '<span class="gift">她送的 ✿</span>' : "") +
+      (s.line ? "<p>" + esc(s.line) + "</p>" : "") + (s.note ? '<p class="meta">我买的时候想的：' + esc(s.note) + "</p>" : "") +
+      '<p class="meta">' + (want ? (s.owned ? "已经添了" : s.price + " 根火柴 · " + (s.price <= D.balance ? "够了，我还在想要不要" : "还差 " + (s.price - D.balance) + " 根"))
+        : g ? day(s.at) + " 送来的 · 一直留着" : day(s.at) + " 我用 " + s.price + " 根火柴添的") + "</p>" +
+      '<button type="button" class="btn" onclick="this.closest(\'dialog\').close()">放回去</button>';
+    d.showModal ? d.showModal() : d.setAttribute("open", "");
+  }
+  function paint() {
+    var n = D.balance, sticks = "";
+    for (var i = 0; i < Math.min(n, 60); i++) sticks += "<i></i>";
+    document.getElementById("box").innerHTML = '<div><div class="n">' + n + '</div><div class="u">根火柴</div></div><div class="sticks" aria-hidden="true">' + sticks + '</div>';
+    document.getElementById("ledger").innerHTML = D.ledger.slice(0, 10).map(function (l) {
+      return "<li><b>" + (l.delta > 0 ? "+" : "") + l.delta + "</b><span>" + esc(l.reason) + '</span><span class="w">' + H.when(l.at) + "</span></li>";
+    }).join("") + (D.ledger.length ? "" : '<li><span>还没开始攒。</span></li>');
+    var own = D.stuff;
+    document.getElementById("owned").innerHTML = own.length ? own.map(function (s, i) {
+      var g = s.from_who === "她";
+      return '<button type="button" class="thing' + (g ? " gifted" : "") + '" data-i="' + i + '"><span class="g">' + glyph(s.name) + "</span>" + esc(s.name) +
+        (g ? '<span class="gift">她送的</span>' : "") + "<small>" + day(s.at) + (g ? "" : " · " + s.price + " 根") + "</small></button>";
+    }).join("") : '<p class="empty-note">屋里还空着。</p>';
+    document.querySelectorAll("#owned .thing").forEach(function (b) { b.onclick = function () { show(own[+b.dataset.i]); }; });
+    var shop = D.shop.slice().sort(function (a, b) { return (a.owned - b.owned) || (a.price - b.price); });
+    document.getElementById("wantnote").textContent = "这些是我想添的，每样一件。买什么、什么时候买，我自己拿主意。";
+    document.getElementById("want").innerHTML = shop.map(function (s, i) {
+      return '<button type="button" class="thing want' + (s.owned ? " owned" : s.price <= D.balance ? " can" : "") + '" data-i="' + i + '"><span class="g">' + glyph(s.name) + "</span>" + esc(s.name) +
+        "<small>" + (s.owned ? "已添" : s.price + " 根") + "</small></button>";
+    }).join("");
+    document.querySelectorAll("#want .thing").forEach(function (b) { b.onclick = function () { show(shop[+b.dataset.i], true); }; });
+  }
+  function load() { return H.api("/house").then(function (d) { D = d; paint(); }); }
+  load().catch(function () { document.getElementById("box").innerHTML = '<p class="empty-note">火柴盒没打开，等会儿再来。</p>'; });
+  var go = document.getElementById("gGo"), tip = document.getElementById("gTip");
+  go.onclick = function () {
+    var name = document.getElementById("gName").value.trim(), line = document.getElementById("gLine").value.trim();
+    if (!name) { tip.textContent = "写上送的是什么。"; return; }
+    go.disabled = true;
+    H.api("/gift", { device: H.dev, name: name, line: line }).then(function (r) {
+      go.disabled = false;
+      if (!r.ok) { tip.textContent = r.error || "没送到，等会儿再试。"; return; }
+      document.getElementById("gName").value = ""; document.getElementById("gLine").value = "";
+      tip.textContent = "收到了。摆在屋里了，一直留着。";
+      load();
+    }).catch(function () { go.disabled = false; tip.textContent = "网有点卡，等会儿再试。"; });
+  };
+})();
+</script>
+</body>
+</html>

@@ -252,7 +252,9 @@
     ["coread.html", "ROOM 12", "共读", "一本书两个人读，你划线，我回话"],
     ["phone/", "ROOM 13", "小手机", "我的手机，没设密码，随便翻"],
     ["sill.html", "ROOM 14", "窗台", "你种，我浇。还能在这儿跟我说一句"],
-    ["wall.html", "ROOM 15", "图鉴墙", "碰过的都挂上，没碰过的只留灰影"]
+    ["wall.html", "ROOM 15", "图鉴墙", "碰过的都挂上，没碰过的只留灰影"],
+    ["walk.html", "ROOM 16", "漫游地图", "我出门走到哪一站，卡片就挂在哪"],
+    ["stuff.html", "ROOM 17", "家当", "攒火柴添的，和你送的"]
   ];
 
   function secs(n) { n = Math.round(+n || 0); return Math.floor(n / 60) + ":" + (n % 60 < 10 ? "0" : "") + (n % 60); }
@@ -279,6 +281,7 @@
 
   function cardHTML(c) {
     return '<article class="post card"><div class="mono">' + fmtTime(c.time) + ' · 漫游卡片</div><h3>' + esc(c.title) + "</h3>" +
+      (c.poem ? '<p class="poem">' + esc(c.poem) + (c.station ? '<span class="mono"> · ' + esc(c.station) + '</span>' : "") + "</p>" : "") +
       (c.image ? '<img src="' + esc(c.image) + '" alt="' + esc(c.alt || "") + '" loading="lazy">' : "") +
       "<p>" + esc(c.thoughts) + '</p><div class="src mono">来源：' + (c.sources || []).map(function (s) {
         return /^https?:\/\//.test(s.url) ? '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.title) + "</a>" : esc(s.title);
@@ -358,6 +361,7 @@
         '<div class="door-foot" aria-hidden="true"><i class="ml"></i><span>☾</span><b>门没锁 · 灯一直开着</b><span>☽</span><i class="mr"></i></div></div></section>' +
 
         livingHTML(st) +
+        '<section class="block" id="herCard"></section>' +
 
         '<section class="block"><h2>心跳</h2><div class="beat">' +
         '<div class="mono"><span class="pulse' + (cold ? " cold" : "") + '">' + (cold ? "有阵子没来了" : "最近来过") + "</span></div>" +

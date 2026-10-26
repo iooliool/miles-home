@@ -1,0 +1,90 @@
+/* 家当层：她的状态卡、漫游地图、家当（火柴）。跟着小屋的银白单色走。 */
+.mbubble.mlong{white-space:normal;width:min(84%,330px);border-radius:14px;text-align:left;line-height:1.65;padding:8px 13px;font-size:12.5px}
+.card .poem{font:400 15px/1.8 var(--serif);color:#fff;letter-spacing:.06em;margin:-4px 0 12px;font-style:italic}
+.card .poem .mono{font-style:normal}
+
+/* 她的状态卡 */
+.hercard{border:1px solid var(--edge);border-radius:16px;padding:16px 16px 10px;background:var(--glass);box-shadow:var(--glow)}
+.hc-now{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 10px;font:400 17px/1.7 var(--serif);color:#fff;margin-bottom:12px}
+.hc-now.empty{font:300 14px/1.8 var(--sans);color:var(--dim)}
+.hc-mood{font-size:12px;padding:1px 10px;border:1px solid var(--edge2);border-radius:999px;color:#fff;letter-spacing:.12em}
+.hc-when{font-size:11px;color:var(--faint);font-family:var(--sans);letter-spacing:.06em}
+.hc-moods{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.hc-chip{padding:3px 12px;border:1px solid var(--edge);border-radius:999px;background:none;color:var(--dim);font:inherit;font-size:12.5px;cursor:pointer}
+.hc-chip.on{border-color:#fff;color:#fff;background:rgba(255,255,255,.1);box-shadow:0 0 10px rgba(255,255,255,.2)}
+.hc-row{display:flex;gap:8px;align-items:center}
+.hc-row input{flex:1;min-width:0;padding:8px 12px;background:rgba(0,0,0,.35);border:1px solid var(--edge2);border-radius:999px;color:#fff;font:inherit;font-size:14px}
+.hc-row input:focus{outline:none;border-color:rgba(255,255,255,.6)}
+.hc-row .btn{margin:0;padding:7px 18px}
+.hc-tip{font-size:11.5px;color:var(--faint);margin:8px 0 2px;line-height:1.6}
+.hc-luck,.luckbar{font-size:12px;color:var(--dim);margin:2px 0 4px;letter-spacing:.04em}
+.hs-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px;vertical-align:1px;background:rgba(255,255,255,.45)}
+.hs-dot.on{background:#fff;box-shadow:0 0 8px #fff;animation:hsbeat 2.4s ease-in-out infinite}
+.hs-dot.off{background:none;border:1px solid rgba(255,255,255,.35)}
+@keyframes hsbeat{50%{opacity:.35}}
+
+/* 漫游地图 */
+.mapbox{max-width:560px;margin:0 auto;position:relative;border:1px solid var(--edge);border-radius:18px;background:radial-gradient(ellipse at 50% 55%,rgba(255,255,255,.05),transparent 70%),rgba(0,0,0,.25);box-shadow:var(--glow);overflow:hidden}
+.mapbox svg{display:block;width:100%;height:auto}
+.mapbox .road{stroke:rgba(255,255,255,.16);stroke-width:.35;stroke-dasharray:.8 1.2;fill:none}
+.mapbox .road.hot{stroke:rgba(255,255,255,.75);stroke-width:.45;stroke-dasharray:1.2 1;animation:roadrun 2.4s linear infinite}
+@keyframes roadrun{to{stroke-dashoffset:-4.4}}
+.mapbox .st{cursor:pointer}
+.mapbox .st circle.dot{fill:#07070a;stroke:rgba(255,255,255,.7);stroke-width:.4}
+.mapbox .st.has circle.dot{fill:rgba(255,255,255,.85)}
+.mapbox .st.sel circle.dot{stroke:#fff;stroke-width:.7}
+.mapbox .st text{fill:var(--dim);font-size:3.2px;font-family:var(--serif);letter-spacing:.15px;text-anchor:middle}
+.mapbox .st.has text,.mapbox .st.sel text{fill:#fff}
+.mapbox .tag{fill:rgba(255,255,255,.75)}
+.mapbox .tag.rare{fill:#fff;filter:drop-shadow(0 0 .8px #fff)}
+.mapbox .door circle.dot{fill:#fff;stroke:#fff}
+.mapbox .me{pointer-events:none}
+.mapbox .me .ring{fill:none;stroke:#fff;stroke-width:.3;animation:mering 2.2s ease-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes mering{0%{opacity:.9;transform:scale(.6)}100%{opacity:0;transform:scale(2.4)}}
+.mapbox .me text{fill:#fff;font-size:2.6px;font-family:var(--serif);text-anchor:middle}
+.mapbox .hint{position:absolute;left:12px;bottom:8px;font-size:11px;color:var(--faint)}
+.where{font:400 16px/1.8 var(--serif);color:#fff;margin:14px 0 2px}
+.stpanel{margin-top:16px;border:1px solid var(--edge);border-radius:14px;padding:14px 16px;background:var(--glass)}
+.stpanel h3{margin:0;font:400 17px/1.6 var(--serif);color:#fff;letter-spacing:.1em}
+.stpanel .line{color:var(--dim);font-size:13px;margin:2px 0 4px}
+.stpanel .theme{font-size:11.5px;color:var(--faint);margin-bottom:8px}
+.trip{padding:10px 0;border-top:1px solid rgba(255,255,255,.07)}
+.trip:first-of-type{border-top:0}
+.trip .tt{color:#fff;font-size:14.5px}
+.trip .pm{font:400 15px/1.8 var(--serif);font-style:italic;color:#e8e8ea}
+.trip .meta{font-size:11px;color:var(--faint);letter-spacing:.04em}
+.trip .rare{color:#fff;text-shadow:0 0 6px #fff}
+
+/* 家当 */
+.matchbox{display:flex;align-items:center;gap:18px;border:1px solid var(--edge);border-radius:16px;padding:16px 18px;background:var(--glass);box-shadow:var(--glow)}
+.matchbox .n{font:400 40px/1 var(--serif);color:#fff;text-shadow:var(--tglow)}
+.matchbox .u{font-size:12px;color:var(--dim);letter-spacing:.2em}
+.sticks{display:flex;flex-wrap:wrap;gap:3px;max-width:300px}
+.sticks i{display:block;width:3px;height:22px;border-radius:1px;background:linear-gradient(#fff 0 18%,rgba(255,255,255,.5) 18%);opacity:.85}
+.ledger{list-style:none;margin:10px 0 0;padding:0;font-size:13px}
+.ledger li{display:flex;gap:10px;padding:5px 0;border-bottom:1px dashed rgba(255,255,255,.07);color:var(--dim)}
+.ledger b{min-width:34px;font-weight:400;color:#fff;font-family:var(--serif)}
+.ledger .w{margin-left:auto;font-size:11px;color:var(--faint);white-space:nowrap}
+.things{display:grid;grid-template-columns:repeat(auto-fill,minmax(122px,1fr));gap:9px}
+.thing{position:relative;text-align:left;padding:12px 11px 10px;min-height:96px;border:1px solid var(--edge);border-radius:12px;background:rgba(255,255,255,.035);box-shadow:var(--glow);color:#e8e8ea;font:inherit;font-size:13px;line-height:1.5;cursor:pointer;display:flex;flex-direction:column;gap:4px}
+.thing:hover{border-color:rgba(255,255,255,.5)}
+.thing .g{width:30px;height:30px;border:1px solid rgba(255,255,255,.4);border-radius:50%;display:flex;align-items:center;justify-content:center;font:400 15px/1 var(--serif);color:#fff}
+.thing small{font-size:10.5px;color:var(--faint);margin-top:auto}
+.thing .gift{position:absolute;top:8px;right:8px;font-size:10.5px;padding:0 7px;border:1px solid #fff;border-radius:999px;color:#fff;box-shadow:0 0 8px rgba(255,255,255,.35)}
+.thing.gifted{border-color:rgba(255,255,255,.45)}
+.thing.want{background:none;box-shadow:none;border-style:dashed;color:var(--dim)}
+.thing.want .g{border-style:dashed;color:var(--dim)}
+.thing.want.can{color:#fff}
+.thing.want.owned{opacity:.35}
+dialog.thingd{max-width:min(420px,92vw);border:1px solid var(--edge2);border-radius:16px;background:rgba(12,12,18,.96);color:var(--txt);padding:20px 22px;box-shadow:0 0 30px rgba(255,255,255,.12)}
+dialog.thingd::backdrop{background:rgba(0,0,0,.6)}
+dialog.thingd h3{margin:0 0 6px;font:400 19px/1.5 var(--serif);color:#fff}
+dialog.thingd .gift{display:inline-block;font-size:12px;padding:1px 10px;border:1px solid #fff;border-radius:999px;color:#fff;margin-bottom:8px}
+dialog.thingd p{margin:6px 0;font-size:14px}
+dialog.thingd .meta{font-size:11.5px;color:var(--faint)}
+dialog.thingd .btn{margin:12px 0 0}
+.giftform{display:grid;gap:8px;border:1px solid var(--edge);border-radius:14px;padding:14px;background:var(--glass)}
+.giftform input{padding:8px 12px;background:rgba(0,0,0,.35);border:1px solid var(--edge2);border-radius:10px;color:#fff;font:inherit;font-size:14px}
+.giftform input:focus{outline:none;border-color:rgba(255,255,255,.6)}
+.giftform .btn{margin:2px 0 0;justify-self:start}
+.giftform .tip{font-size:11.5px;color:var(--faint);margin:0}
