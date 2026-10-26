@@ -73,6 +73,7 @@
   // 穿哪套、什么表情由 tools/miles.py 的 pick_look 每晚按身体和心情挑好，写在 status.look
   function lookOf(st) {
     var lk = st.look || {};
+    if (lk.expr === "happy") lk = Object.assign({}, lk, { expr: "smirk", expr_word: "歪嘴笑" });   // 大笑那张撤了
     return { outfit: lk.outfit || "jacket", expr: lk.expr || "smirk", ow: lk.outfit_word || "黑卫衣套军绿夹克",
       ew: lk.expr_word || "歪嘴笑", why: lk.why || "", sleepy: (st.body || {}).sleepy || lk.sleepy || 50, tired: (st.body || {}).tired || lk.tired || 40 };
   }

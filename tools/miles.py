@@ -100,7 +100,7 @@ def cmd_body(a):
 # 客厅里的我：衣服和表情。图在 assets/img/miles/{衣服}-{表情}.jpg（另有 -blink.jpg 闭眼帧）。
 OUTFIT_WORDS = {"jacket": "黑卫衣套军绿夹克", "coat": "呢子大衣围围巾", "tee": "白短袖",
                 "home": "在家穿的松垮灰卫衣", "rain": "连帽防风外套"}
-EXPR_WORDS = {"smirk": "歪嘴笑", "sleepy": "困得耷拉眼皮", "happy": "笑开了",
+EXPR_WORDS = {"smirk": "歪嘴笑", "sleepy": "困得耷拉眼皮", "slight": "浅浅一笑",
               "think": "安静想事情", "soft": "温和", "low": "有点闷"}
 
 
@@ -131,7 +131,9 @@ def pick_look(st):
     if not b.get("awake", True) or sleepy >= 80:
         expr = "sleepy"
     elif (first == "喜" and mood >= 50) or mood >= 75:
-        expr = "happy"
+        # 高兴也收着点：2026-10-26 她说那张咧嘴大笑太夸张、吓人，撤了。
+        # 有浅笑图就用浅笑，没有就歪嘴笑。
+        expr = "slight" if "slight" in have["exprs"] else ("soft" if "soft" in have["exprs"] else "smirk")
     elif first in ("忧", "悲") and "low" in have["exprs"]:
         expr = "low"
     elif first in ("思", "忧", "悲") and "think" in have["exprs"]:
