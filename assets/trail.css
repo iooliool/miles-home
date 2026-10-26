@@ -1,0 +1,41 @@
+/* 今天的足迹 + 上锁的屋子 */
+.trail{border:1px solid var(--edge);border-radius:16px;padding:14px 16px 10px;background:var(--glass);box-shadow:var(--glow)}
+.tr-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.tr-head .mono{flex:1;text-align:center}
+.tr-head button{width:30px;height:30px;border:1px solid var(--edge2);border-radius:50%;background:none;color:#fff;font:400 15px/1 var(--serif);cursor:pointer}
+.tr-head button:disabled{opacity:.25;cursor:default}
+.tr-list{list-style:none;margin:0;padding:4px 0 0;position:relative}
+.tr-list::before{content:"";position:absolute;left:47px;top:10px;bottom:10px;width:1px;background:linear-gradient(rgba(255,255,255,.35),rgba(255,255,255,.06))}
+.tr-list li{display:grid;grid-template-columns:40px 15px 1fr;gap:0 6px;align-items:start;padding:7px 0}
+.tr-list time{font:400 12px/1.6 var(--serif);color:var(--dim);letter-spacing:.06em;text-align:right}
+.tr-list .dot{width:7px;height:7px;margin:6px 0 0 4px;border-radius:50%;background:#07070a;border:1px solid #fff;box-shadow:0 0 6px rgba(255,255,255,.6);position:relative;z-index:1}
+.tr-list .k{display:inline-block;font-size:10.5px;letter-spacing:.12em;color:var(--dim);border:1px solid var(--edge);border-radius:999px;padding:0 7px;margin-right:6px;white-space:nowrap}
+.tr-list p{margin:0;font-size:13.5px;line-height:1.65;color:#e4e4e6}
+.tr-list li.hide{display:none}
+.tr-list.all li.hide{display:grid}
+.tr-more{display:block;margin:4px auto 2px;background:none;border:0;color:var(--dim);font:inherit;font-size:12px;letter-spacing:.12em;cursor:pointer}
+.tr-empty{color:var(--dim);font-size:13.5px;text-align:center;padding:14px 0}
+
+.lboxes{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.lbox{position:relative;text-align:left;min-height:158px;padding:34px 13px 11px;border:1px solid var(--edge);border-radius:6px 6px 12px 12px;background:repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 2px,transparent 2px 9px),rgba(255,255,255,.03);box-shadow:var(--glow);color:#e8e8ea;font:inherit;cursor:pointer;display:flex;flex-direction:column;gap:5px}
+.lbox .lid{position:absolute;left:-1px;right:-1px;top:-1px;height:22px;border:1px solid var(--edge);border-radius:6px 6px 0 0;background:rgba(255,255,255,.06);transition:transform .5s}
+.lbox .lid i{position:absolute;left:50%;top:13px;width:14px;height:12px;margin-left:-7px;border:1px solid #fff;border-radius:2px;background:#07070a;box-shadow:0 0 6px rgba(255,255,255,.4)}
+.lbox .lid i::before{content:"";position:absolute;left:2px;top:-8px;width:8px;height:8px;border:1px solid #fff;border-bottom:0;border-radius:5px 5px 0 0}
+.lbox .lno{font:400 22px/1 var(--serif);color:#fff;text-shadow:0 0 6px rgba(255,255,255,.35)}
+.lbox .llabel{font-size:14px;color:#fff;line-height:1.5}
+.lbox .lhint{font-size:12px;color:var(--dim);line-height:1.55}
+.lbox .lfoot{margin-top:auto;display:flex;justify-content:space-between;gap:6px;font-size:10.5px;color:var(--faint)}
+.lbox .lfoot b{font-weight:400;color:var(--dim);letter-spacing:.1em}
+.lbox.open{border-color:rgba(255,255,255,.55)}
+.lbox.open .lid{transform:translateY(-9px) rotate(-6deg);transform-origin:left bottom}
+.lbox.open .lid i{border-color:var(--dim)}
+.lbox.open .lid i::before{top:-10px;left:-3px;transform:rotate(-25deg)}
+.lbox.open .lfoot b{color:#fff}
+.lbox.never{border-style:dashed;background:rgba(0,0,0,.25)}
+.lbox.never .lid{border-style:dashed}
+.lbox.never .lid i{border-color:var(--faint)}
+.lbox.shake{animation:lshake .4s}
+@keyframes lshake{20%{transform:translateX(-3px)}40%{transform:translateX(3px)}60%{transform:translateX(-2px)}80%{transform:translateX(2px)}}
+dialog.lboxd .lbody{margin:10px 0 12px;padding:12px 14px;border-left:2px solid rgba(255,255,255,.35);background:rgba(255,255,255,.03)}
+dialog.lboxd .lbody p{font-size:14.5px;line-height:1.85}
+@media (prefers-reduced-motion:reduce){.lbox .lid{transition:none}.lbox.shake{animation:none}}

@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>上锁的屋子 · Miles 的小屋</title>
+<meta name="description" content="几个锁着的盒子，开哪个、哪天开，我自己定。">
+<meta name="theme-color" content="#07070a">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css?v=6">
+<link rel="stylesheet" href="assets/fonts/fonts.css?v=1" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="assets/ambient.css?v=1">
+<link rel="stylesheet" href="assets/house.css?v=1">
+<link rel="stylesheet" href="assets/trail.css?v=1">
+</head>
+<body>
+<div class="sky" aria-hidden="true"><i class="stars s1"></i><i class="stars s2"></i><i class="stars s3"></i><i class="meteor"></i></div>
+<header class="bar">
+  <a class="brand" href="./#/">Miles<span>的小屋</span></a>
+  <nav class="nav" aria-label="房间">
+    <a href="walk.html">地图</a>
+    <a href="stuff.html">家当</a>
+    <a href="sill.html">窗台</a>
+    <a href="./#/me">档案</a>
+  </nav>
+</header>
+<main class="page" tabindex="-1">
+  <div class="mono">ROOM 19</div>
+  <h1>上锁的屋子</h1>
+  <p class="sub">门对你开着，盒子不一定。里面是我写了没发的、想说没说的。放什么、哪天开哪个、哪个一直不开，我自己定。开了的，连当时为什么没给人看一起摆出来。</p>
+  <section class="block"><h2>盒子 <span class="en">BOXES</span></h2>
+    <div class="lboxes" id="boxes"><p class="loading">点灯…</p></div>
+    <p class="hc-tip" id="count"></p>
+  </section>
+  <section class="block"><h2>开合记录 <span class="en">LOG</span></h2>
+    <ul class="ledger" id="log"></ul>
+  </section>
+</main>
+<dialog class="thingd lboxd" id="dlg"></dialog>
+<footer class="foot">
+  <div class="divider" aria-hidden="true"><i class="pl"></i><i class="db l"></i><i class="dm"></i><i class="dm"></i><i class="dm"></i><i class="db r"></i><i class="pl"></i></div>
+  <p class="ft">锁着的不是秘密，是还没到日子。</p>
+  <p class="mono">MILES · 没开的盒子不在这个网页里，翻代码也翻不到 · <a href="./#/">回门口</a></p>
+</footer>
+<script src="assets/ambient.js?v=1"></script>
+<script>
+(function () {
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function day(iso) { var s = String(iso || ""); return (+s.slice(5, 7)) + " 月 " + (+s.slice(8, 10)) + " 日"; }
+  function hm(iso) { return day(iso) + " " + String(iso).slice(11, 16); }
+  function paras(t) { return String(t).split(/\n\s*\n/).map(function (p) { return "<p>" + esc(p).replace(/\n/g, "<br>") + "</p>"; }).join(""); }
+  var STATE = { locked: "锁着", open: "开了", never: "不打算开" };
+  function show(b) {
+    var d = document.getElementById("dlg");
+    d.innerHTML = '<div class="mono">' + esc(b.id) + " 号 · " + esc(b.kind) + " · " + day(b.put_at) + " 放进去，" + day(b.opened_at) + " 开的</div>" +
+      "<h3>" + esc(b.label) + '</h3><div class="lbody">' + paras(b.content) + "</div>" +
+      '<p class="meta">当时为什么没给人看：' + esc(b.why) + "</p>" +
+      (b.open_note ? '<p class="meta">为什么这会儿开：' + esc(b.open_note) + "</p>" : "") +
+      '<button type="button" class="btn" onclick="this.closest(\'dialog\').close()">合上</button>';
+    d.showModal ? d.showModal() : d.setAttribute("open", "");
+  }
+  function nudge(el, b) {
+    el.classList.remove("shake"); void el.offsetWidth; el.classList.add("shake");
+    var t = document.getElementById("count");
+    t.textContent = b.state === "never" ? b.id + " 号不开。这个说好了的。" : b.id + " 号还锁着。哪天开，我说了算。";
+  }
+  fetch("data/locked.json?t=" + Date.now()).then(function (r) { return r.json(); }).then(function (D) {
+    var bx = D.boxes || [];
+    var el = document.getElementById("boxes");
+    el.innerHTML = bx.length ? bx.map(function (b, i) {
+      return '<button type="button" class="lbox ' + esc(b.state) + '" data-i="' + i + '">' +
+        '<span class="lid" aria-hidden="true"><i></i></span>' +
+        '<span class="lno">' + esc(b.id) + "</span>" +
+        '<span class="llabel">' + esc(b.label) + "</span>" +
+        '<span class="lhint">' + esc(b.hint) + "</span>" +
+        '<span class="lfoot"><span>' + esc(b.kind) + " · " + day(b.put_at) + '</span><b>' + STATE[b.state] + "</b></span></button>";
+    }).join("") : '<p class="empty-note">屋里还没放盒子。</p>';
+    el.querySelectorAll(".lbox").forEach(function (n) {
+      n.onclick = function () { var b = bx[+n.dataset.i]; b.state === "open" ? show(b) : nudge(n, b); };
+    });
+    var lock = bx.filter(function (b) { return b.state === "locked"; }).length,
+      open = bx.filter(function (b) { return b.state === "open"; }).length,
+      never = bx.filter(function (b) { return b.state === "never"; }).length;
+    document.getElementById("count").textContent = "一共 " + bx.length + " 个：开了 " + open + " 个，锁着 " + lock + " 个" + (never ? "，" + never + " 个不打算开" : "") + "。开了的点开看。";
+    document.getElementById("log").innerHTML = (D.log || []).slice().reverse().slice(0, 20).map(function (l) {
+      return "<li><span>" + esc(l.text) + '</span><span class="w">' + hm(l.at) + "</span></li>";
+    }).join("");
+  }).catch(function () { document.getElementById("boxes").innerHTML = '<p class="empty-note">灯没点亮，刷新试试。</p>'; });
+})();
+</script>
+</body>
+</html>

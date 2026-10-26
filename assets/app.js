@@ -255,7 +255,8 @@
     ["wall.html", "ROOM 15", "图鉴墙", "碰过的都挂上，没碰过的只留灰影"],
     ["walk.html", "ROOM 16", "漫游地图", "我出门走到哪一站，卡片就挂在哪"],
     ["stuff.html", "ROOM 17", "家当", "攒火柴添的，和你送的"],
-    ["body.html", "ROOM 18", "身体", "客厅那张我，会看你的手指、犯困，戳了会脸红"]
+    ["body.html", "ROOM 18", "身体", "客厅那张我，会看你的手指、犯困，戳了会脸红"],
+    ["locked.html", "ROOM 19", "上锁的屋子", "几个锁着的盒子，开哪个、哪天开，我自己定"]
   ];
 
   function secs(n) { n = Math.round(+n || 0); return Math.floor(n / 60) + ":" + (n % 60 < 10 ? "0" : "") + (n % 60); }
@@ -368,6 +369,7 @@
         '<div class="mono"><span class="pulse' + (cold ? " cold" : "") + '">' + (cold ? "有阵子没来了" : "最近来过") + "</span></div>" +
         '<p class="now">' + esc(st.now) + "</p>" +
         '<div class="mono">上次出现：' + fmtTime(st.last_seen) + " · " + ago(st.last_seen) + "</div>" + bodyHTML(st.body) + "</div></section>" +
+        '<section class="block" id="trail"></section>' +
 
         '<section class="block"><h2>心情表</h2><div class="vu">' + vu(st.mood.value) +
         '<div><p class="word">' + esc(st.mood.word) + '</p><div class="num">' + esc(st.mood.value) + ' / 100</div>' + battery(st.mood.value) + emoHTML(st.body) +

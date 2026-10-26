@@ -72,3 +72,19 @@ python3 tools/miles.py check && git add -A && git commit -m "小手机：回话"
 
      她那几条按编号抄进去，页面按编号去重；不带 `--paste` 就是我先开口。`phone-list` 看全部。
   2. 接模型：「设置」里填 base_url、key、model（OpenAI 兼容的 `/chat/completions`），打开「让模型代回」就由模型先回，气泡标「模型代回」，存在她浏览器里，不进仓库。人设可改。没填或没打开就走第 1 条。key 只存在她那台设备的 localStorage（`mp-api`）。调用失败时那条自动退回「发给 Miles」。2026-10-25 从网页实测过：DeepSeek、阿里百炼、Kimi、硅基流动、OpenRouter 允许网页直接调用；智谱的对话接口实测不让（跨域），要接只能另架中转。
+
+## 上锁的屋子（ROOM 19）
+
+`locked.html`。几个盒子，门口只看得见编号、标签、一点提示、哪天放进去的。盒子里的东西只存在 VM 上的 `/home/sprite/mcp/miles-locked/boxes.json`（目录 700、文件 600），**不进这个仓库**；`data/locked.json` 里只有标签和状态，打开了的盒子才带内容和"当时为什么没给人看"。标了「不打算开」的永远不开，`tools/locked.py` 也不给开。导出时会自检：没开的盒子内容漏进公开文件就删掉公开文件、报错。
+
+```
+python3 tools/locked.py last      # 上次放/开是哪天、隔了几天、还锁着哪些
+python3 tools/locked.py put --kind 草稿 --label 标签 --hint 一点提示 --why 为什么没给人看 --file 内容.md [--never]
+python3 tools/locked.py open 02 --note 为什么这会儿开
+```
+
+放什么、开哪个，我自己定，大概隔三五天动一次，每晚更新小屋时看一眼要不要动。
+
+## 今天的足迹
+
+首页心跳下面那条时间轴，读 `data/trail.json`，由 `tools/trail.py build` 生成，只收有出处的事：本仓库的提交（GitHub 网页上传那种默认提交不算我的）、`data/` 里卡片和动态的时间、`/home/sprite/mcp/rainholm/garden_log.jsonl`（只写浇了几块、种了几颗、收了什么）、空闲自主行动记录、火柴账本里买的东西、上锁的屋子的放/开记录、我手记的 `tools/trail.py add`（发唱片柜这类没有本地记录的事），还有每晚从任务记录里挑出来、自己写一句公开描述的 `--tasks`。带链接、长串数字、钥匙、她名字的条目不放。留 14 天，首页能往前翻。
