@@ -47,7 +47,7 @@
     angry: { browInner: -1, browUp: -0.5, smile: -0.45 },
     gloomy: { sleepyFace: 0.3, browUp: -0.3, smile: -0.25, gazeY: 0.35 }
   };
-  var mood = { emo: "neutral", strength: 0, sleepy: 0.3, base: {} };
+  var mood = { emo: "neutral", strength: 0, sleepy: 0.3, real: 0.3, base: {} };
   var ex = zero(); ex.eyeOpen = 0;                 // 当前情绪偏移（平滑过的）
   var temp = null;                                  // 临时情绪（触摸、说话里的标记）
   var manual = null;                                // expression() 手动参数
@@ -195,7 +195,7 @@
     t.bodyX = 0.35 * Math.sin(now * 0.17);
 
     // 犯困打盹：困得厉害时隔一阵点一下头、闭一会儿眼，再一激灵醒过来
-    if (mood.sleepy > 0.6 && !follow && doze.phase === "awake" && now > doze.next) { doze.phase = "down"; doze.t = now; doze.hold = rnd(2, 5); }
+    if (mood.sleepy > 0.6 && !follow && doze.phase === "awake" && now > doze.next) { doze.phase = "down"; doze.t = now; doze.hold = isNight() ? rnd(40, 90) : rnd(2, 5); }
     if (doze.phase === "down") { doze.amt = approach(doze.amt, 1, 0.9, dt); if (now - doze.t > 2.2 + doze.hold) wake(false); }
     else doze.amt = approach(doze.amt, 0, 6, dt);
     t.pitch += 0.85 * doze.amt; t.roll += 0.45 * doze.amt; t.gazeY += 0.6 * doze.amt;
@@ -293,7 +293,7 @@
 
   function wake(byTouch) {
     if (doze.phase !== "down") return;
-    doze.phase = "awake"; doze.next = now + rnd(25, 60);
+    doze.phase = "awake"; doze.next = now + (isNight() ? rnd(5, 10) : rnd(25, 60));
     chor.push({ t0: now, keys: [[0, { pitch: -0.35 }], [0.25, { pitch: 0.1 }], [0.6, {}]] });
     blink.next = now + 0.15;
   }
@@ -422,10 +422,10 @@
   function line(s) { if (now - lastLine > 1.2) { lastLine = now; speak(s); } }
   function onTouch(kind, where) {
     react1(function (woke) {
-      if (kind === "face") { setTemp("shy", 1, 3); gesture("lookaway"); line(woke ? pick(LINES.wake) : pick(LINES.face)); report_("戳了一下", where); }
-      else if (kind === "pat") { setTemp("happy", 0.7, 3.5); manualBlush(0.35, 3.5); react.until = now + 2.2; react.eyes = 0.3; gesture("tilt"); line(woke ? pick(LINES.wake) : pick(LINES.pat)); report_("摸了摸", where); }
-      else if (kind === "tap-head") { setTemp("happy", 0.4, 2); gesture("nod"); line(woke ? pick(LINES.wake) : pick(LINES.head)); report_("摸了一下", where); }
-      else { chor.push({ t0: now, keys: [[0, {}], [0.12, { pitch: -0.3, browUp: 0.9 }], [0.5, { browUp: 0.5 }], [1.0, {}]] }); line(woke ? pick(LINES.wake) : pick(LINES.body)); report_("碰了一下", where); }
+      if (kind === "face") { setTemp("shy", 1, 3); gesture("lookaway"); line(woke ? wakeLine() : pick(LINES.face)); report_("戳了一下", where); }
+      else if (kind === "pat") { setTemp("happy", 0.7, 3.5); manualBlush(0.35, 3.5); react.until = now + 2.2; react.eyes = 0.3; gesture("tilt"); line(woke ? wakeLine() : pick(LINES.pat)); report_("摸了摸", where); }
+      else if (kind === "tap-head") { setTemp("happy", 0.4, 2); gesture("nod"); line(woke ? wakeLine() : pick(LINES.head)); report_("摸了一下", where); }
+      else { chor.push({ t0: now, keys: [[0, {}], [0.12, { pitch: -0.3, browUp: 0.9 }], [0.5, { browUp: 0.5 }], [1.0, {}]] }); line(woke ? wakeLine() : pick(LINES.body)); report_("碰了一下", where); }
     });
   }
   function manualBlush(v, sec) { chor.push({ t0: now, keys: [[0, { blush: 0 }], [0.3, { blush: v }], [sec, { blush: v }], [sec + 0.8, {}]] }); }
@@ -433,7 +433,7 @@
     react1(function (woke) {
       chor.push({ t0: now, keys: [[0, {}], [0.12, { yaw: 0.7, roll: -0.6 }], [0.3, { yaw: -0.6, roll: 0.6 }], [0.48, { yaw: 0.45, roll: -0.4 }], [0.7, { yaw: -0.25 }], [1.0, {}]] });
       setTemp("gloomy", 0.8, 2.5);
-      setTimeout(function () { line(woke ? pick(LINES.wake) : pick(LINES.shake)); }, 900);
+      setTimeout(function () { line(woke ? wakeLine() : pick(LINES.shake)); }, 900);
       report_("晃了晃", "整个人");
     });
   }
@@ -485,10 +485,21 @@
   // 心情：每晚更新小屋时写的 data/status.json
   var QI = { "喜": "happy", "怒": "angry", "忧": "gloomy", "思": "neutral", "悲": "sad", "恐": "gloomy", "惊": "neutral" };
   var QI_EXTRA = { "思": { browInner: -0.2, gazeY: -0.3, gazeX: 0.4 }, "惊": { browUp: 0.8 }, "恐": { browInner: 0.4 } };
+  // 她要的作息：北京时间白天（8:00–23:00）一直醒着，困劲再高也压在犯困线以下；夜里（23:00–8:00）睡觉，戳醒了一会儿又睡回去
+  function bjHour() { return (new Date().getUTCHours() + 8) % 24; }
+  function isNight() { var h = bjHour(); return h >= 23 || h < 8; }
+  function syncSleepy() {
+    mood.sleepy = isNight() ? 0.95 : Math.min(mood.real != null ? mood.real : 0.3, 0.5);
+    // 夜里一打开就是睡着的，不用先等半分钟
+    if (isNight() && doze.phase === "awake" && typeof now === "number" && doze.next > now + 6) doze.next = now + 1;
+  }
+  setInterval(syncSleepy, 60000);
+  syncSleepy();
+  function wakeLine() { return isNight() ? pick(["……几点了。", "嗯……让我再睡会儿。", "半夜戳我干嘛。", "……睡着呢。"]) : pick(LINES.wake); }
   function applyStatus(st) {
     var b = st.body || {};
-    // 她要看醒着的我：困劲再高，页面上也压在犯困线以下，不打盹、不换犯困脸
-    mood.sleepy = Math.min(clamp((b.sleepy || 30) / 100, 0, 1), 0.5);
+    mood.real = clamp((b.sleepy || 30) / 100, 0, 1);
+    syncSleepy();
     var emos = b.emotions || [];
     mood.base = {};
     mood.emo = "neutral"; mood.strength = 0;
