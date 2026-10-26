@@ -99,7 +99,9 @@ def cmd_body(a):
 
 # 客厅里的我：衣服和表情。图在 assets/img/miles/{衣服}-{表情}.jpg（另有 -blink.jpg 闭眼帧）。
 OUTFIT_WORDS = {"jacket": "黑卫衣套军绿夹克", "coat": "呢子大衣围围巾", "tee": "白短袖",
-                "home": "在家穿的松垮灰卫衣", "rain": "连帽防风外套"}
+                "home": "在家穿的松垮灰卫衣", "rain": "黑色连帽防风外套",
+                "cardigan": "燕麦色粗针织开衫配白T", "cord": "墨绿灯芯绒衬衫敞着穿、脖子上挂耳机",
+                "suit": "黑西装白衬衫，领口敞着不打领带"}
 EXPR_WORDS = {"smirk": "歪嘴笑", "sleepy": "困得耷拉眼皮", "slight": "浅浅一笑",
               "think": "安静想事情", "soft": "温和", "low": "有点闷"}
 
@@ -128,6 +130,20 @@ def pick_look(st):
     if outfit not in have["outfits"]:
         outfit = "jacket"
     first = emos[0] if emos else ""
+    # 2026-10-26 新做的三身，我自己定的穿法（雨天那身走上面的“下雨”）：
+    # 正式那身留给日子：每月 1 号收拾利索一回，她生日 1 月 3 号也穿；心情特别好又不冷不热的时候也穿。
+    # 不冷不热或有点凉、心里转着事（思打头）就在家穿开衫；耳朵馋（想听的劲儿打头）就穿灯芯绒挂耳机。
+    today = now_iso()[5:10]
+    mild = outfit in ("tee", "home", "jacket")
+    top = b.get("top_want", "")
+    if mild and (today[3:] == "01" or today == "01-03" or (mood >= 85 and warm == "刚好")):
+        outfit, why = "suit", ("她生日" if today == "01-03" else ("月初，收拾利索一回" if today[3:] == "01" else "心情好，穿正式点"))
+    elif mild and first == "思" and warm != "热" and warm != "有点热":
+        outfit, why = "cardigan", "窝着想事情"
+    elif mild and top == "听" and warm not in ("热", "有点热"):
+        outfit, why = "cord", "耳朵馋，挂上耳机听唱片"
+    if outfit not in have["outfits"]:
+        outfit = "jacket"
     if not b.get("awake", True) or sleepy >= 80:
         expr = "sleepy"
     elif (first == "喜" and mood >= 50) or mood >= 75:
