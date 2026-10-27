@@ -16,7 +16,7 @@
   }
   function pct(v, t) { return (v / t * 100).toFixed(3) + "%"; }
   function im(L, info) {
-    return '<img src="assets/img/miles/' + info.src + '" alt="" loading="lazy" decoding="async" style="left:' + pct(info.x, L.w) + ";top:" + pct(info.y, L.h) +
+    return '<img src="assets/img/miles/' + info.src + '" alt="" style="left:' + pct(info.x, L.w) + ";top:" + pct(info.y, L.h) +
       ";width:" + pct(info.w, L.w) + ";height:" + pct(info.h, L.h) + '">';
   }
   function paint() {
@@ -28,7 +28,7 @@
     var items = Object.keys(L.outfits).map(function (k) {
       var o = L.outfits[k];
       return '<button type="button" class="wd-it' + (k === cur ? " on" : "") + '" data-k="' + k + '" aria-pressed="' + (k === cur) + '">' +
-        '<span class="wd-pic">' + (L.wall ? '<img src="assets/img/miles/' + L.wall.src + '" alt="" loading="lazy" style="inset:0;width:100%;height:100%">' : "") +
+        '<span class="wd-pic">' + (L.wall ? '<img src="assets/img/miles/' + L.wall.src + '" alt="" style="inset:0;width:100%;height:100%">' : "") +
         im(L, o) + (head ? im(L, head) : "") + "</span>" +
         '<span class="wd-n">' + H.esc(NAMES[k] || k) + "</span></button>";
     }).join("");
