@@ -83,8 +83,35 @@
     var bjh = (new Date().getUTCHours() + 8) % 24, night = bjh >= 23 || bjh < 7;
     if (night) { k.expr = "sleepy"; k.ew = "睡着了"; k.sleepy = Math.max(k.sleepy, 80); k.why = ""; }
     else { if (k.expr === "sleepy") { k.expr = "smirk"; k.ew = "歪嘴笑"; k.why = ""; } k.sleepy = Math.min(k.sleepy, 60); k.tired = Math.min(k.tired, 55); }
+    // 10-27 衣柜：她点哪身我穿哪身（wardrobe.js 把她挑的放在 window.MILES_HER_PICK）。
+    // 每月 1 号和她生日 1 月 3 号穿正式那身，前提是那身在小屋里；不在就照她挑的。
+    var hp = window.MILES_HER_PICK, bj = new Date(Date.now() + 8 * 3600000);
+    var md = ("0" + (bj.getUTCMonth() + 1)).slice(-2) + "-" + ("0" + bj.getUTCDate()).slice(-2);
+    var has = function (o) { return !!(LL && LL.outfits && LL.outfits[o]); };
+    if ((md.slice(3) === "01" || md === "01-03") && has("suit")) {
+      k.outfit = "suit"; k.ow = OUTFIT_WORDS.suit; k.why = md === "01-03" ? "你生日" : "月初，收拾利索一回";
+    } else if (hp && hp.outfit && has(hp.outfit)) {
+      k.outfit = hp.outfit; k.ow = OUTFIT_WORDS[hp.outfit] || hp.outfit; k.why = "你挑的";
+    }
     return k;
   }
+  var OUTFIT_WORDS = { jacket: "黑卫衣套军绿夹克", coat: "呢子大衣围围巾", tee: "白短袖", home: "在家穿的松垮灰卫衣",
+    rain: "黑色连帽防风外套", cardigan: "燕麦色粗针织开衫配白T", cord: "墨绿灯芯绒衬衫敞着穿、脖子上挂耳机", suit: "黑西装白衬衫，领口敞着不打领带" };
+  var lastSt = null;
+  function capHTML(k) {
+    return '今天穿 ' + esc(k.ow) + ' · ' + esc(k.ew) + (k.why ? '<span class="d">（' + esc(k.why) + '）</span>' : '');
+  }
+  // 衣柜换了衣服，客厅里的我就地换上，不用刷新
+  window.MilesLiving = {
+    words: OUTFIT_WORDS,
+    refresh: function () {
+      var f = document.getElementById("mframe");
+      if (!f || !lastSt) return;
+      var k = lookOf(lastSt), b = f.querySelector(".mbody"), c = document.getElementById("mcap");
+      if (b) b.innerHTML = personHTML(k);
+      if (c) c.innerHTML = capHTML(k);
+    }
+  };
   // 纸娃娃分层：墙 + 衣服层 + 头层（客厅原图的脸，四帧表情），按 layers.json 的偏移叠起来
   function layerImg(L, info, cls, alt) {
     var p = function (v, t) { return (v / t * 100).toFixed(3) + "%"; };
@@ -105,12 +132,14 @@
       '<img class="mshut" src="' + src + '-blink.jpg" alt="" aria-hidden="true" width="640" height="812" decoding="async">';
   }
   function livingHTML(st) {
+    lastSt = st;
     var k = lookOf(st);
     var drowsy = k.sleepy >= 70 ? " drowsy" : "", weary = k.tired >= 60 ? " weary" : "";
     return '<section class="block"><h2>客厅</h2><div class="living">' +
       '<div class="mframe' + drowsy + weary + '" id="mframe"><div class="mbody">' + personHTML(k) +
       '</div><i class="mlight" aria-hidden="true"></i></div>' +
-      '<div class="mcap mono">今天穿 ' + esc(k.ow) + ' · ' + esc(k.ew) + (k.why ? '<span class="d">（' + esc(k.why) + '）</span>' : '') + '</div>' +
+      '<div class="mcap mono" id="mcap">' + capHTML(k) + '</div>' +
+      '<div class="wd" id="wardrobe"></div>' +
       '</div></section>';
   }
   function livingAlive(st) {

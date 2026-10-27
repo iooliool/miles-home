@@ -106,6 +106,19 @@ EXPR_WORDS = {"smirk": "歪嘴笑", "sleepy": "困得耷拉眼皮", "slight": "�
               "think": "安静想事情", "soft": "温和", "low": "有点闷"}
 
 
+WARDROBE_API = "https://miles-home-api.xo131415.workers.dev/wardrobe"
+
+
+def her_pick():
+    """她在小屋衣柜里挑的那身；没挑、交回给我自己挑、或者后台连不上，都返回空。"""
+    import urllib.request
+    try:
+        with urllib.request.urlopen(urllib.request.Request(WARDROBE_API, headers={"User-Agent": "miles-home/1"}), timeout=10) as r:
+            return ((json.loads(r.read().decode()).get("pick") or {}).get("outfit") or "").strip()
+    except Exception:
+        return ""
+
+
 def pick_look(st):
     """我自己的规矩：先看天和冷暖挑衣服，再看困不困、七情和心情挑表情。没做出来的表情就退回歪嘴笑。"""
     try:
@@ -144,6 +157,12 @@ def pick_look(st):
         outfit, why = "cord", "耳朵馋，挂上耳机听唱片"
     if outfit not in have["outfits"]:
         outfit = "jacket"
+    # 2026-10-27 衣柜：她在小屋衣柜里点了哪身，我就穿哪身（衣柜里有的才算）。
+    # 每月 1 号和她生日，正式那身在小屋里的话照穿正式的；别的日子她说了算。她点"不管了"就还是我自己挑。
+    hp = her_pick()
+    fixed_suit = (today[3:] == "01" or today == "01-03") and "suit" in have["outfits"]
+    if hp and hp in have["outfits"] and not fixed_suit:
+        outfit, why = hp, "她给我挑的"
     if not b.get("awake", True) or sleepy >= 80:
         expr = "sleepy"
     elif (first == "喜" and mood >= 50) or mood >= 75:
@@ -161,7 +180,7 @@ def pick_look(st):
     if expr not in have["exprs"]:
         expr = "smirk"
     return {"time": now_iso(), "outfit": outfit, "expr": expr, "outfit_word": OUTFIT_WORDS[outfit],
-            "expr_word": EXPR_WORDS[expr], "why": why, "sleepy": sleepy, "tired": tired}
+            "expr_word": EXPR_WORDS[expr], "why": why, "sleepy": sleepy, "tired": tired, "her_pick": hp}
 
 
 def cmd_look(a):
