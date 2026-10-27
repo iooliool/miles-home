@@ -20,9 +20,11 @@ lock（盐、迭代次数、一小段校验密文、音频地址前缀；都不�
 
 每晚的流程（在 miles-home 目录里跑）：
   python3 tools/fm/pod.py fetch [--n 2]          # 每个频道挑最近 n 期能公开放的，写 /tmp/pod_new.json；挂着的那期 say 会带过来，新的要我填
-  python3 tools/fm/pod.py apply /tmp/pod_new.json # say 都填好了才写进 data/pod.json
-  python3 tools/fm/pod.py lock                    # 给 src=lock 的几期下音频、加密、强推到 miles-pod，旧的删掉；写回 pod.json
-  python3 tools/fm/build_page.py                  # 重新生成 fm.html，然后 commit + push miles-home
+  python3 tools/fm/pod.py apply /tmp/pod_new.json # say 都填好了才写进 data/pod.json；有 src=lock 的会自动接着跑 lock
+                                                  # （下音频、加密、强推到 miles-pod，旧的删掉）。lock 失败就退回原来的 pod.json
+  然后 commit + push miles-home 的 data/pod.json。fm.html 不用重生成（节目单是页面现读的），改了 build_page.py 才要。
+  单独重做加密：python3 tools/fm/pod.py lock [--fresh]
+  线上自测：python3 ~/pod-work/test_fm.py（B站封面、错密码被拒、对密码能放；B站播放器在这台云电脑上放不了是 IP 被拦，不算坏）
 其它：show；add-channel --id UC... --name 名字 --by her|miles --src bili|lock [--bili mid] --about "一句话"
 挑节目的条件：公开（会员专享、充电专属、私享的不要）、能嵌入、不是直播、至少 5 分钟（频道可设 min_secs）、不是 Shorts。
 """
@@ -233,9 +235,18 @@ def cmd_apply(a):
         eps.append(x)
     if not eps:
         sys.exit('一期都没有，不写')
+    before = open(DATA, encoding='utf-8').read() if os.path.exists(DATA) else None
     d['eps'] = eps
     save(d)
-    print('apply ok：%d 期%s' % (len(eps), '，有 lock 的几期，接着跑 lock' if any(e['src'] == 'lock' for e in eps) else ''))
+    if any(e['src'] == 'lock' for e in eps) and not a.no_lock:
+        # 加密那几期顺手做掉（下音频、加密、强推 miles-pod、删旧的）；做不成就把 pod.json 退回去，播客台停在上次的样子
+        try:
+            cmd_lock(argparse.Namespace(fresh=False))
+        except (Exception, SystemExit) as ex:
+            if before is not None:
+                open(DATA, 'w', encoding='utf-8').write(before)
+            sys.exit('lock 没做成，pod.json 退回上次的了：%s' % ex)
+    print('apply ok：%d 期' % len(eps))
 
 
 # ---------- 加密（lock） ----------
@@ -395,7 +406,7 @@ if __name__ == '__main__':
     p = argparse.ArgumentParser()
     s = p.add_subparsers(dest='c', required=True)
     f = s.add_parser('fetch'); f.add_argument('--n', type=int, default=2); f.add_argument('--out', default='/tmp/pod_new.json'); f.set_defaults(fn=cmd_fetch)
-    f = s.add_parser('apply'); f.add_argument('file'); f.set_defaults(fn=cmd_apply)
+    f = s.add_parser('apply'); f.add_argument('file'); f.add_argument('--no-lock', action='store_true'); f.set_defaults(fn=cmd_apply)
     f = s.add_parser('lock'); f.add_argument('--fresh', action='store_true', help='换新盐，全部重新加密'); f.set_defaults(fn=cmd_lock)
     f = s.add_parser('show'); f.set_defaults(fn=cmd_show)
     f = s.add_parser('add-channel'); f.add_argument('--id', required=True); f.add_argument('--name', required=True)

@@ -1,5 +1,5 @@
 {
- "updated": 1793110570529,
+ "updated": 1793111271968,
  "channels": [
   {
    "id": "UCa4Q7pecRTebkB18FLT_JJA",
@@ -98,8 +98,8 @@
    "date": "2026-10-07",
    "secs": 3200,
    "say": "道长口头讲，没稿子，绕得厉害，五十多分钟里真讲《阴符经》的也就一半，中间常岔去讲八字和时事。老鼠秋天偷粮那个比方最好懂。想认真学别躺着听，当催眠倒合格。",
-   "heard": true,
    "bytes": 23231222,
+   "heard": true,
    "cover": true
   },
   {
@@ -143,8 +143,8 @@
    "date": "2026-09-13",
    "secs": 2304,
    "say": "标题说从放牛娃讲到登基，其实登基一笔带过，讲的是他怎么把天下人管死：黄册、路引、邻居互相盯。茹太素万言书挨打、袁凯装疯两段最好看。语速平，不吓人，后半段杀人多。",
-   "heard": true,
    "bytes": 16222887,
+   "heard": true,
    "cover": true
   },
   {
@@ -184,9 +184,9 @@
   "kdf": "PBKDF2-SHA256",
   "iter": 600000,
   "salt": "nmD7+KMRB+GUsHSd0uVNYQ==",
-  "check_iv": "7JArandvzyQnC59F",
-  "check": "MDgwmRsIErXiBwmJgromufBuoVCMQvgFPg1fNg==",
+  "check_iv": "zSLuw3Z/ue2lJRM4",
+  "check": "OUxya697/6GYUkTOx1k1lwssLbaQwqzZMnl4sw==",
   "base": "https://iooliool.github.io/miles-pod/",
-  "at": 1793110570529
+  "at": 1793111271968
  }
 }
