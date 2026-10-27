@@ -240,6 +240,7 @@ body,.mast *,.notes,.notes *,.bar,.bar *{transition:background-color var(--t),co
 @keyframes swapR{from{opacity:0;transform:translateX(22px)}to{opacity:1;transform:none}}
 @keyframes swapL{from{opacity:0;transform:translateX(-22px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.pod-wall{margin:4px 0 14px;padding:10px 12px;border:1px solid var(--red);border-radius:4px;font:400 12px/1.6 var(--serif);color:var(--red)}
 .pod-head{font:500 9px/1.6 var(--mono);letter-spacing:.12em;color:var(--ink3);margin-bottom:6px}
 .pod-ch{margin:22px 0 10px;padding-top:12px;border-top:1px solid var(--line)}
 .pod-ch a{font:700 15px/1.3 var(--serif);color:var(--ink);text-decoration:none}
@@ -1776,6 +1777,15 @@ async function drawPod() {
   h += '<div class="pod-foot">用的是 YouTube 自己的播放器，节目是人家的，小屋不下载不转存。放不出来就点「去 YouTube 看」。</div>';
   n.innerHTML = h;
   n.querySelectorAll('.pod-v').forEach(b => { b.addEventListener('click', () => podPlay(b)); b.addEventListener('keydown', ev => { if (ev.key === 'Enter') podPlay(b); }); });
+  podWall(n, d.eps[0].id);
+}
+function podWall(n, id) {
+  /* 封面拉不下来，多半是连不上 YouTube（墙）：顶上挂一句，别让人干点 */
+  let done = false; const im = new Image();
+  const bad = () => { if (done) return; done = true; if (!sess || sess.key !== 'pod' || n.querySelector('.pod-wall')) return; const w = document.createElement('div'); w.className = 'pod-wall'; w.textContent = '封面是黑的？那是你这边连不上 YouTube，播放器也出不来。开梯子再点封面就能放。'; n.insertBefore(w, n.firstChild.nextSibling); };
+  im.onload = () => { if (done) return; done = true; if (im.naturalWidth < 2) { done = false; bad(); } };
+  im.onerror = bad; setTimeout(bad, 6000);
+  im.src = 'https://i.ytimg.com/vi/' + encodeURIComponent(id) + '/default.jpg?t=' + Date.now();
 }
 function podPlay(b) {
   if (b.classList.contains('on')) return;
