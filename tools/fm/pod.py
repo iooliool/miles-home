@@ -4,6 +4,7 @@
 规矩：不下载、不转存别人的音频，小屋只放链接和嵌入播放器。每晚看一遍频道，有新的公开节目就换上。
 数据在 data/pod.json：channels（频道，by=her 是她点的，by=miles 是我加的）和 eps（现在挂着的节目）。
 每期的 say 是我一句话的推荐，我自己写；没看过的不写成看过。
+真从头听完（拉字幕或音频过了一遍）的那期，标 heard: true，页面上挂「听过」；fetch 时听过的旧节目照样留着，不被新节目挤掉。
 
 用法（在 miles-home 目录里跑）：
   python3 tools/fm/pod.py fetch [--n 2]      # 每个频道挑最近 n 期能嵌入的公开节目，写 /tmp/pod_new.json
@@ -106,7 +107,10 @@ def cmd_fetch(a):
         for v in picks:
             o = old.get(v['id'])
             res['eps'].append({'ch': ch['id'], 'id': v['id'], 'title': v['title'], 'date': v['date'], 'secs': v['secs'],
-                               'say': o['say'] if o else '', 'new': not o, 'desc': v['desc']})
+                               'say': o['say'] if o else '', 'heard': bool(o and o.get('heard')), 'new': not o, 'desc': v['desc']})
+        # 我听过的旧节目留着，排在这个频道的新节目后面
+        got = {v['id'] for v in picks}
+        res['eps'] += [e for e in d['eps'] if e['ch'] == ch['id'] and e.get('heard') and e['id'] not in got]
     out = a.out
     json.dump(res, open(out, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     new = [e for e in res['eps'] if e.get('new')]
@@ -135,7 +139,7 @@ def cmd_apply(a):
             sys.exit('推荐太长或带了链接：%s' % say)
         if e['ch'] not in chs or not re.fullmatch(r'[\w-]{11}', e['id']):
             sys.exit('对不上的条目：%s' % e)
-        eps.append({k: e[k] for k in ('ch', 'id', 'title', 'date', 'secs')} | {'say': say})
+        eps.append({k: e[k] for k in ('ch', 'id', 'title', 'date', 'secs')} | {'say': say} | ({'heard': True} if e.get('heard') else {}))
     if not eps:
         sys.exit('一期都没有，不写')
     d['eps'] = eps

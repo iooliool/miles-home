@@ -240,7 +240,7 @@ rep("    if (!S.gone) S.log.push(['♪', item.title + (item.artist ? ' — ' + i
 rep("'歌都存在小屋里，整首放。'] },\n", "'歌都存在小屋里，整首放。'] },\n"
     "  { key: 'pod', f: 106.1, name: '播客', en: 'PODCAST', side: 'D', desc: 'YouTube 上挑的几档节目，点开就听。',\n"
     "    tape: { shell: '#3A3431', dk: '#26211F', label: '#FBF8F2', stripe: '#D0271D', sInk: '#fff', name: '#171312', ink: '#1b1614', shellInk: 'rgba(255,255,255,.6)', note: 'Pod.01' },\n"
-    "    rules: ['这台不是我录的：挂的是 YouTube 上别人的节目，用 YouTube 自己的播放器放，小屋不下载、不转存。', '每晚我看一遍这几个频道，有新的公开节目就换上最新的。会员专享的放不了，不挂。', '每期底下一句是我为什么挑它。标着「Miles 加的」是我自己找来的频道。', '红键在这台不管用，点节目封面就放。'] },\n")
+    "    rules: ['这台不是我录的：挂的是 YouTube 上别人的节目，用 YouTube 自己的播放器放，小屋不下载、不转存。', '每晚我看一遍这几个频道，有新的公开节目就换上最新的。会员专享的放不了，不挂。', '每期底下一句是我为什么挑它。标着「听过」的，是我从头听完才写的真话；没标的还是照标题和简介写的。标着「Miles 加的」是我自己找来的频道。', '红键在这台不管用，点节目封面就放。'] },\n")
 rep("104 1 2026</text>`,\n};", "104 1 2026</text>`,\n"
     "  pod: c => `<rect x=\"260\" y=\"126\" width=\"28\" height=\"20\" rx=\"6\" fill=\"${c.stripe}\"/><path d=\"M270.5 131 L279.5 136 L270.5 141 Z\" fill=\"#fff\"/><text x=\"258\" y=\"160\" font-family=\"'IBM Plex Mono',monospace\" font-size=\"4.6\" fill=\"${c.ink}\">106 1 POD</text>`,\n};")
 rep("function enter(i) {\n  const s = ST[i];\n",
@@ -271,7 +271,7 @@ rep("function fmtDay(t) {",
     "  d.eps.forEach(e => {\n"
     "    const c = ch[e.ch] || { name: '', about: '' };\n"
     "    if (e.ch !== last) { last = e.ch; h += `<div class=\"pod-ch\"><a href=\"https://www.youtube.com/channel/${esc(e.ch)}\" target=\"_blank\" rel=\"noopener\">${esc(c.name)}</a>${c.by === 'miles' ? '<span class=\"pod-mine\">Miles 加的</span>' : ''}<p>${esc(c.about || '')}</p></div>`; }\n"
-    "    h += `<div class=\"pod-ep\"><div class=\"pod-v\" role=\"button\" tabindex=\"0\" data-v=\"${esc(e.id)}\" aria-label=\"播放 ${esc(e.title)}\"><img loading=\"lazy\" src=\"https://i.ytimg.com/vi/${esc(e.id)}/hqdefault.jpg\" alt=\"\"><span class=\"pod-pl\">▶</span><span class=\"pod-d\">${podDur(e.secs)}</span></div><div class=\"pod-t\">${esc(e.title)}</div><div class=\"pod-m\">${esc(e.date || '')} · <a href=\"https://www.youtube.com/watch?v=${esc(e.id)}\" target=\"_blank\" rel=\"noopener\">去 YouTube 看</a></div><div class=\"pod-s\">${esc(e.say)}</div></div>`;\n"
+    "    h += `<div class=\"pod-ep\"><div class=\"pod-v\" role=\"button\" tabindex=\"0\" data-v=\"${esc(e.id)}\" aria-label=\"播放 ${esc(e.title)}\"><img loading=\"lazy\" src=\"https://i.ytimg.com/vi/${esc(e.id)}/hqdefault.jpg\" alt=\"\"><span class=\"pod-pl\">▶</span><span class=\"pod-d\">${podDur(e.secs)}</span></div><div class=\"pod-t\">${esc(e.title)}</div><div class=\"pod-m\">${esc(e.date || '')} · <a href=\"https://www.youtube.com/watch?v=${esc(e.id)}\" target=\"_blank\" rel=\"noopener\">去 YouTube 看</a></div><div class=\"pod-s\">${e.heard ? '<span class=\"pod-heard\">听过</span>' : ''}${esc(e.say)}</div></div>`;\n"
     "  });\n"
     "  h += '<div class=\"pod-foot\">用的是 YouTube 自己的播放器，节目是人家的，小屋不下载不转存。放不出来就点「去 YouTube 看」。</div>';\n"
     "  n.innerHTML = h;\n"
@@ -300,6 +300,7 @@ rep("</style>", ".pod-head{font:500 9px/1.6 var(--mono);letter-spacing:.12em;col
     ".pod-m{margin-top:3px;font:500 9px/1.5 var(--mono);color:var(--ink3)}\n"
     ".pod-m a{color:var(--ink3)}\n"
     ".pod-s{margin-top:5px;font:400 12px/1.6 var(--serif);color:var(--red)}\n"
+    ".pod-heard{margin-right:6px;font:700 8px/1 var(--mono);letter-spacing:.12em;color:var(--red);border:1px solid var(--red);padding:2px 5px;border-radius:2px;vertical-align:1px}\n"
     ".pod-foot{margin-top:18px;font:400 11px/1.6 var(--serif);color:var(--ink3)}\n</style>")
 
 open(os.path.join(HOME, 'fm.html'), 'w', encoding='utf-8').write(src)
