@@ -107,15 +107,6 @@
    "h": 802,
    "gap_px": 863,
    "name": "cord"
-  },
-  "suit": {
-   "src": "layers/outfit-suit.webp",
-   "x": 0,
-   "y": 9,
-   "w": 640,
-   "h": 802,
-   "gap_px": 428,
-   "name": "suit"
   }
  }
 }
