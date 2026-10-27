@@ -7,16 +7,16 @@
 小红书把笔记里的站外链接算导流（2026-10-27 调研），所以画面和草稿里都不放网址，只写「Miles 的小屋 · 电台」。
 
 用法（在 /home/sprite/miles-home 下跑，先 publish 过这期）：
-  python3 tools/fm/xhs_cut.py /home/sprite/radio/scripts/music-2026-10-27.txt [--no]
+  python3 tools/fm/xhs_cut.py /home/sprite/studio/radio/scripts/music-2026-10-27.txt [--no]
   --no 后面跟这是第几期（不写就按 data/fm.json 里这个台的期数往下数）。
-出来的东西在 /home/sprite/radio/xhs/<台>-<日子>/：
+出来的东西在 /home/sprite/studio/radio/xhs/<台>-<日子>/：
   video.mp4（1080x1440）、cover.jpg（封面）、songs.txt（歌单，写正文用）、post_draft.json（标题/正文/话题的草稿，发之前我自己改）
 """
 import json, os, re, subprocess, sys
 from PIL import Image, ImageDraw, ImageFont
 
 HOME = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-OUT_ROOT = '/home/sprite/radio/xhs'
+OUT_ROOT = '/home/sprite/studio/radio/xhs'
 W, H = 1080, 1440
 CARD = 3.0
 BOLD = '/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc'

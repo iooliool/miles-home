@@ -32,7 +32,7 @@ from datetime import datetime, timezone, timedelta
 
 HOME = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 DATA = os.path.join(HOME, 'data', 'fm.json')
-RAW = '/home/sprite/radio/raw'
+RAW = '/home/sprite/studio/radio/raw'
 BRIGHTEN = '/home/sprite/voice/brighten.sh'
 CN = timezone(timedelta(hours=8))
 H = {'User-Agent': 'Mozilla/5.0', 'Referer': 'https://music.163.com'}

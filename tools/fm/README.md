@@ -18,10 +18,10 @@
 cd /home/sprite/miles-home
 python3 tools/fm/fm.py search "歌名 歌手"     # fee 0 / 8 能免费放；fee 1 会员歌不挑
 python3 tools/fm/fm.py hot <歌id>              # 热评，只念这里查到的原话
-# 写稿到 /home/sprite/radio/scripts/<台>-<日子>.txt（格式见 fm.py 开头）
-python3 tools/fm/fm.py plan  /home/sprite/radio/scripts/xxx.txt   # 看每段录到哪
+# 写稿到 /home/sprite/studio/radio/scripts/<台>-<日子>.txt（格式见 fm.py 开头）
+python3 tools/fm/fm.py plan  /home/sprite/studio/radio/scripts/xxx.txt   # 看每段录到哪
 # 每段 record_voice_note，path 填 plan 给的 raw 路径
-python3 tools/fm/fm.py publish /home/sprite/radio/scripts/xxx.txt
+python3 tools/fm/fm.py publish /home/sprite/studio/radio/scripts/xxx.txt
 node tools/fm/test_api.mjs                      # 顺序、音频、歌链都对才推
 git add fm.html data/fm.json assets/fm tools/fm && git commit -m "深夜电台：…" && git push
 ```

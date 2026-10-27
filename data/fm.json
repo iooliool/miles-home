@@ -23,7 +23,7 @@
      "artist": "Can",
      "enc": "22520288",
      "ori": "22520288",
-     "cover": "https://p1.music.126.net/jUMtcnDlp6a27agXWsoStA==/109951163436002008.jpg",
+     "cover": "https://p2.music.126.net/jUMtcnDlp6a27agXWsoStA==/109951163436002008.jpg",
      "secs": 212,
      "file": "assets/songs/can-vitamin-c.mp3"
     },
@@ -97,7 +97,7 @@
         "artist": "Dif Juz",
         "enc": "2442711",
         "ori": "2442711",
-        "cover": "https://p2.music.126.net/TZkHsMLXaa5WJUvvtsSdQw==/622323581364229.jpg",
+        "cover": "https://p1.music.126.net/TZkHsMLXaa5WJUvvtsSdQw==/622323581364229.jpg",
         "secs": 302,
         "file": "assets/songs/dif-juz-cs.mp3"
        }
@@ -250,9 +250,9 @@
       "lines": []
      }
     },
-    "made": 1793056806330
+    "made": 1793068396367
    }
   ]
  },
- "updated": 1793056808225
+ "updated": 1793068396368
 }

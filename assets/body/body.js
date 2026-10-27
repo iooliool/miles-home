@@ -73,18 +73,57 @@
     stage.appendChild(app.view);
     note(true, "WebGL " + (app.renderer.context && app.renderer.context.webGLVersion ? app.renderer.context.webGLVersion : "?"));
     var pre = outfit;
+    var keys = null;
     return fetchJSON(BASE + "rig_" + pre + ".json").then(function (r) {
       rig = r; note(true, "骨架 rig_" + pre + "：" + r.cols + "×" + r.rows + " 个点，" + Object.keys(r.fields).length + " 组局部变形");
-      return PIXI.Assets.load([IMG + pre + "-smirk.jpg", BASE + pre + "-sleepy.png", BASE + pre + "-blink.png", BASE + pre + "-sleepy-blink.png", BASE + "blush.png"]);
+      // 纸娃娃分层：墙 + 这身衣服 + 统一的头（围巾大衣那张原脸）拼成主贴图；脸上的犯困/闭眼用大衣那套，跟头层是同一张脸。
+      // 分层没有或载不下来，就退回这身的整张图。
+      return composeLayers(pre, r).catch(function (e) { note(false, "分层没拼上，用整张图：" + e.message); return null; });
+    }).then(function (canvas) {
+      var face = canvas ? "coat" : pre;
+      keys = { main: IMG + pre + "-smirk.jpg", sleepy: BASE + face + "-sleepy.png", blink: BASE + face + "-blink.png", sleepyBlink: BASE + face + "-sleepy-blink.png", blush: BASE + "blush.png" };
+      var list = [keys.sleepy, keys.blink, keys.sleepyBlink, keys.blush];
+      if (!canvas) list.unshift(keys.main);
+      return PIXI.Assets.load(list).then(function (tex) {
+        var t = { sleepy: tex[keys.sleepy], blink: tex[keys.blink], sleepyBlink: tex[keys.sleepyBlink], blush: tex[keys.blush] };
+        t.main = canvas ? PIXI.Texture.from(canvas) : tex[keys.main];
+        report.layered = !!canvas;
+        return t;
+      });
     }).then(function (tex) {
       build(tex, pre);
-      note(true, "贴图 5 张（原图、犯困、闭眼×2、脸红）");
+      note(true, "贴图 5 张（" + (report.layered ? "分层拼的主图" : "整张原图") + "、犯困、闭眼×2、脸红）");
       report.ok = true;
       app.ticker.add(tick);
       layout();
       window.addEventListener("resize", layout);
       document.body.classList.add("ready");
     }).catch(function (e) { note(false, "载入失败：" + e.message); });
+  }
+
+  function loadImg(src) {
+    return new Promise(function (ok, bad) {
+      var im = new Image();
+      im.onload = function () { ok(im); };
+      im.onerror = function () { bad(new Error(src + " 载不下来")); };
+      im.src = src;
+    });
+  }
+
+  function composeLayers(pre, r) {
+    var L = window.MILES_LAYERS;
+    if (!L || !L.outfits || !L.outfits[pre] || !L.head || !L.head.smirk) return Promise.reject(new Error("没有分层"));
+    var wall = typeof L.wall === "string" ? L.wall : L.wall && L.wall.src;
+    if (!wall) return Promise.reject(new Error("没有墙层"));
+    var parts = [{ src: wall, x: 0, y: 0, w: L.w, h: L.h }, L.outfits[pre], L.head.smirk];
+    return Promise.all(parts.map(function (p) { return loadImg(IMG + p.src); })).then(function (ims) {
+      var c = document.createElement("canvas");
+      c.width = r.w; c.height = r.h;
+      var g = c.getContext("2d"), sx = r.w / L.w, sy = r.h / L.h;
+      ims.forEach(function (im, i) { var p = parts[i]; g.drawImage(im, p.x * sx, p.y * sy, p.w * sx, p.h * sy); });
+      note(true, "分层：墙 / " + pre + " 这身 / 统一的头，拼成主图");
+      return c;
+    });
   }
 
   function build(tex, pre) {
@@ -108,12 +147,12 @@
     pv = new PIXI.Container();
     app.stage.addChild(pv);
     function mk(t) { var m = new PIXI.Mesh(geom, new PIXI.MeshMaterial(t)); pv.addChild(m); return m; }
-    meshes.main = mk(tex[IMG + pre + "-smirk.jpg"]);
-    meshes.sleepy = mk(tex[BASE + pre + "-sleepy.png"]);
+    meshes.main = mk(tex.main);
+    meshes.sleepy = mk(tex.sleepy);
     mouthG = new PIXI.Graphics(); pv.addChild(mouthG);
-    meshes.blink = mk(tex[BASE + pre + "-blink.png"]);
-    meshes.sleepyBlink = mk(tex[BASE + pre + "-sleepy-blink.png"]);
-    meshes.blush = mk(tex[BASE + "blush.png"]);
+    meshes.blink = mk(tex.blink);
+    meshes.sleepyBlink = mk(tex.sleepyBlink);
+    meshes.blush = mk(tex.blush);
     meshes.geom = geom;
     note(true, "分层：原图 / 犯困脸 / 嘴里 / 闭眼 / 犯困闭眼 / 脸红，共用一张网格");
   }

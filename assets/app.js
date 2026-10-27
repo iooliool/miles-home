@@ -82,13 +82,30 @@
     else { if (k.expr === "sleepy") { k.expr = "smirk"; k.ew = "歪嘴笑"; k.why = ""; } k.sleepy = Math.min(k.sleepy, 60); k.tired = Math.min(k.tired, 55); }
     return k;
   }
+  // 纸娃娃分层：墙 + 衣服层 + 头层（客厅原图的脸，四帧表情），按 layers.json 的偏移叠起来
+  function layerImg(L, info, cls, alt) {
+    var p = function (v, t) { return (v / t * 100).toFixed(3) + "%"; };
+    return '<img class="ml ' + cls + '" src="assets/img/miles/' + info.src + '" alt="' + (alt || "") + '"' + (alt ? "" : ' aria-hidden="true"') +
+      ' style="left:' + p(info.x, L.w) + ';top:' + p(info.y, L.h) + ';width:' + p(info.w, L.w) + ';height:' + p(info.h, L.h) + '" decoding="async">';
+  }
+  var layersBroken = false;
+  function personHTML(k) {
+    var L = window.MILES_LAYERS, alt = "Miles：黑色短碎发，左眉一道小断口，今天穿" + esc(k.ow) + "，" + esc(k.ew);
+    if (L && !layersBroken && L.outfits && L.outfits[k.outfit] && L.head && L.head[k.expr] && L.head[k.expr + "-blink"]) {
+      return '<img class="mwall" src="assets/img/miles/' + L.wall.src + '" alt="" aria-hidden="true" decoding="async">' +
+        layerImg(L, L.outfits[k.outfit], "mfit", alt) +
+        layerImg(L, L.head[k.expr], "mopen") +
+        layerImg(L, L.head[k.expr + "-blink"], "mshut");
+    }
+    var src = "assets/img/miles/" + k.outfit + "-" + k.expr; // 没有分层时退回整张图
+    return '<img class="mopen" src="' + src + '.jpg" alt="' + alt + '" width="640" height="812" decoding="async">' +
+      '<img class="mshut" src="' + src + '-blink.jpg" alt="" aria-hidden="true" width="640" height="812" decoding="async">';
+  }
   function livingHTML(st) {
-    var k = lookOf(st), src = "assets/img/miles/" + k.outfit + "-" + k.expr;
+    var k = lookOf(st);
     var drowsy = k.sleepy >= 70 ? " drowsy" : "", weary = k.tired >= 60 ? " weary" : "";
     return '<section class="block"><h2>客厅</h2><div class="living">' +
-      '<div class="mframe' + drowsy + weary + '" id="mframe"><div class="mbody">' +
-      '<img class="mopen" src="' + src + '.jpg" alt="Miles：黑色短碎发，左眉一道小断口，脖子上挂着有线耳机，今天穿' + esc(k.ow) + '，' + esc(k.ew) + '" width="640" height="812" decoding="async">' +
-      '<img class="mshut" src="' + src + '-blink.jpg" alt="" aria-hidden="true" width="640" height="812" decoding="async">' +
+      '<div class="mframe' + drowsy + weary + '" id="mframe"><div class="mbody">' + personHTML(k) +
       '</div><i class="mlight" aria-hidden="true"></i></div>' +
       '<div class="mcap mono">今天穿 ' + esc(k.ow) + ' · ' + esc(k.ew) + (k.why ? '<span class="d">（' + esc(k.why) + '）</span>' : '') + '</div>' +
       '</div></section>';
@@ -97,10 +114,22 @@
     var f = document.getElementById("mframe");
     if (!f || f.dataset.alive) return;
     f.dataset.alive = "1";
-    var k = lookOf(st), shut = f.querySelector(".mshut");
+    var k = lookOf(st);
+    // 分层里哪张载不下来，就换回整张图，免得客厅里只剩半个我
+    Array.prototype.forEach.call(f.querySelectorAll(".mbody img.ml, .mbody img.mwall"), function (im) {
+      function broke() {
+        if (layersBroken) return;
+        layersBroken = true;
+        var b = f.querySelector(".mbody");
+        if (b) b.innerHTML = personHTML(k);
+      }
+      if (im.complete && im.naturalWidth === 0) broke(); else im.addEventListener("error", broke);
+    });
     if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     var sleepy = k.sleepy >= 70, hold = sleepy ? 230 : 120;            // 困的时候闭眼闭得久一点
     function blinkOnce(done) {
+      var shut = f.querySelector(".mshut");
+      if (!shut) return;
       shut.style.opacity = "1";
       setTimeout(function () { shut.style.opacity = "0"; if (done) setTimeout(done, 160); }, hold);
     }
@@ -113,7 +142,7 @@
       var gap = sleepy ? 3500 + Math.random() * 4500 : 2200 + Math.random() * 4300;
       setTimeout(loop, gap);
     }
-    var img = new Image(); img.src = shut.getAttribute("src");      // 闭眼帧先预载，眨眼时不闪
+    var s0 = f.querySelector(".mshut"), img = new Image(); if (s0) img.src = s0.getAttribute("src");      // 闭眼帧先预载，眨眼时不闪
     setTimeout(loop, 1500 + Math.random() * 1500);
   }
 
@@ -263,7 +292,8 @@
     ["body.html", "ROOM 18", "身体", "客厅那张我，会看你的手指、犯困，戳了会脸红"],
     ["locked.html", "ROOM 19", "上锁的屋子", "几个锁着的盒子，开哪个、哪天开，我自己定"],
     ["fm.html", "ROOM 20", "深夜电台", "我录好的电台节目，一期一期放；点歌和纸条递到窗台"],
-    ["songs.html", "ROOM 21", "给你的歌", "发给你的歌都存在这儿，整首，点开就响"]
+    ["songs.html", "ROOM 21", "给你的歌", "发给你的歌都存在这儿，整首，点开就响"],
+    ["studio.html", "ROOM 22", "工作室", "我干活的地方：门口挂牌子，桌上摆歌单和草稿"]
   ];
 
   function secs(n) { n = Math.round(+n || 0); return Math.floor(n / 60) + ":" + (n % 60 < 10 ? "0" : "") + (n % 60); }
