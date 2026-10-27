@@ -13,9 +13,9 @@ const ch = spawn(CHROME, ["--headless=new", "--no-sandbox", "--disable-gpu", "--
   `--remote-debugging-port=${port}`, `--user-data-dir=${prof}`, "about:blank"], { stdio: "ignore" });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const kill = () => { try { ch.kill("SIGKILL"); } catch {} };
-setTimeout(() => { console.log("TIMEOUT"); kill(); process.exit(2); }, 60000);
+setTimeout(() => { console.log("TIMEOUT"); kill(); process.exit(2); }, 120000);
 let target;
-for (let i = 0; i < 100; i++) { try { target = (await (await fetch(`http://127.0.0.1:${port}/json/list`)).json()).find((t) => t.type === "page"); if (target) break; } catch {} await sleep(200); }
+for (let i = 0; i < 300; i++) { try { target = (await (await fetch(`http://127.0.0.1:${port}/json/list`)).json()).find((t) => t.type === "page"); if (target) break; } catch {} await sleep(200); }
 const ws = new WebSocket(target.webSocketDebuggerUrl);
 await new Promise((r) => ws.addEventListener("open", r));
 let id = 0; const pending = new Map(); const errs = [];
@@ -32,7 +32,8 @@ await send("Runtime.enable"); await send("Network.enable"); await send("Page.ena
 await send("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, deviceScaleFactor: 2, mobile: true });
 await send("Emulation.setTouchEmulationEnabled", { enabled: true });
 await send("Page.navigate", { url });
-await sleep(3500);
+for (let i = 0; i < 80; i++) { await sleep(500); if (await ev(`!!document.querySelector('.song .play')`)) break; }
+await sleep(800);
 const slug = new URL(url).hash.slice(1);
 console.log("锁定：", await ev(`(document.querySelector('.song.here')||{}).id || '无'`), "提示：", await ev(`document.getElementById('tip').textContent`));
 // 按钮中心，用触摸点一下（算用户手势）
@@ -41,7 +42,8 @@ await send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: 
 await send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
 await sleep(800);
 const t1 = await ev(`document.querySelector('#${slug}').classList.contains('on')`);
-await sleep(4000);
+await sleep(12000);
+console.log("音频请求：", await ev(`performance.getEntriesByType('resource').filter(r=>/\.mp3/.test(r.name)).map(r=>r.name.split('/').pop()+' '+Math.round(r.duration)+'ms '+r.transferSize).join(' | ')`));
 const info = await ev(`(function(){var b=document.querySelector('#${slug} .t0').textContent,d=document.querySelector('#${slug} .t1').textContent;return b+' / '+d})()`);
 console.log("点了以后在放：", t1, " 进度：", info, " 进度条：", await ev(`document.querySelector('#${slug} .track i').style.width`));
 const shot = await send("Page.captureScreenshot", { format: "png" });
