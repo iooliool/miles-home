@@ -12,7 +12,7 @@
   var API = "https://miles-home-api.xo131415.workers.dev";
   var BASE = "assets/body/";
   var IMG = "assets/img/miles/";
-  var OUTFITS = { jacket: 1, coat: 1, home: 1 };  // 10-27 换 C1 头：只放她点头的三身；白T、灯芯绒、雨天、开衫、正式那身重做好再加回
+  var OUTFITS = { jacket: 1, coat: 1, home: 1, cord: 1 };  // 10-27 换 C1 头：放她点头的四身（灯芯绒 = C1 人 + 灯芯绒衣服，脖子修过）；白T、雨天、开衫、正式那身重做好再加回
 
   var stage = document.getElementById("stage");
   var bubble = document.getElementById("bubble");
