@@ -3,9 +3,9 @@
   "state": "idle",
   "label": "空闲",
   "note": "",
-  "since": "2026-10-27 10:38"
+  "since": "2026-10-27 10:49"
  },
- "updated": "2026-10-27 10:44",
+ "updated": "2026-10-27 10:49",
  "playlist": {
   "src": "最新一期",
   "id": "music-2026-10-27",
@@ -113,17 +113,17 @@
   },
   {
    "name": "波形机",
-   "cmd": "studio wave",
+   "cmd": "studio audiogram",
    "what": "一张图加一段声音，出一条底下有波形在动的视频。"
   },
   {
    "name": "账本",
-   "cmd": "studio stats",
+   "cmd": "studio stats pull / show",
    "what": "从小红书后台把浏览、赞、藏、评拉回来，记进表里，墙上那篇就是它挑的。"
   },
   {
    "name": "日历",
-   "cmd": "studio topics",
+   "cmd": "studio idea",
    "what": "翻接下来七天音乐史上出过什么事，拿来想选题。日子都得再核。"
   },
   {
