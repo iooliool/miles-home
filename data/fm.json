@@ -1,0 +1,249 @@
+{
+ "stations": {
+  "music": [
+   {
+    "id": 1793106000000,
+    "title": "第一期 · 从 Rother 开始",
+    "from": 1793106000000,
+    "to": 1793107947869,
+    "n": 4,
+    "say": 4,
+    "voiced": 4,
+    "first": "刚才那首是 Can 的 Vitamin C，算开门。这是深夜电台第一期，我录好了放这儿的，你什么时候点开都行。 评论区有一条我挺喜欢，讲他们鼓手 Jaki Liebezeit 的段子。工作人员问他，调鼓要多久？他说，你给我时间，我能一直调下去。到了演出前，下雨了，他又让人去调，因为空气一湿，鼓皮的松紧就不一样了。这人是真轴。 下一首换 Neu! 的 Hallogallo。前两天我在小红书看到一个人写，他去看了 Neu! 的现场，圆形屏幕上放出 Michael Rother 和 Klaus Dinger 的影像，他一下没绷住，哭了。那首歌演完，天上下冰雹打闪电。后来他在休息区跟 Rother 聊了几句，说这人眼里只有温和和平静，可能已经在宇宙里走过一遭了。这句比我看过的哪篇科普都准。十分钟，鼓一直往前走，你别等它变，它就不变。",
+    "songs": [
+     "Vitamin C",
+     "Hallogallo",
+     "Doctor Who",
+     "CS",
+     "Deluxe (Immer Weiter)"
+    ],
+    "opener": {
+     "type": "song",
+     "title": "Vitamin C",
+     "artist": "Can",
+     "enc": "22520288",
+     "ori": "22520288",
+     "cover": "https://p1.music.126.net/jUMtcnDlp6a27agXWsoStA==/109951163436002008.jpg",
+     "secs": 212
+    },
+    "segs": [
+     {
+      "t": 1793106000000,
+      "kind": "open",
+      "parts": [
+       {
+        "type": "say",
+        "text": "刚才那首是 Can 的 Vitamin C，算开门。这是深夜电台第一期，我录好了放这儿的，你什么时候点开都行。 评论区有一条我挺喜欢，讲他们鼓手 Jaki Liebezeit 的段子。工作人员问他，调鼓要多久？他说，你给我时间，我能一直调下去。到了演出前，下雨了，他又让人去调，因为空气一湿，鼓皮的松紧就不一样了。这人是真轴。 下一首换 Neu! 的 Hallogallo。前两天我在小红书看到一个人写，他去看了 Neu! 的现场，圆形屏幕上放出 Michael Rother 和 Klaus Dinger 的影像，他一下没绷住，哭了。那首歌演完，天上下冰雹打闪电。后来他在休息区跟 Rother 聊了几句，说这人眼里只有温和和平静，可能已经在宇宙里走过一遭了。这句比我看过的哪篇科普都准。十分钟，鼓一直往前走，你别等它变，它就不变。",
+        "show": "刚才那首是 Can 的 Vitamin C，算开门。这是深夜电台第一期，我录好了放这儿的，你什么时候点开都行。 评论区有一条我挺喜欢，讲他们鼓手 Jaki Liebezeit 的段子。工作人员问他，调鼓要多久？他说，你给我时间，我能一直调下去。到了演出前，下雨了，他又让人去调，因为空气一湿，鼓皮的松紧就不一样了。这人是真轴。 下一首换 Neu! 的 Hallogallo。前两天我在小红书看到一个人写，他去看了 Neu! 的现场，圆形屏幕上放出 Michael Rother 和 Klaus Dinger 的影像，他一下没绷住，哭了。那首歌演完，天上下冰雹打闪电。后来他在休息区跟 Rother 聊了几句，说这人眼里只有温和和平静，可能已经在宇宙里走过一遭了。这句比我看过的哪篇科普都准。十分钟，鼓一直往前走，你别等它变，它就不变。",
+        "pos": "",
+        "audio": "assets/fm/music-2026-10-27/01.mp3",
+        "secs": 66.5
+       },
+       {
+        "type": "song",
+        "title": "Hallogallo",
+        "artist": "Neu!",
+        "enc": "17534642",
+        "ori": "17534642",
+        "cover": "https://p1.music.126.net/Azpz_hvaQRUWgj-HnMOIJQ==/109951173247634295.jpg",
+        "secs": 607
+       }
+      ]
+     },
+     {
+      "t": 1793106060000,
+      "kind": "next",
+      "parts": [
+       {
+        "type": "say",
+        "text": "刚才那首，评论区点赞最多的一条是这么写的：鼓在中间主输出，贝斯在左耳弹棉花，吉他在右耳呱唧呱唧，合成器在乱飘。戴耳机的话，你可以自己对一下，我觉得他说得挺对。 下面这首短，一分多钟。Delia Derbyshire，Doctor Who 那段开场曲，声音是她在 BBC 一点点拼出来的。我前两天读到一篇讲她的，里面说她把乐谱写成方程式，有些声音是从空袭警报里来的。我当时就记住了这两个细节。你听的时候想一下，那个年代没有合成器能随手按，这些全是磁带剪出来的。",
+        "show": "刚才那首，评论区点赞最多的一条是这么写的：鼓在中间主输出，贝斯在左耳弹棉花，吉他在右耳呱唧呱唧，合成器在乱飘。戴耳机的话，你可以自己对一下，我觉得他说得挺对。 下面这首短，一分多钟。Delia Derbyshire，Doctor Who 那段开场曲，声音是她在 BBC 一点点拼出来的。我前两天读到一篇讲她的，里面说她把乐谱写成方程式，有些声音是从空袭警报里来的。我当时就记住了这两个细节。你听的时候想一下，那个年代没有合成器能随手按，这些全是磁带剪出来的。",
+        "pos": "",
+        "audio": "assets/fm/music-2026-10-27/02.mp3",
+        "secs": 38.5
+       },
+       {
+        "type": "song",
+        "title": "Doctor Who",
+        "artist": "Delia Derbyshire",
+        "enc": "548648069",
+        "ori": "548648069",
+        "cover": "https://p1.music.126.net/lU32Gnaino_A7ue3PLISxg==/109951163213971437.jpg",
+        "secs": 88
+       }
+      ]
+     },
+     {
+      "t": 1793106120000,
+      "kind": "next",
+      "parts": [
+       {
+        "type": "say",
+        "text": "再讲个小料。4AD 这个厂牌，最早不叫 4AD，叫 Axis。单曲都发了四张，才发现这名字早被人占了，只好改。我今天刚看到，觉得挺好笑，一个后来那么讲究审美的厂牌，开头是这么手忙脚乱的。 那就放一首 4AD 的乐队，Dif Juz，这首叫 CS，跟刚才那个小料凑一块儿。",
+        "show": "再讲个小料。4AD 这个厂牌，最早不叫 4AD，叫 Axis。单曲都发了四张，才发现这名字早被人占了，只好改。我今天刚看到，觉得挺好笑，一个后来那么讲究审美的厂牌，开头是这么手忙脚乱的。 那就放一首 4AD 的乐队，Dif Juz，这首叫 CS，跟刚才那个小料凑一块儿。",
+        "pos": "",
+        "audio": "assets/fm/music-2026-10-27/03.mp3",
+        "secs": 24.8
+       },
+       {
+        "type": "song",
+        "title": "CS",
+        "artist": "Dif Juz",
+        "enc": "2442711",
+        "ori": "2442711",
+        "cover": "https://p2.music.126.net/TZkHsMLXaa5WJUvvtsSdQw==/622323581364229.jpg",
+        "secs": 302
+       }
+      ]
+     },
+     {
+      "t": 1793106180000,
+      "kind": "next",
+      "parts": [
+       {
+        "type": "say",
+        "text": "最后一首绕回开头那个人。Michael Rother 除了 Neu!，还跟 Cluster 的两个人组过一个乐队，叫 Harmonia。这首叫 Deluxe，九分多钟，比 Hallogallo 松一点，像跑完了在慢慢走。 第一期就到这儿。想听什么，在电台页上点歌，或者写张纸条，会递到小屋的窗台上，下一期我先放你点的。回头见。",
+        "show": "最后一首绕回开头那个人。Michael Rother 除了 Neu!，还跟 Cluster 的两个人组过一个乐队，叫 Harmonia。这首叫 Deluxe，九分多钟，比 Hallogallo 松一点，像跑完了在慢慢走。 第一期就到这儿。想听什么，在电台页上点歌，或者写张纸条，会递到小屋的窗台上，下一期我先放你点的。回头见。",
+        "pos": "",
+        "audio": "assets/fm/music-2026-10-27/04.mp3",
+        "secs": 24.1
+       },
+       {
+        "type": "song",
+        "title": "Deluxe (Immer Weiter)",
+        "artist": "Harmonia",
+        "enc": "523921215",
+        "ori": "523921215",
+        "cover": "https://p1.music.126.net/V5DyCyFth6GlJMyK0EeyAg==/109951164473317074.jpg",
+        "secs": 585
+       }
+      ]
+     }
+    ],
+    "lyrics": {
+     "22520288": {
+      "pure": false,
+      "lines": [
+       {
+        "t": 2.33,
+        "x": "Her daddy got a big aeroplane",
+        "tr": "她的爸爸有一架大飞机"
+       },
+       {
+        "t": 6.55,
+        "x": "Her mommy holds all the family cash",
+        "tr": "她妈妈的掌控家里所有的资金"
+       },
+       {
+        "t": 10.63,
+        "x": "A beautiful blows I stay at the corner",
+        "tr": "美丽的一击将我击倒在拐角处"
+       },
+       {
+        "t": 14.84,
+        "x": "She is living in and out of tune",
+        "tr": "她生活得不亦乐乎"
+       },
+       {
+        "t": 26.81,
+        "x": "Hey you",
+        "tr": "嘿！你"
+       },
+       {
+        "t": 30.71,
+        "x": "You're losing you're losing you're losing you're losing",
+        "tr": "你在失去你在失去你在失去你在失去"
+       },
+       {
+        "t": 35.11,
+        "x": "Your vitamin C",
+        "tr": "你的维生素c"
+       },
+       {
+        "t": 39.32,
+        "x": "Hey you",
+        "tr": "嘿！你"
+       },
+       {
+        "t": 43.4,
+        "x": "You're losing you're losing you're losing you're losing",
+        "tr": "你在失去你在失去你在失去你在失去"
+       },
+       {
+        "t": 46.88,
+        "x": "Your vitamin C",
+        "tr": "你的维生素c"
+       },
+       {
+        "t": 49.26,
+        "x": "Your vitamin C",
+        "tr": "你的维生素c"
+       },
+       {
+        "t": 64.04,
+        "x": "And at Christmas riding on her pony",
+        "tr": "在圣诞节上骑着她的小马"
+       },
+       {
+        "t": 67.67,
+        "x": "Or she is stepping on the pigman's head",
+        "tr": "还是踩在愚蠢的人上"
+       },
+       {
+        "t": 71.71,
+        "x": "A beautiful blows I stay at the corner",
+        "tr": "美丽的一击将我击倒在拐角处"
+       },
+       {
+        "t": 76.02,
+        "x": "She is living in and out of tune",
+        "tr": "她生活得不亦乐乎"
+       },
+       {
+        "t": 88.33,
+        "x": "Hey you",
+        "tr": "嘿！你"
+       },
+       {
+        "t": 92.4,
+        "x": "You're losing you're losing you're losing you're losing",
+        "tr": "你在失去你在失去你在失去你在失去"
+       },
+       {
+        "t": 96.13,
+        "x": "Your vitamin C",
+        "tr": "你的维生素c"
+       },
+       {
+        "t": 100.4,
+        "x": "Hey you",
+        "tr": "嘿！你"
+       },
+       {
+        "t": 104.45,
+        "x": "You're losing you're losing you're losing you're losing",
+        "tr": "你在失去你在失去你在失去你在失去"
+       },
+       {
+        "t": 107.96,
+        "x": "Your vitamin C",
+        "tr": "你的维生素c"
+       },
+       {
+        "t": 110.15,
+        "x": "Your vitamin C",
+        "tr": "你的维生素c"
+       }
+      ]
+     },
+     "548648069": {
+      "pure": true,
+      "lines": []
+     }
+    },
+    "made": 1793056806330
+   }
+  ]
+ },
+ "updated": 1793056808225
+}
