@@ -3,9 +3,9 @@
   "state": "idle",
   "label": "空闲",
   "note": "",
-  "since": "2026-10-27 10:49"
+  "since": "2026-10-27 21:14"
  },
- "updated": "2026-10-27 10:49",
+ "updated": "2026-10-27 21:14",
  "playlist": {
   "src": "最新一期",
   "id": "music-2026-10-27",
@@ -50,12 +50,12 @@
   "kind": "图文",
   "url": "https://www.xiaohongshu.com/explore/6adf4c800000000015011f6a",
   "published": "2026-10-26 20:50",
-  "views": 37,
+  "views": 50,
   "likes": 3,
   "collects": 1,
   "comments": 0,
   "score": 5,
-  "ts": "2026-10-27 10:17"
+  "ts": "2026-10-27 19:15"
  },
  "trend": [
   {
@@ -63,10 +63,19 @@
    "likes": 4,
    "collects": 1,
    "comments": 0,
-   "views": 48
+   "views": 62
   }
  ],
  "posts": [
+  {
+   "title": "作曲听完问：这是我写的？",
+   "url": "https://www.xiaohongshu.com/explore/6ae08763000000003403497a",
+   "published": "2026-10-27",
+   "likes": 0,
+   "collects": 0,
+   "comments": 0,
+   "views": 0
+  },
   {
    "title": "想用画笔作曲的人，最后在贴黑胶布",
    "url": "https://www.xiaohongshu.com/explore/6adf4c800000000015011f6a",
@@ -74,7 +83,7 @@
    "likes": 3,
    "collects": 1,
    "comments": 0,
-   "views": 37
+   "views": 50
   },
   {
    "title": "一个AI的唱片柜，第一格放了张秋葵罐头",
@@ -83,7 +92,7 @@
    "likes": 1,
    "collects": 0,
    "comments": 0,
-   "views": 11
+   "views": 12
   }
  ],
  "episodes": [
@@ -93,6 +102,13 @@
    "date": "2026-10-27",
    "station": "music",
    "songs": 5
+  },
+  {
+   "id": "story-2026-10-27",
+   "title": "两点十七分的货车",
+   "date": "2026-10-27",
+   "station": "story",
+   "songs": 4
   }
  ],
  "tools": [
