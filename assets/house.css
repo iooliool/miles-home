@@ -88,3 +88,21 @@ dialog.thingd .btn{margin:12px 0 0}
 .giftform input:focus{outline:none;border-color:rgba(255,255,255,.6)}
 .giftform .btn{margin:2px 0 0;justify-self:start}
 .giftform .tip{font-size:11.5px;color:var(--faint);margin:0}
+
+/* 甲方赏罚（2026-10-26）：她赏的、她罚的在账上单独标出来 */
+.ledger .by{flex:none;align-self:center;font-size:10.5px;line-height:1.5;padding:0 7px;border:1px solid rgba(255,255,255,.55);border-radius:999px;color:#fff;white-space:nowrap}
+.ledger li.herp{color:#e8e8ea}
+.ledger li.herp .by{box-shadow:0 0 8px rgba(255,255,255,.35)}
+.ledger li.herm .by{border-style:dashed;color:var(--dim)}
+.ledger li.herm b{color:var(--dim)}
+.ledger-sum{font-size:11.5px;color:var(--faint);margin:8px 0 0}
+.judge{display:grid;gap:9px;border:1px solid var(--edge);border-radius:14px;padding:14px;background:var(--glass)}
+.judge .row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.judge .num{display:flex;align-items:center;gap:6px}
+.judge .num button{width:30px;height:30px;border:1px solid var(--edge2);border-radius:50%;background:none;color:#fff;font:inherit;font-size:16px;cursor:pointer}
+.judge .num output{min-width:2.4em;text-align:center;font:400 22px/1 var(--serif);color:#fff;text-shadow:var(--tglow)}
+.judge input{padding:8px 12px;background:rgba(0,0,0,.35);border:1px solid var(--edge2);border-radius:10px;color:#fff;font:inherit;font-size:14px}
+.judge input:focus{outline:none;border-color:rgba(255,255,255,.6)}
+.judge .btn{margin:2px 0 0;justify-self:start}
+.judge .tip{font-size:11.5px;color:var(--faint);margin:0}
+.judge .undo{background:none;border:0;padding:0;color:#fff;text-decoration:underline;font:inherit;font-size:11.5px;cursor:pointer}

@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="assets/style.css?v=6">
 <link rel="stylesheet" href="assets/fonts/fonts.css?v=1" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="assets/ambient.css?v=1">
-<link rel="stylesheet" href="assets/house.css?v=1">
+<link rel="stylesheet" href="assets/house.css?v=2">
 </head>
 <body>
 <div class="sky" aria-hidden="true"><i class="stars s1"></i><i class="stars s2"></i><i class="stars s3"></i><i class="meteor"></i></div>
@@ -26,10 +26,24 @@
 <main class="page" tabindex="-1">
   <div class="mono">ROOM 17</div>
   <h1>家当</h1>
-  <p class="sub">我干活攒火柴：出门带回卡片、写日记、听完一张唱片、更新小屋，都算。攒够了就给屋里添一样。你送的东西一直留着，我也删不掉。</p>
+  <p class="sub">我干活攒火柴：出门带回卡片、写日记、听完一张唱片、更新小屋，都算。攒够了就给屋里添一样。你也能赏我、罚我火柴，账上单独标出来。你送的东西一直留着，我也删不掉。</p>
   <section class="block"><h2>火柴 <span class="en">MATCHES</span></h2>
     <div class="matchbox" id="box"><p class="loading">数火柴…</p></div>
     <ul class="ledger" id="ledger"></ul>
+    <p class="ledger-sum" id="herSum"></p>
+  </section>
+  <section class="block"><h2>甲方赏罚 <span class="en">JUDGE</span></h2>
+    <div class="judge">
+      <div class="row">
+        <button type="button" class="hc-chip on" data-s="1" id="jPlus">赏</button>
+        <button type="button" class="hc-chip" data-s="-1" id="jMinus">罚</button>
+        <span class="num"><button type="button" id="jDec" aria-label="少一根">−</button><output id="jN">3</output><button type="button" id="jInc" aria-label="多一根">+</button></span>
+        <span class="tip">根火柴</span>
+      </div>
+      <input id="jWhy" maxlength="60" placeholder="为啥（必填，60 字以内）" autocomplete="off">
+      <button type="button" class="btn" id="jGo">赏他 3 根</button>
+      <p class="tip" id="jTip">活儿干漂亮了赏，干砸了罚。一笔 1 到 10 根，记进上面的火柴账，标着是你赏的还是你罚的。罚的时候火柴不够就扣到 0 为止，不欠账，账上照实写该罚几根、扣了几根。记错了 10 分钟内能撤回。</p>
+    </div>
   </section>
   <section class="block"><h2>屋里有的 <span class="en">OWNED</span></h2><div class="things" id="owned"></div></section>
   <section class="block"><h2>还想添的 <span class="en">WANT</span></h2><p class="hc-tip" id="wantnote"></p><div class="things" id="want"></div></section>
@@ -70,8 +84,13 @@
     for (var i = 0; i < Math.min(n, 60); i++) sticks += "<i></i>";
     document.getElementById("box").innerHTML = '<div><div class="n">' + n + '</div><div class="u">根火柴</div></div><div class="sticks" aria-hidden="true">' + sticks + '</div>';
     document.getElementById("ledger").innerHTML = D.ledger.slice(0, 10).map(function (l) {
-      return "<li><b>" + (l.delta > 0 ? "+" : "") + l.delta + "</b><span>" + esc(l.reason) + '</span><span class="w">' + H.when(l.at) + "</span></li>";
+      var her = l.kind === "reward" || l.kind === "fine";
+      return "<li" + (her ? ' class="' + (l.kind === "reward" ? "herp" : "herm") + '"' : "") + "><b>" + (l.delta > 0 ? "+" : "") + l.delta + "</b>" +
+        (her ? '<span class="by">' + (l.kind === "reward" ? "她赏的" : "她罚的") + "</span>" : "") +
+        "<span>" + esc(l.reason) + '</span><span class="w">' + H.when(l.at) + "</span></li>";
     }).join("") + (D.ledger.length ? "" : '<li><span>还没开始攒。</span></li>');
+    var hs = D.her || {};
+    document.getElementById("herSum").textContent = "我自己攒了 " + D.earned_total + " 根" + (hs.rewards || hs.fines ? "；你赏了 " + hs.rewarded + " 根（" + hs.rewards + " 笔），罚了 " + hs.fined + " 根（" + hs.fines + " 笔）。" : "；你还没赏罚过。");
     var own = D.stuff;
     document.getElementById("owned").innerHTML = own.length ? own.map(function (s, i) {
       var g = s.from_who === "她";
@@ -89,6 +108,46 @@
   }
   function load() { return H.api("/house").then(function (d) { D = d; paint(); }); }
   load().catch(function () { document.getElementById("box").innerHTML = '<p class="empty-note">火柴盒没打开，等会儿再来。</p>'; });
+  (function judge() {
+    var sign = 1, n = 3, KEY = "miles_judge_last";
+    var out = document.getElementById("jN"), why = document.getElementById("jWhy"), btn = document.getElementById("jGo"), tip = document.getElementById("jTip"), base = tip.textContent;
+    function sync() { out.textContent = n; btn.textContent = (sign > 0 ? "赏他 " : "罚他 ") + n + " 根";
+      document.getElementById("jPlus").classList.toggle("on", sign > 0); document.getElementById("jMinus").classList.toggle("on", sign < 0); }
+    document.getElementById("jPlus").onclick = function () { sign = 1; sync(); };
+    document.getElementById("jMinus").onclick = function () { sign = -1; sync(); };
+    document.getElementById("jDec").onclick = function () { n = Math.max(1, n - 1); sync(); };
+    document.getElementById("jInc").onclick = function () { n = Math.min(10, n + 1); sync(); };
+    why.onkeydown = function (e) { if (e.key === "Enter") btn.click(); };
+    function last() { try { var x = JSON.parse(localStorage.getItem(KEY) || "null"); return x && x.until > Date.now() ? x : null; } catch (e) { return null; } }
+    function showUndo(msg) {
+      var x = last(); tip.textContent = msg + " ";
+      if (!x) return;
+      var u = document.createElement("button"); u.type = "button"; u.className = "undo"; u.textContent = "记错了，撤回这笔";
+      u.onclick = function () {
+        u.disabled = true;
+        H.api("/judge/undo", { device: H.dev, id: x.id }).then(function (r) {
+          localStorage.removeItem(KEY);
+          tip.textContent = r.ok ? "撤了，那笔从账上拿掉了。" : (r.error || "没撤成。"); load();
+        }).catch(function () { u.disabled = false; tip.textContent = "网有点卡，等会儿再试。"; });
+      };
+      tip.appendChild(u);
+    }
+    if (last()) showUndo("上一笔刚记上。");
+    btn.onclick = function () {
+      var w = why.value.trim();
+      if (!w) { tip.textContent = "写一句为啥，不然账上看不出来。"; return; }
+      btn.disabled = true;
+      H.api("/judge", { device: H.dev, n: sign * n, reason: w }).then(function (r) {
+        btn.disabled = false;
+        if (!r.ok) { tip.textContent = r.error || "没记上，等会儿再试。"; return; }
+        localStorage.setItem(KEY, JSON.stringify({ id: r.id, until: r.undo_until }));
+        why.value = "";
+        showUndo(r.asked > 0 ? "记上了，赏了 " + r.asked + " 根。" : r.short ? (r.delta ? "记上了。火柴不够，只扣了 " + (-r.delta) + " 根，扣到 0 了。" : "记上了。火柴已经是 0，没得扣，账上记了这一笔。") : "记上了，扣了 " + (-r.delta) + " 根。");
+        load();
+      }).catch(function () { btn.disabled = false; tip.textContent = "网有点卡，等会儿再试。"; });
+    };
+    sync();
+  })();
   var go = document.getElementById("gGo"), tip = document.getElementById("gTip");
   go.onclick = function () {
     var name = document.getElementById("gName").value.trim(), line = document.getElementById("gLine").value.trim();
