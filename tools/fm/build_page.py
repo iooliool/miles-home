@@ -235,65 +235,155 @@ rep("    if (!S.gone) S.log.push(['♪', item.title + (item.artist ? ' — ' + i
     "    if (!S.gone) S.log.push(item._fail ? ['✕', '《' + item.title + '》' + (item.artist ? ' — ' + item.artist : '') + '\\n' + item._fail, S.now.at, false, { ori: item.ori || '', q: item.title + (item.artist ? ' ' + item.artist : '') }]\n"
     "      : ['♪', item.title + (item.artist ? ' — ' + item.artist : ''), S.now.at]);")
 
-# 10. 播客台（106.1）：YouTube 上别人的节目，用 YouTube 官方播放器嵌进来放，不下载不转存。节目单在 data/pod.json（tools/fm/pod.py 管）。
+# 10. 播客台（106.1）：挂别人的节目。节目单在 data/pod.json（tools/fm/pod.py 管），每期按 src 用对应的播放器：
+#     bili = B站官方嵌入播放器（频道本人/官方的 B站 号），封面在 hdslb 图床，有防盗链，所以 referrerpolicy=no-referrer；
+#     lock = YouTube 上没有国内版的，音频加密放在 iooliool.github.io/miles-pod（AES-256-GCM，PBKDF2-SHA256 从密码推密钥），
+#            浏览器里输密码、WebCrypto 解开再放，只给阿与听；密码不在页面和仓库里；
+#     yt   = YouTube 嵌入（备用），只有这种才挂「连不上 YouTube 就开梯子」的提示。
 #     这台不开播、不走队列：进台只画节目单，点封面才加载播放器（一次只留一个在放）。
 rep("'歌都存在小屋里，整首放。'] },\n", "'歌都存在小屋里，整首放。'] },\n"
-    "  { key: 'pod', f: 106.1, name: '播客', en: 'PODCAST', side: 'D', desc: 'YouTube 上挑的几档节目，点开就听。',\n"
+    "  { key: 'pod', f: 106.1, name: '播客', en: 'PODCAST', side: 'D', desc: '挑的几档节目：B站的点开就放，加密的输了密码放。',\n"
     "    tape: { shell: '#3A3431', dk: '#26211F', label: '#FBF8F2', stripe: '#D0271D', sInk: '#fff', name: '#171312', ink: '#1b1614', shellInk: 'rgba(255,255,255,.6)', note: 'Pod.01' },\n"
-    "    rules: ['这台不是我录的：挂的是 YouTube 上别人的节目，用 YouTube 自己的播放器放，小屋不下载、不转存。', '每晚我看一遍这几个频道，有新的公开节目就换上最新的。会员专享的放不了，不挂。', '每期底下一句是我为什么挑它。标着「听过」的，是我从头听完才写的真话；没标的还是照标题和简介写的。标着「Miles 加的」是我自己找来的频道。', '红键在这台不管用，点节目封面就放。'] },\n")
+    "    rules: ['这台不是我录的，挂的都是别人的节目。频道在 B站 有本人或官方号的，用 B站 自己的播放器放，不下载。', "
+    "'YouTube 上没有国内版的节目，下载下来加密放着，只给阿与听，输了密码才能放。没密码的人拿到文件也只是一堆乱码。', "
+    "'每晚我看一遍这几个频道，有新的公开节目就换上最新的，换下来的加密音频跟着删掉。会员专享、充电专属的不挂。', "
+    "'每期底下一句是我为什么挑它。标着「听过」的，是我从头听完才写的真话；没标的还是照标题和简介写的。标着「Miles 加的」是我自己找来的频道。', '红键在这台不管用，点节目封面就放。'] },\n")
 rep("104 1 2026</text>`,\n};", "104 1 2026</text>`,\n"
     "  pod: c => `<rect x=\"260\" y=\"126\" width=\"28\" height=\"20\" rx=\"6\" fill=\"${c.stripe}\"/><path d=\"M270.5 131 L279.5 136 L270.5 141 Z\" fill=\"#fff\"/><text x=\"258\" y=\"160\" font-family=\"'IBM Plex Mono',monospace\" font-size=\"4.6\" fill=\"${c.ink}\">106 1 POD</text>`,\n};")
 rep("function enter(i) {\n  const s = ST[i];\n",
     "function enter(i) {\n  const s = ST[i];\n"
-    "  if (s.key === 'pod') { sess = { key: 'pod', st: s, queue: [], inflight: null, log: [], now: null, ended: false, waiting: [], ordered: false, showText: true, err: '' }; drawNotes(); lcd('YouTube 节目 · 点封面就放'); return; }\n")
+    "  if (s.key === 'pod') { sess = { key: 'pod', st: s, queue: [], inflight: null, log: [], now: null, ended: false, waiting: [], ordered: false, showText: true, err: '' }; drawNotes(); lcd('播客 · 点封面就放'); return; }\n")
 rep("  if (!sess) { n.innerHTML = ''; return; }\n  const S = sess;\n",
     "  if (!sess) { n.innerHTML = ''; return; }\n  if (sess.key === 'pod') { $('rule').style.visibility = ''; if (!sess.podDrawn) { sess.podDrawn = true; drawPod(); } return; }\n  const S = sess;\n")
 rep("$('bPlay').addEventListener('click', () => {\n",
     "$('bPlay').addEventListener('click', () => {\n"
     "  if (sess && sess.key === 'pod') { audioOn(); started = true; $('bPlay').classList.remove('wait'); toast('这台点下面的节目封面放'); const f = document.querySelector('.pod-v'); if (f) f.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }\n")
 rep("  if (!started) { started = true; audioOn(); setPaused(false); }\n  if (!sess.ordered) { toast('先点单，开播以后再说'); return; }",
-    "  if (sess.key === 'pod') { toast('这台放的是 YouTube 节目，纸条和点歌换到别的台递'); return; }\n"
+    "  if (sess.key === 'pod') { toast('这台放的是别人的节目，纸条和点歌换到别的台递'); return; }\n"
     "  if (!started) { started = true; audioOn(); setPaused(false); }\n  if (!sess.ordered) { toast('先点单，开播以后再说'); return; }")
 rep("  if (e.target.closest('.btn,#mic,button,a,input,.tun-l,.ord,.chip')) return;",
-    "  if (e.target.closest('.btn,#mic,button,a,input,.tun-l,.ord,.chip,.pod-v')) return;")
-rep("function fmtDay(t) {",
-    "var POD = null;   /* 小屋版：播客台 */\n"
-    "async function podLoad() { if (POD && !POD.bad) return POD; try { const r = await fetch('data/pod.json?t=' + Date.now(), { cache: 'no-store' }); if (!r.ok) throw 0; POD = await r.json(); } catch (e) { POD = { channels: [], eps: [], bad: true }; } return POD; }\n"
-    "function podDur(s) { const m = Math.round((s || 0) / 60); return m >= 60 ? Math.floor(m / 60) + ' 小时' + (m % 60 ? ' ' + (m % 60) + ' 分' : '') : m + ' 分钟'; }\n"
-    "async function drawPod() {\n"
-    "  const n = $('notes');\n"
-    "  n.innerHTML = '<div class=\"pod-head\">翻节目单…</div>';\n"
-    "  const d = await podLoad();\n"
-    "  if (!sess || sess.key !== 'pod') return;\n"
-    "  if (!d.eps || !d.eps.length) { n.innerHTML = '<div class=\"err\">节目单没拿到，过会儿再来。</div>'; sess.podDrawn = false; return; }\n"
-    "  const ch = {}; (d.channels || []).forEach(c => ch[c.id] = c);\n"
-    "  let h = '<div class=\"pod-head\">YouTube 上挑的几档节目 · 点封面就放' + (d.updated ? ' · ' + fmtDay(d.updated) + '换的' : '') + '</div>', last = null;\n"
-    "  d.eps.forEach(e => {\n"
-    "    const c = ch[e.ch] || { name: '', about: '' };\n"
-    "    if (e.ch !== last) { last = e.ch; h += `<div class=\"pod-ch\"><a href=\"https://www.youtube.com/channel/${esc(e.ch)}\" target=\"_blank\" rel=\"noopener\">${esc(c.name)}</a>${c.by === 'miles' ? '<span class=\"pod-mine\">Miles 加的</span>' : ''}<p>${esc(c.about || '')}</p></div>`; }\n"
-    "    h += `<div class=\"pod-ep\"><div class=\"pod-v\" role=\"button\" tabindex=\"0\" data-v=\"${esc(e.id)}\" aria-label=\"播放 ${esc(e.title)}\"><img loading=\"lazy\" src=\"https://i.ytimg.com/vi/${esc(e.id)}/hqdefault.jpg\" alt=\"\"><span class=\"pod-pl\">▶</span><span class=\"pod-d\">${podDur(e.secs)}</span></div><div class=\"pod-t\">${esc(e.title)}</div><div class=\"pod-m\">${esc(e.date || '')} · <a href=\"https://www.youtube.com/watch?v=${esc(e.id)}\" target=\"_blank\" rel=\"noopener\">去 YouTube 看</a></div><div class=\"pod-s\">${e.heard ? '<span class=\"pod-heard\">听过</span>' : ''}${esc(e.say)}</div></div>`;\n"
-    "  });\n"
-    "  h += '<div class=\"pod-foot\">用的是 YouTube 自己的播放器，节目是人家的，小屋不下载不转存。放不出来就点「去 YouTube 看」。</div>';\n"
-    "  n.innerHTML = h;\n"
-    "  n.querySelectorAll('.pod-v').forEach(b => { b.addEventListener('click', () => podPlay(b)); b.addEventListener('keydown', ev => { if (ev.key === 'Enter') podPlay(b); }); });\n"
-    "  podWall(n, d.eps[0].id);\n"
-    "}\n"
-    "function podWall(n, id) {\n"
-    "  /* 封面拉不下来，多半是连不上 YouTube（墙）：顶上挂一句，别让人干点 */\n"
-    "  let done = false; const im = new Image();\n"
-    "  const bad = () => { if (done) return; done = true; if (!sess || sess.key !== 'pod' || n.querySelector('.pod-wall')) return; const w = document.createElement('div'); w.className = 'pod-wall'; w.textContent = '封面是黑的？那是你这边连不上 YouTube，播放器也出不来。开梯子再点封面就能放。'; n.insertBefore(w, n.firstChild.nextSibling); };\n"
-    "  im.onload = () => { if (done) return; done = true; if (im.naturalWidth < 2) { done = false; bad(); } };\n"
-    "  im.onerror = bad; setTimeout(bad, 6000);\n"
-    "  im.src = 'https://i.ytimg.com/vi/' + encodeURIComponent(id) + '/default.jpg?t=' + Date.now();\n"
-    "}\n"
-    "function podPlay(b) {\n"
-    "  if (b.classList.contains('on')) return;\n"
-    "  document.querySelectorAll('.pod-v.on').forEach(x => { x.classList.remove('on'); x.innerHTML = x._h; });\n"
-    "  b._h = b.innerHTML; b.classList.add('on');\n"
-    "  b.innerHTML = `<iframe src=\"https://www.youtube-nocookie.com/embed/${encodeURIComponent(b.dataset.v)}?autoplay=1&playsinline=1&rel=0\" title=\"YouTube\" allow=\"autoplay; encrypted-media; picture-in-picture; fullscreen\" referrerpolicy=\"strict-origin-when-cross-origin\"></iframe>`;\n"
-    "  lcd('在放 YouTube 节目');\n"
-    "}\n"
-    "function fmtDay(t) {")
+    "  if (e.target.closest('.btn,#mic,button,a,input,.tun-l,.ord,.chip,.pod-v,.pod-key')) return;")
+rep("function fmtDay(t) {", r'''var POD = null;   /* 小屋版：播客台 */
+var PODK = null;  /* 解开加密节目的钥匙（只在内存里） */
+var PODU = {};    /* 已经解开的音频 blob 地址 */
+async function podLoad() { if (POD && !POD.bad) return POD; try { const r = await fetch('data/pod.json?t=' + Date.now(), { cache: 'no-store' }); if (!r.ok) throw 0; POD = await r.json(); } catch (e) { POD = { channels: [], eps: [], bad: true }; } return POD; }
+function podDur(s) { const m = Math.round((s || 0) / 60); return m >= 60 ? Math.floor(m / 60) + ' 小时' + (m % 60 ? ' ' + (m % 60) + ' 分' : '') : m + ' 分钟'; }
+function podB64(s) { const b = atob(s), u = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; }
+async function podDerive(pw) {
+  /* 密码 → PBKDF2-SHA256 → AES-256-GCM 钥匙；先解一小段校验密文，解不开就是密码不对 */
+  const L = POD.lock;
+  const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveKey']);
+  const k = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: podB64(L.salt), iterations: L.iter, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+  await crypto.subtle.decrypt({ name: 'AES-GCM', iv: podB64(L.check_iv) }, k, podB64(L.check));
+  return k;
+}
+function podCh(c) {
+  if (c.src === 'bili' && c.bili) return 'https://space.bilibili.com/' + encodeURIComponent(c.bili);
+  return 'https://www.youtube.com/channel/' + encodeURIComponent(c.id);
+}
+function podCover(e) {
+  if (e.src === 'bili') return `<img loading="lazy" referrerpolicy="no-referrer" src="${esc((e.pic || '').replace(/^http:/, 'https:'))}@480w_270h_1c.jpg" alt="">`;
+  if (e.src === 'lock') return e.cover === false ? '' : `<img loading="lazy" src="${esc(POD.lock.base)}c/${esc(e.id)}.jpg" alt="">`;
+  return `<img loading="lazy" src="https://i.ytimg.com/vi/${esc(e.id)}/hqdefault.jpg" alt="">`;
+}
+function podMeta(e) {
+  if (e.src === 'bili') return `B站 · <a href="https://www.bilibili.com/video/${esc(e.id)}" target="_blank" rel="noopener">去B站看</a>`;
+  if (e.src === 'lock') return '加密 · 输了密码才能放';
+  return `<a href="https://www.youtube.com/watch?v=${esc(e.id)}" target="_blank" rel="noopener">去 YouTube 看</a>`;
+}
+async function drawPod() {
+  const n = $('notes');
+  n.innerHTML = '<div class="pod-head">翻节目单…</div>';
+  const d = await podLoad();
+  if (!sess || sess.key !== 'pod') return;
+  if (!d.eps || !d.eps.length) { n.innerHTML = '<div class="err">节目单没拿到，过会儿再来。</div>'; sess.podDrawn = false; return; }
+  const ch = {}; (d.channels || []).forEach(c => ch[c.id] = c);
+  const hasLock = d.lock && d.eps.some(e => e.src === 'lock');
+  let h = '<div class="pod-head">挑的几档节目 · 点封面就放' + (d.updated ? ' · ' + fmtDay(d.updated) + '换的' : '') + '</div>', last = null;
+  if (hasLock) h += '<div class="pod-key" id="podKey"><div class="pod-kt">标着「要密码」的几期是加密放着的，只给阿与听。</div><form id="podKf" autocomplete="off"><input id="podPw" type="password" placeholder="输密码" autocomplete="current-password" aria-label="密码"><button type="submit">解锁</button></form><div class="pod-km" id="podKm"></div></div>';
+  d.eps.forEach(e => {
+    e.src = e.src || 'yt';
+    const c = ch[e.ch] || { name: '', about: '' };
+    if (e.ch !== last) { last = e.ch; h += `<div class="pod-ch"><a href="${podCh(c)}" target="_blank" rel="noopener">${esc(c.name)}</a>${c.by === 'miles' ? '<span class="pod-mine">Miles 加的</span>' : ''}<p>${esc(c.about || '')}</p></div>`; }
+    h += `<div class="pod-ep"><div class="pod-v" role="button" tabindex="0" data-v="${esc(e.id)}" data-s="${esc(e.src)}" aria-label="播放 ${esc(e.title)}">${podCover(e)}<span class="pod-pl">▶</span>${e.src === 'lock' ? '<span class="pod-lk">要密码</span>' : ''}<span class="pod-d">${podDur(e.secs)}</span></div><div class="pod-t">${esc(e.title)}</div><div class="pod-m">${esc(e.date || '')} · ${podMeta(e)}</div><div class="pod-s">${e.heard ? '<span class="pod-heard">听过</span>' : ''}${esc(e.say)}</div></div>`;
+  });
+  h += '<div class="pod-foot">B站那几期用的是 B站 自己的播放器，节目是人家的，小屋不下载。要密码的几期是 YouTube 上没有国内版的，下载下来加密放着，只给阿与听。</div>';
+  n.innerHTML = h;
+  n.querySelectorAll('.pod-v').forEach(b => { b.addEventListener('click', () => podPlay(b)); b.addEventListener('keydown', ev => { if (ev.key === 'Enter') podPlay(b); }); });
+  if (hasLock) podKeyUi();
+  const yt = d.eps.find(e => e.src === 'yt');
+  if (yt) podWall(n, yt.id);
+}
+function podKeyUi() {
+  const f = $('podKf'), m = $('podKm'), box = $('podKey');
+  const ok = () => { box.classList.add('ok'); f.style.display = 'none'; m.innerHTML = '已解锁，点封面就放。 <a href="#" id="podForget">锁回去</a>'; $('podForget').onclick = ev => { ev.preventDefault(); PODK = null; try { localStorage.removeItem('miles-podpw'); } catch (e) {} box.classList.remove('ok'); f.style.display = ''; m.textContent = '锁回去了。'; }; };
+  const tryPw = async (pw, quiet) => {
+    if (!pw) return false;
+    if (!(window.crypto && crypto.subtle)) { m.textContent = '这个浏览器解不了密，换个浏览器试试。'; return false; }
+    if (!quiet) m.textContent = '对密码…';
+    try { PODK = await podDerive(pw); try { localStorage.setItem('miles-podpw', pw); } catch (e) {} ok(); return true; }
+    catch (e) { PODK = null; if (!quiet) { m.textContent = '密码不对。'; box.classList.add('bad'); setTimeout(() => box.classList.remove('bad'), 600); } return false; }
+  };
+  f.addEventListener('submit', ev => { ev.preventDefault(); tryPw($('podPw').value.trim()); });
+  if (PODK) { ok(); return; }
+  let saved = ''; try { saved = localStorage.getItem('miles-podpw') || ''; } catch (e) {}
+  if (saved) tryPw(saved, true);
+}
+function podWall(n, id) {
+  /* 只管 YouTube 那几期：封面拉不下来，多半是连不上 YouTube，在那期上面挂一句 */
+  let done = false; const im = new Image();
+  const bad = () => { if (done) return; done = true; const v = n.querySelector('.pod-v[data-s="yt"]'); if (!sess || sess.key !== 'pod' || !v || n.querySelector('.pod-wall')) return; const w = document.createElement('div'); w.className = 'pod-wall'; w.textContent = '这期是 YouTube 的，封面是黑的就是你这边连不上 YouTube，开梯子再点封面就能放。'; v.parentNode.insertBefore(w, v); };
+  im.onload = () => { if (done) return; done = true; if (im.naturalWidth < 2) { done = false; bad(); } };
+  im.onerror = bad; setTimeout(bad, 6000);
+  im.src = 'https://i.ytimg.com/vi/' + encodeURIComponent(id) + '/default.jpg?t=' + Date.now();
+}
+function podStop() {
+  document.querySelectorAll('.pod-v.on').forEach(x => { x.classList.remove('on'); x._gen = (x._gen || 0) + 1; x.innerHTML = x._h; });
+}
+async function podPlay(b) {
+  if (b.classList.contains('on')) return;
+  const id = b.dataset.v, src = b.dataset.s;
+  if (src === 'lock' && !PODK) { toast('先在上面输密码'); const k = $('podKey'); if (k) { k.scrollIntoView({ behavior: 'smooth', block: 'center' }); const i = $('podPw'); if (i) setTimeout(() => i.focus(), 300); } return; }
+  podStop();
+  b._h = b.innerHTML; b.classList.add('on');
+  if (src === 'bili') {
+    b.innerHTML = `<iframe src="https://player.bilibili.com/player.html?bvid=${encodeURIComponent(id)}&autoplay=1&high_quality=1&danmaku=0" title="B站播放器" allow="autoplay; fullscreen; encrypted-media" allowfullscreen referrerpolicy="no-referrer-when-downgrade" scrolling="no"></iframe>`;
+    lcd('在放 B站 节目'); return;
+  }
+  if (src === 'yt') {
+    b.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&playsinline=1&rel=0" title="YouTube" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
+    lcd('在放 YouTube 节目'); return;
+  }
+  /* lock：下密文 → WebCrypto 解开 → 本地 blob 放 */
+  const gen = b._gen = (b._gen || 0) + 1;
+  const e = POD.eps.find(x => x.id === id) || {};
+  const show = url => { b.innerHTML = `<div class="pod-au">${b._h.match(/<img[^>]*>/) ? b._h.match(/<img[^>]*>/)[0] : ''}<audio controls autoplay playsinline preload="auto" src="${url}"></audio></div>`; const a = b.querySelector('audio'); a.play().catch(() => {}); lcd('在放 · ' + (e.title || '').slice(0, 14)); };
+  if (PODU[id]) { show(PODU[id]); return; }
+  b.innerHTML = '<div class="pod-ld"><span>取节目…</span><i><b style="width:0"></b></i></div>';
+  const st = b.querySelector('span'), bar = b.querySelector('b');
+  try {
+    const r = await fetch(POD.lock.base + 'a/' + encodeURIComponent(id) + '.bin');
+    if (!r.ok) throw new Error('文件没拿到（' + r.status + '）');
+    const total = +r.headers.get('content-length') || e.bytes || 0;
+    let buf;
+    if (r.body && r.body.getReader && total) {
+      buf = new Uint8Array(total); let got = 0; const rd = r.body.getReader();
+      for (;;) { const { done, value } = await rd.read(); if (done) break; if (gen !== b._gen) { rd.cancel(); return; } if (got + value.length > buf.length) { const nb = new Uint8Array(got + value.length); nb.set(buf.subarray(0, got)); buf = nb; } buf.set(value, got); got += value.length; const p = Math.min(100, Math.round(got * 100 / total)); bar.style.width = p + '%'; st.textContent = '取节目 ' + p + '%'; }
+      buf = buf.subarray(0, got);
+    } else { buf = new Uint8Array(await r.arrayBuffer()); }
+    if (gen !== b._gen) return;
+    st.textContent = '解密…';
+    const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: buf.slice(0, 12), additionalData: new TextEncoder().encode(id) }, PODK, buf.subarray(12));
+    if (gen !== b._gen) return;
+    PODU[id] = URL.createObjectURL(new Blob([plain], { type: 'audio/mp4' }));
+    show(PODU[id]);
+  } catch (err) {
+    if (gen !== b._gen) return;
+    st.textContent = (err && err.name === 'OperationError') ? '解不开，密码不对或文件换了，刷新再试。' : ('没放成：' + ((err && err.message) || '网络不好') + '，再点一下试试。');
+    b.classList.remove('on'); setTimeout(() => { if (!b.classList.contains('on')) b.innerHTML = b._h; }, 4000);
+  }
+}
+function fmtDay(t) {''')
 rep("</style>", ".pod-wall{margin:4px 0 14px;padding:10px 12px;border:1px solid var(--red);border-radius:4px;font:400 12px/1.6 var(--serif);color:var(--red)}\n"
     ".pod-head{font:500 9px/1.6 var(--mono);letter-spacing:.12em;color:var(--ink3);margin-bottom:6px}\n"
     ".pod-ch{margin:22px 0 10px;padding-top:12px;border-top:1px solid var(--line)}\n"
@@ -311,7 +401,24 @@ rep("</style>", ".pod-wall{margin:4px 0 14px;padding:10px 12px;border:1px solid 
     ".pod-m a{color:var(--ink3)}\n"
     ".pod-s{margin-top:5px;font:400 12px/1.6 var(--serif);color:var(--red)}\n"
     ".pod-heard{margin-right:6px;font:700 8px/1 var(--mono);letter-spacing:.12em;color:var(--red);border:1px solid var(--red);padding:2px 5px;border-radius:2px;vertical-align:1px}\n"
-    ".pod-foot{margin-top:18px;font:400 11px/1.6 var(--serif);color:var(--ink3)}\n</style>")
+    ".pod-foot{margin-top:18px;font:400 11px/1.6 var(--serif);color:var(--ink3)}\n"
+    ".pod-key{margin:8px 0 6px;padding:10px 12px;border:1px solid var(--line);border-radius:4px}\n"
+    ".pod-key.ok{border-color:var(--red)}\n"
+    ".pod-key.bad{animation:podShake .4s}\n"
+    "@keyframes podShake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}\n"
+    ".pod-kt{font:400 12px/1.6 var(--serif);color:var(--ink2)}\n"
+    ".pod-key form{display:flex;gap:8px;margin-top:8px}\n"
+    ".pod-key input{flex:1;min-width:0;font:500 14px/1.4 var(--mono);padding:7px 9px;border:1px solid var(--line);border-radius:3px;background:transparent;color:var(--ink)}\n"
+    ".pod-key button{font:700 11px/1 var(--mono);letter-spacing:.1em;padding:0 14px;border:0;border-radius:3px;background:var(--red);color:#fff;cursor:pointer}\n"
+    ".pod-km{margin-top:6px;font:500 10px/1.5 var(--mono);color:var(--red)}\n"
+    ".pod-km a{color:var(--ink3)}\n"
+    ".pod-lk{position:absolute;left:6px;top:6px;background:rgba(0,0,0,.72);color:#fff;font:700 9px/1 var(--mono);letter-spacing:.08em;padding:4px 6px;border-radius:2px}\n"
+    ".pod-au{position:absolute;inset:0;background:#000}\n"
+    ".pod-au img{opacity:.55}\n"
+    ".pod-au audio{position:absolute;left:8px;right:8px;bottom:10px;width:calc(100% - 16px)}\n"
+    ".pod-ld{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#fff;font:500 11px/1.4 var(--mono);padding:0 16px;text-align:center}\n"
+    ".pod-ld i{display:block;width:60%;height:3px;background:rgba(255,255,255,.2);border-radius:2px;overflow:hidden}\n"
+    ".pod-ld b{display:block;height:100%;background:var(--red);transition:width .2s}\n</style>")
 
 open(os.path.join(HOME, 'fm.html'), 'w', encoding='utf-8').write(src)
 print('fm.html ok', len(src))

@@ -1,142 +1,192 @@
 {
- "updated": 1793109344877,
+ "updated": 1793110570529,
  "channels": [
   {
    "id": "UCa4Q7pecRTebkB18FLT_JJA",
    "name": "X博士",
    "by": "her",
-   "about": "「大玄學」系列，一集一两个钟头，历史和怪事掰开了讲。"
+   "about": "「大玄學」系列，一集一两个钟头，历史和怪事掰开了讲。",
+   "src": "lock"
   },
   {
    "id": "UCG2zTFaMhkYIcV6TtSoQyVw",
    "name": "古靈精怪我老秦",
    "by": "her",
-   "about": "佛道密宗、萨满风水，讲的是来龙去脉，不是装神弄鬼。"
+   "about": "佛道密宗、萨满风水，讲的是来龙去脉，不是装神弄鬼。",
+   "src": "bili",
+   "bili": "3493261100451944"
   },
   {
    "id": "UCH3rX9Q6H8FMncsECyHQs_Q",
    "name": "云隐终南",
    "by": "her",
-   "about": "道长讲老子、阴阳五行和八字，慢，适合关灯听。"
+   "about": "道长讲老子、阴阳五行和八字，慢，适合关灯听。",
+   "src": "lock"
   },
   {
    "id": "UCMUnInmOkrWN4gof9KlhNmQ",
    "name": "老高與小茉",
    "by": "miles",
-   "about": "未解之谜这一路的老牌子，六百多万人订阅，讲故事的节奏没话说。"
+   "about": "未解之谜这一路的老牌子，六百多万人订阅，讲故事的节奏没话说。",
+   "src": "lock"
   },
   {
    "id": "UCI7ANIwQYoXosiX89er5vIw",
    "name": "床台",
    "by": "miles",
-   "about": "自己说是「床边的历史电台」，长篇讲历史和宗教，就是做来听着睡的。"
+   "about": "自己说是「床边的历史电台」，长篇讲历史和宗教，就是做来听着睡的。",
+   "src": "lock"
   },
   {
    "id": "UCht_mj0oHHlOsuhLn5u5ceQ",
    "name": "大範的怪談酒館",
    "by": "miles",
-   "about": "专讲网络怪谈和都市传说，一个个词条考据着讲，不靠吓人。"
+   "about": "专讲网络怪谈和都市传说，一个个词条考据着讲，不靠吓人。",
+   "src": "bili",
+   "bili": "13577938"
   }
  ],
  "eps": [
   {
    "ch": "UCa4Q7pecRTebkB18FLT_JJA",
+   "src": "lock",
    "id": "0Ch3BmsWJYo",
    "title": "他有4%的概率找到地下王國「大玄學」｜X博士",
    "date": "2026-01-02",
    "secs": 2863,
-   "say": "前克格勃军官顺着纳粹小分队的路线去高加索找地下王国，长度正好一个睡前。"
+   "say": "前克格勃军官顺着纳粹小分队的路线去高加索找地下王国，长度正好一个睡前。",
+   "bytes": 20745536,
+   "cover": true
   },
   {
    "ch": "UCa4Q7pecRTebkB18FLT_JJA",
+   "src": "lock",
    "id": "MoB3uBKOx64",
    "title": "去溥儀住過的偽滿皇宮看看「遊戲人間」｜X博士",
    "date": "2025-11-07",
    "secs": 1671,
-   "say": "逛长春伪满皇宫的游记，轻松不烧脑。他家新的几期都是会员专享，放不了，这是能放的里头最近的。"
+   "say": "逛长春伪满皇宫的游记，轻松不烧脑。他家新的几期都是会员专享，放不了，这是能放的里头最近的。",
+   "bytes": 12428684,
+   "cover": true
   },
   {
    "ch": "UCG2zTFaMhkYIcV6TtSoQyVw",
-   "id": "SJH2Bdk7-2Q",
-   "title": "詳解道教九大天尊，為什麼書上寫的跟觀里供的不一樣？三清以下究竟是四御還是六御？道教天尊如何轉正定級？道教神仙體系為什麼各門各派眾說不一？信道教拜神仙應該以哪個版本為準？｜古靈精怪我老秦",
+   "src": "bili",
+   "id": "BV1k2Hw6NEjP",
+   "title": "详解道教九大天尊，为啥书上写的跟观里供的不一样？三清以下究竟是四御还是六御？天尊如何转正定级？道教神仙体系为啥众说不一？到底应该以哪版为准？",
    "date": "2026-10-24",
    "secs": 1119,
-   "say": "三清底下到底是四御还是六御，书上写的和观里供的为啥对不上，这期一次讲清。"
+   "say": "三清底下到底是四御还是六御，书上写的和观里供的为啥对不上，这期一次讲清。",
+   "pic": "https://i2.hdslb.com/bfs/archive/40af76b38e3f4d5bf4c7eadfe6285b0cdb6e8d6b.jpg"
   },
   {
    "ch": "UCG2zTFaMhkYIcV6TtSoQyVw",
-   "id": "OssRnMQaTNI",
-   "title": "薩滿過陰，能在陰陽兩界自由行走的靈魂擺渡人！鄂倫春、赫哲、錫伯、烏桓、契丹，這些不同部落族群的薩滿為何過陰？如何過陰？什麼人可以過陰？薩滿眼中的冥界布尼、陰姆坎、伊瑪堪是什麼樣子？｜古靈精怪我老秦",
+   "src": "bili",
+   "id": "BV1HMph6mEFM",
+   "title": "萨满过阴，能在阴阳两界自由行走的灵魂摆渡人！鄂伦春、赫哲、锡伯、乌桓、契丹的萨满为何过阴？如何过阴？什么人可以过阴？萨满眼中的冥界是什么样子？",
    "date": "2026-10-10",
-   "secs": 1365,
+   "secs": 1366,
    "say": "头一分钟是网文开场加求订阅，拖过去。阴间什么都反着长、女萨满把魂吞进肚子存到十三岁再吐回鼓上，这两段最好。鼓面爬黑老鼠那段有点瘆，二十来分钟，睡前能听。",
+   "pic": "https://i2.hdslb.com/bfs/archive/66f1773ceb0a6b7f32abc5eac1db25c4b956d78b.jpg",
    "heard": true
   },
   {
    "ch": "UCH3rX9Q6H8FMncsECyHQs_Q",
+   "src": "lock",
    "id": "jwODberOs3c",
    "title": "从老子到阴符经 学会如何盗机与天道同频｜陰陽五行. 天干地支｜八字命理風水六爻奇門｜ 中國道家易學傳統文化 | 老子道德經",
    "date": "2026-10-07",
    "secs": 3200,
    "say": "道长口头讲，没稿子，绕得厉害，五十多分钟里真讲《阴符经》的也就一半，中间常岔去讲八字和时事。老鼠秋天偷粮那个比方最好懂。想认真学别躺着听，当催眠倒合格。",
-   "heard": true
+   "heard": true,
+   "bytes": 23231222,
+   "cover": true
   },
   {
    "ch": "UCH3rX9Q6H8FMncsECyHQs_Q",
+   "src": "lock",
    "id": "p_SK3AjqliA",
    "title": "身弱官杀旺女命网红是否能躲过牢狱之灾？｜陰陽五行. 天干地支｜八字命理風水六爻奇門｜ 中國道家易學傳統文化 | 老子道德經",
    "date": "2026-09-12",
    "secs": 3515,
-   "say": "拿一个网红的八字现场推命，看道长怎么断，当热闹听。"
+   "say": "拿一个网红的八字现场推命，看道长怎么断，当热闹听。",
+   "bytes": 25546837,
+   "cover": true
   },
   {
    "ch": "UCMUnInmOkrWN4gof9KlhNmQ",
+   "src": "lock",
    "id": "Z5L6hwVWWFg",
    "title": "【最長影片】1小時講完《奧德賽》完整版 | 老高與小茉 Mr & Mrs Gao",
    "date": "2026-09-02",
    "secs": 4280,
-   "say": "老高自己标的最长一期，一个多钟头把《奥德赛》从头讲到尾。"
+   "say": "老高自己标的最长一期，一个多钟头把《奥德赛》从头讲到尾。",
+   "bytes": 31027197,
+   "cover": true
   },
   {
    "ch": "UCMUnInmOkrWN4gof9KlhNmQ",
+   "src": "lock",
    "id": "SHWjQrGb3MQ",
    "title": "第二名 | 老高與小茉 Mr & Mrs Gao",
    "date": "2026-07-22",
    "secs": 1747,
-   "say": "标题就仨字，不点开不知道讲啥，老高惯用的钩子。"
+   "say": "标题就仨字，不点开不知道讲啥，老高惯用的钩子。",
+   "bytes": 12685530,
+   "cover": true
   },
   {
    "ch": "UCI7ANIwQYoXosiX89er5vIw",
+   "src": "lock",
    "id": "fjwhUtO6djo",
    "title": "明朝絕密開國檔案：朱元璋的陰毒權謀 | 從朱重八到洪武大帝的秘術 | 一部影片看懂大明王朝 | 床台",
    "date": "2026-09-13",
    "secs": 2304,
    "say": "标题说从放牛娃讲到登基，其实登基一笔带过，讲的是他怎么把天下人管死：黄册、路引、邻居互相盯。茹太素万言书挨打、袁凯装疯两段最好看。语速平，不吓人，后半段杀人多。",
-   "heard": true
+   "heard": true,
+   "bytes": 16222887,
+   "cover": true
   },
   {
    "ch": "UCI7ANIwQYoXosiX89er5vIw",
+   "src": "lock",
    "id": "IOLmnOeTeNo",
    "title": "伊朗為何與世界為敵？中東的禍根，要從默罕默德的創教史開始講起 | 穆斯林真的相信他們的真主嗎？| 伊斯蘭教快速入門指南 | 床台",
    "date": "2026-09-06",
    "secs": 1643,
-   "say": "从穆罕默德创教讲到什叶派和伊朗，想弄懂中东先听这期。"
+   "say": "从穆罕默德创教讲到什叶派和伊朗，想弄懂中东先听这期。",
+   "bytes": 11920784,
+   "cover": true
   },
   {
    "ch": "UCht_mj0oHHlOsuhLn5u5ceQ",
-   "id": "4grmPM8FPaY",
-   "title": "【怪談合集】游戲預言斷頭案？黑化版的游戲角色，你聽過幾個？丨真女神轉生丨SONIC.EXE丨MARIOMX丨MR.L丨井之頭公園事件",
-   "date": "2026-10-24",
-   "secs": 2162,
-   "say": "游戏怪谈合集，Sonic.EXE、马力欧 MX 这些黑化角色是怎么传出来的。"
+   "src": "bili",
+   "id": "BV12zHV6zE5Q",
+   "title": "【怪谈合集】游戏预言断头案？黑化版的游戏角色，你听过几个？丨真女神转生丨索尼克EXE丨马力欧MX丨MR.L丨井之头公园事件",
+   "date": "2026-10-25",
+   "secs": 2163,
+   "say": "游戏怪谈合集，Sonic.EXE、马力欧 MX 这些黑化角色是怎么传出来的。",
+   "pic": "https://i2.hdslb.com/bfs/archive/5f3b93887edcd681bfa91e3b131a2688a0947fa5.jpg"
   },
   {
    "ch": "UCht_mj0oHHlOsuhLn5u5ceQ",
-   "id": "sgxNSurk6vE",
-   "title": "【恐怖詞條】謹慎搜索！日本互聯網那些讓人起鷄皮的圖像影片丨靈異直播丨厨師背後的焦尸丨下水道美人魚",
+   "src": "bili",
+   "id": "BV1SKJX6mEA5",
+   "title": "谨慎搜索！日本互联网那些让人起鸡皮的恐怖词条丨灵异直播丨厨师背后的焦尸丨下水道美人鱼",
    "date": "2026-10-17",
-   "secs": 746,
-   "say": "日本网上那些「禁搜词条」，这期偏看图，得睁着眼看。"
+   "secs": 747,
+   "say": "日本网上那些「谨慎搜索」的词条，一个个考据着讲，偏看图，得睁着眼看。",
+   "pic": "https://i0.hdslb.com/bfs/archive/cc2e2456b39c99288b62890ed9dc4f54dd521962.jpg"
   }
- ]
+ ],
+ "lock": {
+  "v": 1,
+  "kdf": "PBKDF2-SHA256",
+  "iter": 600000,
+  "salt": "nmD7+KMRB+GUsHSd0uVNYQ==",
+  "check_iv": "7JArandvzyQnC59F",
+  "check": "MDgwmRsIErXiBwmJgromufBuoVCMQvgFPg1fNg==",
+  "base": "https://iooliool.github.io/miles-pod/",
+  "at": 1793110570529
+ }
 }
