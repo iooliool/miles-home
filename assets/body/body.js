@@ -12,7 +12,7 @@
   var API = "https://miles-home-api.xo131415.workers.dev";
   var BASE = "assets/body/";
   var IMG = "assets/img/miles/";
-  var OUTFITS = { jacket: 1, coat: 1, tee: 1, home: 1, rain: 1, cardigan: 1, cord: 1 };  // suit 2026-10-27 手不对，先撤下，重做好再加回
+  var OUTFITS = { jacket: 1, coat: 1, home: 1 };  // 10-27 换 C1 头：只放她点头的三身；白T、灯芯绒、雨天、开衫、正式那身重做好再加回
 
   var stage = document.getElementById("stage");
   var bubble = document.getElementById("bubble");
@@ -80,7 +80,7 @@
       // 分层没有或载不下来，就退回这身的整张图。
       return composeLayers(pre, r).catch(function (e) { note(false, "分层没拼上，用整张图：" + e.message); return null; });
     }).then(function (canvas) {
-      var face = canvas ? "coat" : pre;
+      var face = canvas ? "uni" : pre;   // 分层时用裁进统一头层的叠层
       keys = { main: IMG + pre + "-smirk.jpg", sleepy: BASE + face + "-sleepy.png", blink: BASE + face + "-blink.png", sleepyBlink: BASE + face + "-sleepy-blink.png", blush: BASE + "blush.png" };
       var list = [keys.sleepy, keys.blink, keys.sleepyBlink, keys.blush];
       if (!canvas) list.unshift(keys.main);
