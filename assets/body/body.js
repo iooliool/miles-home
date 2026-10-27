@@ -12,7 +12,7 @@
   var API = "https://miles-home-api.xo131415.workers.dev";
   var BASE = "assets/body/";
   var IMG = "assets/img/miles/";
-  var OUTFITS = { jacket: 1, coat: 1, tee: 1, home: 1, rain: 1, cardigan: 1, cord: 1, suit: 1 };
+  var OUTFITS = { jacket: 1, coat: 1, tee: 1, home: 1, rain: 1, cardigan: 1, cord: 1 };  // suit 2026-10-27 手不对，先撤下，重做好再加回
 
   var stage = document.getElementById("stage");
   var bubble = document.getElementById("bubble");
