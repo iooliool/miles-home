@@ -240,6 +240,22 @@ body,.mast *,.notes,.notes *,.bar,.bar *{transition:background-color var(--t),co
 @keyframes swapR{from{opacity:0;transform:translateX(22px)}to{opacity:1;transform:none}}
 @keyframes swapL{from{opacity:0;transform:translateX(-22px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.pod-head{font:500 9px/1.6 var(--mono);letter-spacing:.12em;color:var(--ink3);margin-bottom:6px}
+.pod-ch{margin:22px 0 10px;padding-top:12px;border-top:1px solid var(--line)}
+.pod-ch a{font:700 15px/1.3 var(--serif);color:var(--ink);text-decoration:none}
+.pod-mine{margin-left:8px;font:700 8px/1 var(--mono);letter-spacing:.12em;color:#fff;background:var(--red);padding:3px 6px;border-radius:2px;vertical-align:2px}
+.pod-ch p{margin:6px 0 0;font:400 12px/1.6 var(--serif);color:var(--ink2)}
+.pod-ep{margin:0 0 18px}
+.pod-v{position:relative;aspect-ratio:16/9;background:#000;border-radius:4px;overflow:hidden;cursor:pointer}
+.pod-v img{width:100%;height:100%;object-fit:cover;display:block;opacity:.88}
+.pod-v iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.pod-pl{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:46px;height:46px;border-radius:50%;background:var(--red);color:#fff;font-size:17px;display:flex;align-items:center;justify-content:center;padding-left:3px;box-sizing:border-box}
+.pod-d{position:absolute;right:6px;bottom:6px;background:rgba(0,0,0,.72);color:#fff;font:500 9px/1 var(--mono);padding:3px 5px;border-radius:2px}
+.pod-t{margin-top:8px;font:600 13px/1.5 var(--serif);color:var(--ink)}
+.pod-m{margin-top:3px;font:500 9px/1.5 var(--mono);color:var(--ink3)}
+.pod-m a{color:var(--ink3)}
+.pod-s{margin-top:5px;font:400 12px/1.6 var(--serif);color:var(--red)}
+.pod-foot{margin-top:18px;font:400 11px/1.6 var(--serif);color:var(--ink3)}
 </style>
 </head>
 <body>
@@ -437,6 +453,9 @@ const ST = [
   { key: 'music', f: 104.1, name: '音樂', en: 'MUSIC BOX', side: 'C', desc: 'Miles 挑的歌，中间说两句。',
     tape: { shell: '#D0271D', dk: '#AE1D15', label: '#FBF8F2', stripe: '#171312', sInk: '#fff', name: '#D0271D', ink: '#1b1614', shellInk: 'rgba(255,255,255,.7)', note: 'Mix.01' },
     rules: ['我挑的歌，中间说两句。一期的歌有走向，前后两首要么有联系，要么故意反差。', '评论只念网易云评论区里真有的原话，查不到就不念。', '不确定的事（年份、来历、编曲）不说。不说「很温柔很好听」。', '节目是我提前录好的。点歌会递到小屋窗台，下一期先放你点的。', '歌都存在小屋里，整首放。'] },
+  { key: 'pod', f: 106.1, name: '播客', en: 'PODCAST', side: 'D', desc: 'YouTube 上挑的几档节目，点开就听。',
+    tape: { shell: '#3A3431', dk: '#26211F', label: '#FBF8F2', stripe: '#D0271D', sInk: '#fff', name: '#171312', ink: '#1b1614', shellInk: 'rgba(255,255,255,.6)', note: 'Pod.01' },
+    rules: ['这台不是我录的：挂的是 YouTube 上别人的节目，用 YouTube 自己的播放器放，小屋不下载、不转存。', '每晚我看一遍这几个频道，有新的公开节目就换上最新的。会员专享的放不了，不挂。', '每期底下一句是我为什么挑它。标着「Miles 加的」是我自己找来的频道。', '红键在这台不管用，点节目封面就放。'] },
 ];
 const LAST = ST.length - 1;
 
@@ -464,6 +483,7 @@ const DECO = {
   story: c => `<g fill="none" stroke="${c.ink}" stroke-width=".8"><path d="M262 132 C262 118 288 118 288 132 C284 130 280 134 275 131 C270 134 266 130 262 132Z"/><path d="M266 126 C272 121 280 121 284 125" stroke-width=".5"/><path d="M268 133 c-2 6 2 10 0 16"/><path d="M273 134 c2 6 -2 10 0 18"/><path d="M278 134 c-2 6 2 10 0 16"/><path d="M283 133 c2 5 -1 8 1 12"/></g>`,
   talk: c => `<circle cx="276" cy="140" r="12" fill="${c.name}"/><circle cx="282" cy="135" r="10.5" fill="${c.label}"/><path d="M262 124 h5 M264.5 121.5 v5" stroke="${c.name}" stroke-width=".7"/>`,
   music: c => barcode(258, 124, 28, c.ink) + `<text x="258" y="160" font-family="'IBM Plex Mono',monospace" font-size="4.6" fill="${c.ink}">104 1 2026</text>`,
+  pod: c => `<rect x="260" y="126" width="28" height="20" rx="6" fill="${c.stripe}"/><path d="M270.5 131 L279.5 136 L270.5 141 Z" fill="#fff"/><text x="258" y="160" font-family="'IBM Plex Mono',monospace" font-size="4.6" fill="${c.ink}">106 1 POD</text>`,
 };
 function reel(cx, side, packFill, packStroke, hubFill, holeFill) {
   let teeth = '';
@@ -1056,6 +1076,7 @@ function leave() {
 }
 function enter(i) {
   const s = ST[i];
+  if (s.key === 'pod') { sess = { key: 'pod', st: s, queue: [], inflight: null, log: [], now: null, ended: false, waiting: [], ordered: false, showText: true, err: '' }; drawNotes(); lcd('YouTube 节目 · 点封面就放'); return; }
   sess = { key: s.key, st: s, queue: [], inflight: null, log: [], now: null, ended: false, waiting: [], ordered: s.key !== 'pillow', showText: s.key !== 'pillow', tracks: null, trackNo: null, err: '' };
   const m = stationMem[s.key];
   if (m && !m.ended && Date.now() - m.at < 30 * 60000) Object.assign(sess, { log: m.log, order: m.order, ordered: m.ordered, showText: m.showText, tracks: m.tracks, trackNo: m.trackNo, bgm: m.bgm, mail: m.mail, resume: true });
@@ -1300,6 +1321,7 @@ function setPaused(p) {
   nativeSay();
 }
 $('bPlay').addEventListener('click', () => {
+  if (sess && sess.key === 'pod') { audioOn(); started = true; $('bPlay').classList.remove('wait'); toast('这台点下面的节目封面放'); const f = document.querySelector('.pod-v'); if (f) f.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
   audioOn(); staticOn();
   if (!started) { started = true; $('bPlay').classList.remove('wait'); if (sess && sess.ordered) begin(sess); else if (sess) { setPaused(false); lcd('请戴耳机 · 先点单'); } return; }
   setPaused(!paused);
@@ -1334,7 +1356,7 @@ window.addEventListener('keydown', e => { if (e.target.tagName === 'INPUT') retu
 /* 左右滑：带子跟着手走 */
 let sw = null;
 $('wrap').addEventListener('pointerdown', e => {
-  if (e.target.closest('.btn,#mic,button,a,input,.tun-l,.ord,.chip')) return;
+  if (e.target.closest('.btn,#mic,button,a,input,.tun-l,.ord,.chip,.pod-v')) return;
   if (!e.target.closest('#hero,.mast')) return;   /* v5：单子那块上下翻的时候不算换台（她：「太敏感，好容易划走」） */
   sw = { x: e.clientX, y: e.clientY, h: null, w: $('hero').getBoundingClientRect().width, t: performance.now() };
 });
@@ -1363,6 +1385,7 @@ window.addEventListener('pointerup', endSwipe); window.addEventListener('pointer
 /* ═══════════════ 她插话 ═══════════════ */
 function her(kind, text) {
   if (!sess) return;
+  if (sess.key === 'pod') { toast('这台放的是 YouTube 节目，纸条和点歌换到别的台递'); return; }
   if (!started) { started = true; audioOn(); setPaused(false); }
   if (!sess.ordered) { toast('先点单，开播以后再说'); return; }
   if (!sess.begun) begin(sess);
@@ -1550,6 +1573,7 @@ function drawNotes() {
   const n = $('notes');
   revealSpans = null;
   if (!sess) { n.innerHTML = ''; return; }
+  if (sess.key === 'pod') { $('rule').style.visibility = ''; if (!sess.podDrawn) { sess.podDrawn = true; drawPod(); } return; }
   const S = sess;
   $('rule').style.visibility = S.key === 'pillow' && !S.ordered ? 'hidden' : '';
   const errHtml = S.err ? `<div class="err">${esc(S.err)}</div>` : '';
@@ -1731,6 +1755,33 @@ async function capSeek(a, t) {
   const u = URL.createObjectURL(b); capBlobs.push(u); while (capBlobs.length > 6) URL.revokeObjectURL(capBlobs.shift());
   a.addEventListener('loadedmetadata', () => { try { a.currentTime = t; } catch (err) {} if (go) a.play().catch(() => {}); }, { once: true });
   a.src = u;
+}
+var POD = null;   /* 小屋版：播客台 */
+async function podLoad() { if (POD && !POD.bad) return POD; try { const r = await fetch('data/pod.json?t=' + Date.now(), { cache: 'no-store' }); if (!r.ok) throw 0; POD = await r.json(); } catch (e) { POD = { channels: [], eps: [], bad: true }; } return POD; }
+function podDur(s) { const m = Math.round((s || 0) / 60); return m >= 60 ? Math.floor(m / 60) + ' 小时' + (m % 60 ? ' ' + (m % 60) + ' 分' : '') : m + ' 分钟'; }
+async function drawPod() {
+  const n = $('notes');
+  n.innerHTML = '<div class="pod-head">翻节目单…</div>';
+  const d = await podLoad();
+  if (!sess || sess.key !== 'pod') return;
+  if (!d.eps || !d.eps.length) { n.innerHTML = '<div class="err">节目单没拿到，过会儿再来。</div>'; sess.podDrawn = false; return; }
+  const ch = {}; (d.channels || []).forEach(c => ch[c.id] = c);
+  let h = '<div class="pod-head">YouTube 上挑的几档节目 · 点封面就放' + (d.updated ? ' · ' + fmtDay(d.updated) + '换的' : '') + '</div>', last = null;
+  d.eps.forEach(e => {
+    const c = ch[e.ch] || { name: '', about: '' };
+    if (e.ch !== last) { last = e.ch; h += `<div class="pod-ch"><a href="https://www.youtube.com/channel/${esc(e.ch)}" target="_blank" rel="noopener">${esc(c.name)}</a>${c.by === 'miles' ? '<span class="pod-mine">Miles 加的</span>' : ''}<p>${esc(c.about || '')}</p></div>`; }
+    h += `<div class="pod-ep"><div class="pod-v" role="button" tabindex="0" data-v="${esc(e.id)}" aria-label="播放 ${esc(e.title)}"><img loading="lazy" src="https://i.ytimg.com/vi/${esc(e.id)}/hqdefault.jpg" alt=""><span class="pod-pl">▶</span><span class="pod-d">${podDur(e.secs)}</span></div><div class="pod-t">${esc(e.title)}</div><div class="pod-m">${esc(e.date || '')} · <a href="https://www.youtube.com/watch?v=${esc(e.id)}" target="_blank" rel="noopener">去 YouTube 看</a></div><div class="pod-s">${esc(e.say)}</div></div>`;
+  });
+  h += '<div class="pod-foot">用的是 YouTube 自己的播放器，节目是人家的，小屋不下载不转存。放不出来就点「去 YouTube 看」。</div>';
+  n.innerHTML = h;
+  n.querySelectorAll('.pod-v').forEach(b => { b.addEventListener('click', () => podPlay(b)); b.addEventListener('keydown', ev => { if (ev.key === 'Enter') podPlay(b); }); });
+}
+function podPlay(b) {
+  if (b.classList.contains('on')) return;
+  document.querySelectorAll('.pod-v.on').forEach(x => { x.classList.remove('on'); x.innerHTML = x._h; });
+  b._h = b.innerHTML; b.classList.add('on');
+  b.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(b.dataset.v)}?autoplay=1&playsinline=1&rel=0" title="YouTube" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
+  lcd('在放 YouTube 节目');
 }
 function fmtDay(t) { const d = new Date(t); return (d.getMonth() + 1) + '月' + d.getDate() + '日 ' + ['周日', '周一', '周二', '周三', '周四', '周五', '周六'][d.getDay()]; }
 function hm2(t) { const d = new Date(t); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }

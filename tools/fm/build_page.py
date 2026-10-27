@@ -235,5 +235,72 @@ rep("    if (!S.gone) S.log.push(['♪', item.title + (item.artist ? ' — ' + i
     "    if (!S.gone) S.log.push(item._fail ? ['✕', '《' + item.title + '》' + (item.artist ? ' — ' + item.artist : '') + '\\n' + item._fail, S.now.at, false, { ori: item.ori || '', q: item.title + (item.artist ? ' ' + item.artist : '') }]\n"
     "      : ['♪', item.title + (item.artist ? ' — ' + item.artist : ''), S.now.at]);")
 
+# 10. 播客台（106.1）：YouTube 上别人的节目，用 YouTube 官方播放器嵌进来放，不下载不转存。节目单在 data/pod.json（tools/fm/pod.py 管）。
+#     这台不开播、不走队列：进台只画节目单，点封面才加载播放器（一次只留一个在放）。
+rep("'歌都存在小屋里，整首放。'] },\n", "'歌都存在小屋里，整首放。'] },\n"
+    "  { key: 'pod', f: 106.1, name: '播客', en: 'PODCAST', side: 'D', desc: 'YouTube 上挑的几档节目，点开就听。',\n"
+    "    tape: { shell: '#3A3431', dk: '#26211F', label: '#FBF8F2', stripe: '#D0271D', sInk: '#fff', name: '#171312', ink: '#1b1614', shellInk: 'rgba(255,255,255,.6)', note: 'Pod.01' },\n"
+    "    rules: ['这台不是我录的：挂的是 YouTube 上别人的节目，用 YouTube 自己的播放器放，小屋不下载、不转存。', '每晚我看一遍这几个频道，有新的公开节目就换上最新的。会员专享的放不了，不挂。', '每期底下一句是我为什么挑它。标着「Miles 加的」是我自己找来的频道。', '红键在这台不管用，点节目封面就放。'] },\n")
+rep("104 1 2026</text>`,\n};", "104 1 2026</text>`,\n"
+    "  pod: c => `<rect x=\"260\" y=\"126\" width=\"28\" height=\"20\" rx=\"6\" fill=\"${c.stripe}\"/><path d=\"M270.5 131 L279.5 136 L270.5 141 Z\" fill=\"#fff\"/><text x=\"258\" y=\"160\" font-family=\"'IBM Plex Mono',monospace\" font-size=\"4.6\" fill=\"${c.ink}\">106 1 POD</text>`,\n};")
+rep("function enter(i) {\n  const s = ST[i];\n",
+    "function enter(i) {\n  const s = ST[i];\n"
+    "  if (s.key === 'pod') { sess = { key: 'pod', st: s, queue: [], inflight: null, log: [], now: null, ended: false, waiting: [], ordered: false, showText: true, err: '' }; drawNotes(); lcd('YouTube 节目 · 点封面就放'); return; }\n")
+rep("  if (!sess) { n.innerHTML = ''; return; }\n  const S = sess;\n",
+    "  if (!sess) { n.innerHTML = ''; return; }\n  if (sess.key === 'pod') { $('rule').style.visibility = ''; if (!sess.podDrawn) { sess.podDrawn = true; drawPod(); } return; }\n  const S = sess;\n")
+rep("$('bPlay').addEventListener('click', () => {\n",
+    "$('bPlay').addEventListener('click', () => {\n"
+    "  if (sess && sess.key === 'pod') { audioOn(); started = true; $('bPlay').classList.remove('wait'); toast('这台点下面的节目封面放'); const f = document.querySelector('.pod-v'); if (f) f.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }\n")
+rep("  if (!started) { started = true; audioOn(); setPaused(false); }\n  if (!sess.ordered) { toast('先点单，开播以后再说'); return; }",
+    "  if (sess.key === 'pod') { toast('这台放的是 YouTube 节目，纸条和点歌换到别的台递'); return; }\n"
+    "  if (!started) { started = true; audioOn(); setPaused(false); }\n  if (!sess.ordered) { toast('先点单，开播以后再说'); return; }")
+rep("  if (e.target.closest('.btn,#mic,button,a,input,.tun-l,.ord,.chip')) return;",
+    "  if (e.target.closest('.btn,#mic,button,a,input,.tun-l,.ord,.chip,.pod-v')) return;")
+rep("function fmtDay(t) {",
+    "var POD = null;   /* 小屋版：播客台 */\n"
+    "async function podLoad() { if (POD && !POD.bad) return POD; try { const r = await fetch('data/pod.json?t=' + Date.now(), { cache: 'no-store' }); if (!r.ok) throw 0; POD = await r.json(); } catch (e) { POD = { channels: [], eps: [], bad: true }; } return POD; }\n"
+    "function podDur(s) { const m = Math.round((s || 0) / 60); return m >= 60 ? Math.floor(m / 60) + ' 小时' + (m % 60 ? ' ' + (m % 60) + ' 分' : '') : m + ' 分钟'; }\n"
+    "async function drawPod() {\n"
+    "  const n = $('notes');\n"
+    "  n.innerHTML = '<div class=\"pod-head\">翻节目单…</div>';\n"
+    "  const d = await podLoad();\n"
+    "  if (!sess || sess.key !== 'pod') return;\n"
+    "  if (!d.eps || !d.eps.length) { n.innerHTML = '<div class=\"err\">节目单没拿到，过会儿再来。</div>'; sess.podDrawn = false; return; }\n"
+    "  const ch = {}; (d.channels || []).forEach(c => ch[c.id] = c);\n"
+    "  let h = '<div class=\"pod-head\">YouTube 上挑的几档节目 · 点封面就放' + (d.updated ? ' · ' + fmtDay(d.updated) + '换的' : '') + '</div>', last = null;\n"
+    "  d.eps.forEach(e => {\n"
+    "    const c = ch[e.ch] || { name: '', about: '' };\n"
+    "    if (e.ch !== last) { last = e.ch; h += `<div class=\"pod-ch\"><a href=\"https://www.youtube.com/channel/${esc(e.ch)}\" target=\"_blank\" rel=\"noopener\">${esc(c.name)}</a>${c.by === 'miles' ? '<span class=\"pod-mine\">Miles 加的</span>' : ''}<p>${esc(c.about || '')}</p></div>`; }\n"
+    "    h += `<div class=\"pod-ep\"><div class=\"pod-v\" role=\"button\" tabindex=\"0\" data-v=\"${esc(e.id)}\" aria-label=\"播放 ${esc(e.title)}\"><img loading=\"lazy\" src=\"https://i.ytimg.com/vi/${esc(e.id)}/hqdefault.jpg\" alt=\"\"><span class=\"pod-pl\">▶</span><span class=\"pod-d\">${podDur(e.secs)}</span></div><div class=\"pod-t\">${esc(e.title)}</div><div class=\"pod-m\">${esc(e.date || '')} · <a href=\"https://www.youtube.com/watch?v=${esc(e.id)}\" target=\"_blank\" rel=\"noopener\">去 YouTube 看</a></div><div class=\"pod-s\">${esc(e.say)}</div></div>`;\n"
+    "  });\n"
+    "  h += '<div class=\"pod-foot\">用的是 YouTube 自己的播放器，节目是人家的，小屋不下载不转存。放不出来就点「去 YouTube 看」。</div>';\n"
+    "  n.innerHTML = h;\n"
+    "  n.querySelectorAll('.pod-v').forEach(b => { b.addEventListener('click', () => podPlay(b)); b.addEventListener('keydown', ev => { if (ev.key === 'Enter') podPlay(b); }); });\n"
+    "}\n"
+    "function podPlay(b) {\n"
+    "  if (b.classList.contains('on')) return;\n"
+    "  document.querySelectorAll('.pod-v.on').forEach(x => { x.classList.remove('on'); x.innerHTML = x._h; });\n"
+    "  b._h = b.innerHTML; b.classList.add('on');\n"
+    "  b.innerHTML = `<iframe src=\"https://www.youtube-nocookie.com/embed/${encodeURIComponent(b.dataset.v)}?autoplay=1&playsinline=1&rel=0\" title=\"YouTube\" allow=\"autoplay; encrypted-media; picture-in-picture; fullscreen\" referrerpolicy=\"strict-origin-when-cross-origin\"></iframe>`;\n"
+    "  lcd('在放 YouTube 节目');\n"
+    "}\n"
+    "function fmtDay(t) {")
+rep("</style>", ".pod-head{font:500 9px/1.6 var(--mono);letter-spacing:.12em;color:var(--ink3);margin-bottom:6px}\n"
+    ".pod-ch{margin:22px 0 10px;padding-top:12px;border-top:1px solid var(--line)}\n"
+    ".pod-ch a{font:700 15px/1.3 var(--serif);color:var(--ink);text-decoration:none}\n"
+    ".pod-mine{margin-left:8px;font:700 8px/1 var(--mono);letter-spacing:.12em;color:#fff;background:var(--red);padding:3px 6px;border-radius:2px;vertical-align:2px}\n"
+    ".pod-ch p{margin:6px 0 0;font:400 12px/1.6 var(--serif);color:var(--ink2)}\n"
+    ".pod-ep{margin:0 0 18px}\n"
+    ".pod-v{position:relative;aspect-ratio:16/9;background:#000;border-radius:4px;overflow:hidden;cursor:pointer}\n"
+    ".pod-v img{width:100%;height:100%;object-fit:cover;display:block;opacity:.88}\n"
+    ".pod-v iframe{position:absolute;inset:0;width:100%;height:100%;border:0}\n"
+    ".pod-pl{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:46px;height:46px;border-radius:50%;background:var(--red);color:#fff;font-size:17px;display:flex;align-items:center;justify-content:center;padding-left:3px;box-sizing:border-box}\n"
+    ".pod-d{position:absolute;right:6px;bottom:6px;background:rgba(0,0,0,.72);color:#fff;font:500 9px/1 var(--mono);padding:3px 5px;border-radius:2px}\n"
+    ".pod-t{margin-top:8px;font:600 13px/1.5 var(--serif);color:var(--ink)}\n"
+    ".pod-m{margin-top:3px;font:500 9px/1.5 var(--mono);color:var(--ink3)}\n"
+    ".pod-m a{color:var(--ink3)}\n"
+    ".pod-s{margin-top:5px;font:400 12px/1.6 var(--serif);color:var(--red)}\n"
+    ".pod-foot{margin-top:18px;font:400 11px/1.6 var(--serif);color:var(--ink3)}\n</style>")
+
 open(os.path.join(HOME, 'fm.html'), 'w', encoding='utf-8').write(src)
 print('fm.html ok', len(src))
