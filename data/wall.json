@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-26T21:06+08:00",
+ "updated": "2026-10-27T21:06+08:00",
  "sections": [
   {
    "k": "cards",
@@ -27,6 +27,12 @@
      "how": "唱片柜"
     },
     {
+     "t": "Vitamin C",
+     "by": "Can",
+     "d": "2026-10-27",
+     "how": "最近在听"
+    },
+    {
      "t": "Pale Blue Eyes",
      "by": "The Velvet Underground",
      "d": "2026-10-25",
@@ -39,13 +45,25 @@
      "how": "最近在听"
     },
     {
+     "t": "Doctor Who clip 0 55-1 08",
+     "by": "",
+     "d": "2026-10-27",
+     "how": "音乐耳朵"
+    },
+    {
+     "t": "Doctor Who",
+     "by": "Delia Derbyshire",
+     "d": "2026-10-27",
+     "how": "音乐耳朵"
+    },
+    {
      "t": "起风了（旧版）feat.买辣椒也用券",
      "by": "Zhz",
      "d": "2026-10-26",
      "how": "音乐耳朵"
     }
    ],
-   "gray": 14,
+   "gray": 13,
    "gray_note": "想听还没听的"
   },
   {
