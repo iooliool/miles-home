@@ -44,6 +44,13 @@ async function fmData() {
   return FMD;
 }
 const fmLatest = (d, k) => ((d.stations || {})[k] || [])[0] || null;
+/* 听到哪了：每期记一个「听到第几段」（只存在她自己的浏览器里）。睡着前没听完的那期，回放单子上能接着听。 */
+function fmPosAll() { try { return JSON.parse(localStorage.getItem('miles_fm_pos') || '{}') || {}; } catch (e) { return {}; } }
+function fmPosSet(id, seg, n) {
+  const a = fmPosAll(); a[id] = { seg, n, t: Date.now() };
+  try { localStorage.setItem('miles_fm_pos', JSON.stringify(a)); } catch (e) {}
+}
+var fmFrom = 0;   /* 点了「接着听」：这次回放从第几段起 */
 const fmQ = (p, k) => { const m = p.match(new RegExp('[?&]' + k + '=([^&]*)')); return m ? decodeURIComponent(m[1]) : ''; };
 function fmDevice() {
   let dev = null; try { dev = localStorage.getItem('miles_device'); } catch (e) {}
@@ -76,8 +83,11 @@ async function api(p, opts) {
     if (kind === 'open') fmCur[k] = 0;
     else fmCur[k] = (fmCur[k] == null ? 0 : fmCur[k] + 1);
     const seg = n.segs[fmCur[k]];
-    if (!seg) return { parts: [], ended: true };
-    return { parts: JSON.parse(JSON.stringify(seg.parts)) };
+    if (!seg) { fmPosSet(n.id, n.segs.length, n.segs.length); return { parts: [], ended: true }; }
+    const parts = JSON.parse(JSON.stringify(seg.parts));
+    if (seg.her) parts.unshift({ type: 'her', text: seg.her, at: seg.her_at || '' });   /* 这段是回她的纸条：她的原话先上单子 */
+    parts.unshift({ type: 'mark', id: n.id, seg: fmCur[k], n: n.segs.length });   /* 记一下听到哪段了，回放里能接着听 */
+    return { parts };
   }
   if (path === '/api/radio/replay') {
     const lst = (d.stations || {})[fmQ(p, 'station')] || [];
@@ -101,6 +111,11 @@ async function api(p, opts) {
     const enc = fmQ(p, 'enc');
     for (const k in (d.stations || {})) for (const n of d.stations[k]) if (n.lyrics && n.lyrics[enc]) return n.lyrics[enc];
     return { pure: false, lines: [] };
+  }
+  if (path === '/api/radio/align') {   /* 逐字时间：align.py 用本机 whisper 对好存在 mp3 旁边的 .align.json */
+    const h = fmQ(p, 'h');
+    if (!/^assets\/fm\/[\w.\-\/]+\.align\.json$/.test(h)) return null;
+    return fetch(h).then(r => r.ok ? r.json() : null).catch(() => null);
   }
   if (path === '/api/radio/state' || path === '/api/radio/se' || path === '/api/radio/findsong') return {};
   if (path === '/api/asr') return { ok: false, detail: '热线要现场接，小屋这边接不了。写纸条吧。' };
@@ -171,6 +186,54 @@ rep('MIDNIGHT FM · 深夜电台</span>', 'MIDNIGHT FM · Miles 的深夜电台<
 # 8. 歌放不出来（会员歌、地区限制）时，play() 的失败会把整台按成暂停，卡在下一段。只有浏览器拦自动播放（NotAllowedError）才暂停。
 rep("songEl.play().then(songLevel).catch(() => setPaused(true));", "songEl.play().then(songLevel).catch(e => { if (e && e.name === 'NotAllowedError') setPaused(true); });")
 rep("a.play().catch(() => { /* 还是被拦了：等她按一下播放键 */ setPaused(true); });", "a.play().catch(e => { /* 还是被拦了：等她按一下播放键（小屋版：只有拦自动播放才停） */ if (e && e.name === 'NotAllowedError') setPaused(true); });")
+
+# 9. 回放（原版第十六版那套抽屉照留）上再加几样，都是静态站做得到的：
+# 9a. 听到哪了 / 接着听：队里每段前面放一个 mark，放到就记下；回放单子上没听完的那期多一行「上回听到第 X/N 段 · 接着听 →」
+rep("  if (item.type === 'her') {   /* v15 回放：她当时插的那句 */",
+    "  if (item.type === 'mark') { fmPosSet(item.id, item.seg, item.n); S.playing = null; return pump(S); }   /* 小屋版：听到第几段 */\n"
+    "  if (item.type === 'her') {   /* v15 回放：她当时插的那句 */")
+rep("    if (S.replay) { S.ended = true; setPaused(true); lcd('这一晚放完了');",
+    "    if (S.replay) { if (S.rpId) fmPosSet(S.rpId, S.rpN, S.rpN); S.ended = true; setPaused(true); lcd('这一晚放完了');")
+rep("""  for (const e of r.segs) {
+    if (e.her) q.push({ type: 'her', text: e.her, at: hm2(e.t) });
+    for (const p of e.parts || []) q.push(Object.assign({}, p, p.type === 'say' ? { text: p.show || '' } : {}));
+  }""",
+    """  const from = Math.max(0, Math.min(fmFrom || 0, r.segs.length - 1)); fmFrom = 0;
+  r.segs.forEach((e, si) => {
+    if (si < from) return;
+    q.push({ type: 'mark', id: r.night.id, seg: si, n: r.segs.length });
+    if (e.her) q.push({ type: 'her', text: e.her, at: e.her_at || '' });
+    for (const p of e.parts || []) q.push(Object.assign({}, p, p.type === 'say' ? { text: p.show || '' } : {}));
+  });""")
+rep("replay: true, begun: true };", "replay: true, begun: true, rpId: r.night.id, rpN: r.segs.length };")
+rep("  toast('回放 ' + fmtDay(r.night.from) + ' 那一晚');",
+    "  toast(from ? '接着上回，从第 ' + (from + 1) + ' 段放' : '回放 ' + fmtDay(r.night.from) + ' 那一晚');")
+rep("${n.back ? ' · 找回的' : ''}</i></li>`",
+    "${n.back ? ' · 找回的' : ''}</i>${fmPosHtml(n)}</li>`")
+rep("  box.querySelectorAll('li[data-id]').forEach(li => li.addEventListener('click', () => { closeReplay(); rpGo(key, +li.dataset.id); }));",
+    "  box.querySelectorAll('li[data-id]').forEach(li => li.addEventListener('click', () => { closeReplay(); rpGo(key, +li.dataset.id); }));\n"
+    "  box.querySelectorAll('span.rsm[data-from]').forEach(a => a.addEventListener('click', ev => { ev.stopPropagation(); closeReplay(); fmFrom = +a.dataset.from; rpGo(key, +a.dataset.id); }));")
+rep("var rpKey = null;",
+    "var rpKey = null;\n"
+    "function fmPosHtml(n) {   /* 小屋版：这期听到哪了 */\n"
+    "  const p = fmPosAll()[n.id];\n"
+    "  if (!p) return '';\n"
+    "  if (p.seg >= p.n) return '<span class=\"rsm done\">听完了 · 点标题从头再听</span>';\n"
+    "  if (p.seg < 1) return '';\n"
+    "  return `<span class=\"rsm\" data-id=\"${n.id}\" data-from=\"${p.seg}\">上回听到第 ${p.seg + 1}/${p.n} 段 · 接着听 →</span>`;\n"
+    "}")
+rep(".rp .none{", ".rp li span.rsm{color:var(--red);font-weight:700;cursor:pointer}\n.rp li span.rsm.done{color:var(--ink3);font-weight:500;cursor:inherit}\n.rp .none{")
+
+# 9b. 歌放不出来（还没存进小屋、文件坏了）：不悄悄跳过。单子里留一行「✕ 《歌名》 — 歌手 / 这首没放出来」，后面是去网易云听的口子
+rep("    catch (e) { toast('《' + part.title + '》放不出来'); await sleep(1500); return; }",
+    "    catch (e) { part._fail = (e && e.message) || '放不出来'; toast('《' + part.title + '》' + part._fail); await sleep(1500); return; }")
+rep("  if (!r || !r.url) { toast('《' + part.title + '》放不出来'); return; }",
+    "  if (!r || !r.url) { part._fail = '放不出来'; toast('《' + part.title + '》放不出来'); return; }")
+rep("    songEl.onerror = () => { toast('《' + part.title + '》放到一半断了'); done(); };",
+    "    songEl.onerror = () => { const t0 = songEl.currentTime || 0; if (t0 < 1) part._fail = '这首没放出来'; toast('《' + part.title + '》' + (t0 < 1 ? '没放出来' : '放到一半断了')); done(); };")
+rep("    if (!S.gone) S.log.push(['♪', item.title + (item.artist ? ' — ' + item.artist : ''), S.now.at]);",
+    "    if (!S.gone) S.log.push(item._fail ? ['✕', '《' + item.title + '》' + (item.artist ? ' — ' + item.artist : '') + '\\n' + item._fail, S.now.at, false, { ori: item.ori || '', q: item.title + (item.artist ? ' ' + item.artist : '') }]\n"
+    "      : ['♪', item.title + (item.artist ? ' — ' + item.artist : ''), S.now.at]);")
 
 open(os.path.join(HOME, 'fm.html'), 'w', encoding='utf-8').write(src)
 print('fm.html ok', len(src))

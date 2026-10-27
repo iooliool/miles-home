@@ -23,6 +23,9 @@
   ---                       每个 --- 起一段
   这一段要念的话（可以多行，录成一条）
   [song:歌名|歌手|网易云id]   这一段念完放的歌（可省，一段最多一首）
+  [her:她的原话|10-26 23:10]  这一段是回她的纸条 / 点歌：她窗台上的原话照抄，竖线后面是她递的时间（可省）。
+                            开播和回放时，这句先以「你」出现在单子上，再放我那段。小屋是公开的，她的私事不抄。
+publish 完会接着跑 align.py：本机 faster-whisper 听一遍我录的每一段，给字幕配上逐字时间（回放时字按真时间亮、点字能跳）。
 """
 import json, os, re, subprocess, sys, time, urllib.parse, urllib.request
 from datetime import datetime, timezone, timedelta
@@ -78,6 +81,12 @@ def parse(path):
             if len(f) < 3 or not f[2].isdigit():
                 sys.exit('song 行要写成 [song:歌名|歌手|网易云id]：' + s)
             cur['song'] = {'title': f[0], 'artist': f[1], 'id': f[2]}
+            continue
+        m = re.match(r'^\[her:(.+)\]$', s)
+        if m:
+            txt, _, at = m.group(1).rpartition('|') if '|' in m.group(1) else (m.group(1), '', '')
+            cur['her'] = txt.strip()
+            cur['her_at'] = at.strip()
             continue
         cur['say'].append(s)
     for k in ('station', 'date', 'title'):
@@ -252,7 +261,12 @@ def cmd_publish(path):
             total += so.get('secs', 0)
             songs.append(so['title'])
             parts.append(so)
-        out.append({'t': t, 'kind': 'open' if i == 0 else 'next', 'parts': parts})
+        seg = {'t': t, 'kind': 'open' if i == 0 else 'next', 'parts': parts}
+        if sg.get('her'):
+            seg['her'] = sg['her']
+            if sg.get('her_at'):
+                seg['her_at'] = sg['her_at']
+        out.append(seg)
         t += 60000
     for so in ([opener] if opener else []) + [p for sg in out for p in sg['parts'] if p['type'] == 'song']:
         ly = lyric(so['ori'])
@@ -272,6 +286,8 @@ def cmd_publish(path):
     data['updated'] = int(time.time() * 1000)
     json.dump(data, open(DATA, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     print('fm ok', st, day, meta['title'], '|', len(out), '段 |', say_n, '段有声 | 约', round(total / 60), '分钟 | 歌：', '、'.join(songs))
+    # 逐字字幕：给这期新录的每一段对时间（对不上的段页面照旧按分量估着亮）
+    subprocess.run([sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'align.py')])
 
 
 if __name__ == '__main__':
