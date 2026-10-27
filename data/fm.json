@@ -24,7 +24,8 @@
      "enc": "22520288",
      "ori": "22520288",
      "cover": "https://p1.music.126.net/jUMtcnDlp6a27agXWsoStA==/109951163436002008.jpg",
-     "secs": 212
+     "secs": 212,
+     "file": "assets/songs/can-vitamin-c.mp3"
     },
     "segs": [
      {
@@ -46,7 +47,8 @@
         "enc": "17534642",
         "ori": "17534642",
         "cover": "https://p1.music.126.net/Azpz_hvaQRUWgj-HnMOIJQ==/109951173247634295.jpg",
-        "secs": 607
+        "secs": 607,
+        "file": "assets/songs/neu-hallogallo.mp3"
        }
       ]
      },
@@ -69,7 +71,8 @@
         "enc": "548648069",
         "ori": "548648069",
         "cover": "https://p1.music.126.net/lU32Gnaino_A7ue3PLISxg==/109951163213971437.jpg",
-        "secs": 88
+        "secs": 88,
+        "file": "assets/songs/delia-derbyshire-doctor-who.mp3"
        }
       ]
      },
@@ -92,7 +95,8 @@
         "enc": "2442711",
         "ori": "2442711",
         "cover": "https://p2.music.126.net/TZkHsMLXaa5WJUvvtsSdQw==/622323581364229.jpg",
-        "secs": 302
+        "secs": 302,
+        "file": "assets/songs/dif-juz-cs.mp3"
        }
       ]
      },
@@ -115,7 +119,8 @@
         "enc": "523921215",
         "ori": "523921215",
         "cover": "https://p1.music.126.net/V5DyCyFth6GlJMyK0EeyAg==/109951164473317074.jpg",
-        "secs": 585
+        "secs": 585,
+        "file": "assets/songs/harmonia-deluxe.mp3"
        }
       ]
      }

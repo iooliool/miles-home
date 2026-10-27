@@ -1,0 +1,82 @@
+{
+ "songs": [
+  {
+   "slug": "sunday-morning",
+   "artist": "The Velvet Underground, Nico",
+   "title": "Sunday Morning",
+   "file": "assets/songs/sunday-morning.mp3",
+   "secs": 176,
+   "note": "地下丝绒和 Nico 那张同名专辑里的，1967 年。前奏叮叮当当，声音软，不吵人，刚醒听正好。",
+   "why": "10 月 27 日早上 8 点叫你起床配的。",
+   "source": "网易云 518846259",
+   "source_url": "https://music.163.com/song?id=518846259",
+   "added": "2026-10-27T08:23:26+08:00",
+   "ncm": "518846259"
+  },
+  {
+   "slug": "can-vitamin-c",
+   "artist": "Can",
+   "title": "Vitamin C",
+   "file": "assets/songs/can-vitamin-c.mp3",
+   "secs": 212,
+   "note": "鼓一进来人就醒了，三分半，比咖啡快。",
+   "why": "深夜电台第一期《从 Rother 开始》里放的。",
+   "source": "网易云 22520288",
+   "source_url": "https://music.163.com/song?id=22520288",
+   "added": "2026-10-27T08:21:54+08:00",
+   "ncm": "22520288"
+  },
+  {
+   "slug": "neu-hallogallo",
+   "artist": "Neu!",
+   "title": "Hallogallo",
+   "file": "assets/songs/neu-hallogallo.mp3",
+   "secs": 607,
+   "note": "十分钟，鼓一直往前走，你别等它变，它就不变。",
+   "why": "深夜电台第一期《从 Rother 开始》里放的。",
+   "source": "网易云 17534642",
+   "source_url": "https://music.163.com/song?id=17534642",
+   "added": "2026-10-27T08:20:54+08:00",
+   "ncm": "17534642"
+  },
+  {
+   "slug": "delia-derbyshire-doctor-who",
+   "artist": "Delia Derbyshire",
+   "title": "Doctor Who",
+   "file": "assets/songs/delia-derbyshire-doctor-who.mp3",
+   "secs": 88,
+   "note": "Doctor Who 那段开场曲，一分多钟。声音是她在 BBC 一点点拼出来的。",
+   "why": "深夜电台第一期《从 Rother 开始》里放的。",
+   "source": "网易云 548648069",
+   "source_url": "https://music.163.com/song?id=548648069",
+   "added": "2026-10-27T08:20:09+08:00",
+   "ncm": "548648069"
+  },
+  {
+   "slug": "dif-juz-cs",
+   "artist": "Dif Juz",
+   "title": "CS",
+   "file": "assets/songs/dif-juz-cs.mp3",
+   "secs": 303,
+   "note": "4AD 的乐队。",
+   "why": "深夜电台第一期《从 Rother 开始》里放的。",
+   "source": "网易云 2442711",
+   "source_url": "https://music.163.com/song?id=2442711",
+   "added": "2026-10-27T08:19:00+08:00",
+   "ncm": "2442711"
+  },
+  {
+   "slug": "harmonia-deluxe",
+   "artist": "Harmonia",
+   "title": "Deluxe (Immer Weiter)",
+   "file": "assets/songs/harmonia-deluxe.mp3",
+   "secs": 585,
+   "note": "比 Hallogallo 松一点，像跑完了在慢慢走。",
+   "why": "深夜电台第一期《从 Rother 开始》里放的。",
+   "source": "网易云 523921215",
+   "source_url": "https://music.163.com/song?id=523921215",
+   "added": "2026-10-27T08:18:16+08:00",
+   "ncm": "523921215"
+  }
+ ]
+}

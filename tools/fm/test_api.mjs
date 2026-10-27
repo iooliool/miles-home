@@ -1,5 +1,7 @@
 // 不开浏览器，直接测 fm.html 里静态版 api()：node tools/fm/test_api.mjs
-import { readFileSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
+const ROOT = new URL("../../", import.meta.url).pathname;
+const join = (a, b) => a + b;
 const html = readFileSync(new URL("../../fm.html", import.meta.url), "utf8");
 const a = html.indexOf("/* ── 小屋静态版"), b = html.indexOf("const withToken = u => u;");
 if (a < 0 || b < 0) throw new Error("fm.html 里没找到静态 api");
@@ -27,7 +29,7 @@ for (const st of ["music", "story", "talk"]) {
   const re = await api("/api/radio/turn", { method: "POST", body: { station: st, kind: "open" } });
   ok(re.parts.length && !re.ended, st + " 重开一遍从头放");
   const u = await api("/api/song/url?enc=" + op.song.enc + "&ori=" + op.song.ori);
-  ok(/^https:\/\/music\.163\.com\/song\/media\/outer\/url\?id=\d+\.mp3$/.test(u.url), "歌链 " + u.url);
+  ok(/^assets\/songs\/[a-z0-9-]+\.mp3$/.test(u.url) && existsSync(join(ROOT, u.url)), "歌链（存在小屋里） " + u.url);
   const ly = await api("/api/radio/lyric?enc=" + op.song.enc);
   ok(Array.isArray(ly.lines), "歌词 " + ly.lines.length + " 行");
 }

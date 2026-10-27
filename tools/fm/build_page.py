@@ -4,7 +4,7 @@
 原页所有动作都找后端 /api/... 要；小屋没有常开的后端，所以这里把 api() 换成读 data/fm.json 的静态版：
 - 开播 = 放这个台最新录好的一期；下一段 = 这一期的下一段；放完就收台。
 - 回放 = 以前录的每一期。
-- 歌：网易云外链（music.163.com/song/media/outer/url）；歌词是出片时存好的。
+- 歌：存在小屋 assets/songs/ 里的整首 mp3（出片时 fm.py 用 tools/songs.py 下好，跟 ROOM 21 共用），part.file 指过去；没存的歌跳过。歌词是出片时存好的。
 - 纸条、点歌：递到小屋窗台（miles-home-api 的 /notes），Miles 下一期念 / 放。
 - 热线（按住说话）要现场语音转写和现场模型，静态站做不到，按下去提示写纸条。
 - 枕話台不要。
@@ -48,7 +48,7 @@ const fmQ = (p, k) => { const m = p.match(new RegExp('[?&]' + k + '=([^&]*)')); 
 function fmDevice() {
   let dev = null; try { dev = localStorage.getItem('miles_device'); } catch (e) {}
   if (!dev) {
-    const a = new Uint8Array(8); crypto.getRandomValues(a);
+    const a = new Uint8Array(24); crypto.getRandomValues(a);   /* 跟 sill.js 一样，窗台接口要求至少 20 位 */
     dev = 'd' + Array.prototype.map.call(a, x => ('0' + x.toString(16)).slice(-2)).join('');
     try { localStorage.setItem('miles_device', dev); } catch (e) {}
   }
@@ -88,9 +88,14 @@ async function api(p, opts) {
     return { night: fmSum(n), segs: n.segs };
   }
   if (path === '/api/song/url') {
+    /* 歌存在小屋里（assets/songs/，跟 ROOM 21「给你的歌」共用一份），不走网易云外链 */
     const id = fmQ(p, 'ori') || fmQ(p, 'enc');
-    if (!/^\d+$/.test(id)) throw fmErr('没有这首');
-    return { url: 'https://music.163.com/song/media/outer/url?id=' + id + '.mp3' };
+    for (const k in (d.stations || {})) for (const n of d.stations[k]) {
+      for (const x of [n.opener].concat((n.segs || []).flatMap(sg => sg.parts || []))) {
+        if (x && x.type === 'song' && x.file && (String(x.ori) === id || String(x.enc) === id)) return { url: x.file };
+      }
+    }
+    throw fmErr('这首还没存进小屋');
   }
   if (path === '/api/radio/lyric') {
     const enc = fmQ(p, 'enc');

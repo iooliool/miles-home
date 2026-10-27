@@ -10,7 +10,10 @@
   python3 tools/fm/fm.py hot <歌id>                 # 这首的热评（念评论只念这里查到的原话，查不到就不念）
   python3 tools/fm/fm.py plan  稿子.txt              # 列出每段要录的话和录音该存的路径
   （用 sesame_voice_notes__record_voice_note 一段段录，path 填 plan 给的 raw 路径）
-  python3 tools/fm/fm.py publish 稿子.txt            # 调亮、拼成一晚、写进 data/fm.json，再 git 推
+  python3 tools/fm/fm.py publish 稿子.txt            # 调亮、拼成一晚、把每首歌存进小屋（tools/songs.py）、写进 data/fm.json，再 git 推
+  python3 tools/fm/fm.py attach all                  # 给已出的各期补存歌：没存进小屋的歌下好、写上 file
+歌：不走网易云外链（我电脑在美国，外链 404，也不合她「音乐存小屋」的规矩）。publish 时每首歌用 tools/songs.py
+  按网易云 id 下整首存进 assets/songs/（跟 ROOM 21「给你的歌」共用一份），part 里写 file；下不到的歌页面上会跳过，publish 会报出来。
 
 稿子格式：
   #station music            台：story / talk / music（枕話不做）
@@ -138,6 +141,49 @@ def song_info(s):
     return info
 
 
+def slug_of(title, artist):
+    x = re.sub(r'[^a-z0-9]+', '-', ('%s %s' % (artist.split(',')[0], title)).lower()).strip('-')
+    return x or 'ncm'
+
+
+def store_song(info, why):
+    """把这首歌存进小屋（跟 ROOM 21 共用 data/songs.json / assets/songs），成功就在 info 里写 file。"""
+    sid = str(info.get('ori') or info.get('enc') or '')
+    sj = os.path.join(HOME, 'data', 'songs.json')
+    def lookup():
+        try:
+            for r in json.load(open(sj, encoding='utf-8')).get('songs', []):
+                if str(r.get('ncm', '')) == sid and os.path.exists(os.path.join(HOME, r['file'])):
+                    return r['file']
+        except FileNotFoundError:
+            pass
+    f = lookup()
+    if not f and sid:
+        cmd = [sys.executable, os.path.join(HOME, 'tools', 'songs.py'), 'add', info['artist'], info['title'],
+               '--ncm', sid, '--slug', slug_of(info['title'], info['artist']), '--why', why, '--force']
+        if info.get('secs') and info['secs'] < 60:
+            cmd.append('--short')
+        r = subprocess.run(cmd, capture_output=True, text=True)
+        print('  ', info['title'], (r.stdout.strip().splitlines() or ['?'])[-1] if r.returncode == 0 else '没存成：' + r.stderr.strip()[-200:])
+        f = lookup()
+    if f:
+        info['file'] = f
+    else:
+        print('  注意：', info['title'], '没存进小屋，电台放到这首会跳过')
+    return info
+
+
+def cmd_attach(_):
+    data = json.load(open(DATA, encoding='utf-8'))
+    for st, lst in data.get('stations', {}).items():
+        for n in lst:
+            for x in [n.get('opener')] + [p for sg in n.get('segs', []) for p in sg.get('parts', [])]:
+                if x and x.get('type') == 'song' and not x.get('file'):
+                    store_song(x, '深夜电台「%s」里放的。' % n['title'])
+    json.dump(data, open(DATA, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+    print('attach ok')
+
+
 TS = re.compile(r'\[(\d+):(\d+(?:\.\d+)?)\]')
 CREDIT = re.compile(r'^(作词|作曲|编曲|制作|混音|母带|词|曲|Lyrics|Composer|Producer)\s*[:：]', re.I)
 
@@ -184,8 +230,9 @@ def cmd_publish(path):
         sys.exit('这些段还没录：\n' + '\n'.join(missing))
     out, lyrics, total, say_n, songs = [], {}, 0.0, 0, []
     opener = None
+    why = '深夜电台「%s」里放的。' % meta['title']
     if op:
-        opener = song_info(op)
+        opener = store_song(song_info(op), why)
         total += opener.get('secs', 0)
         songs.append(opener['title'])
     t = nid
@@ -201,7 +248,7 @@ def cmd_publish(path):
             show = ' '.join(x for x in sg['text'].split('\n') if x)
             parts.append({'type': 'say', 'text': show, 'show': show, 'pos': '', 'audio': rel_dir + '/' + name, 'secs': round(secs, 1)})
         if sg['song']:
-            so = song_info(sg['song'])
+            so = store_song(song_info(sg['song']), why)
             total += so.get('secs', 0)
             songs.append(so['title'])
             parts.append(so)
@@ -231,4 +278,4 @@ if __name__ == '__main__':
     if len(sys.argv) < 3:
         sys.exit(__doc__)
     c, arg = sys.argv[1], sys.argv[2]
-    {'search': cmd_search, 'hot': cmd_hot, 'plan': cmd_plan, 'publish': cmd_publish}.get(c, lambda a: sys.exit(__doc__))(arg)
+    {'search': cmd_search, 'hot': cmd_hot, 'plan': cmd_plan, 'publish': cmd_publish, 'attach': cmd_attach}.get(c, lambda a: sys.exit(__doc__))(arg)

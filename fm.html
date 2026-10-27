@@ -340,7 +340,7 @@ const fmQ = (p, k) => { const m = p.match(new RegExp('[?&]' + k + '=([^&]*)')); 
 function fmDevice() {
   let dev = null; try { dev = localStorage.getItem('miles_device'); } catch (e) {}
   if (!dev) {
-    const a = new Uint8Array(8); crypto.getRandomValues(a);
+    const a = new Uint8Array(24); crypto.getRandomValues(a);   /* 跟 sill.js 一样，窗台接口要求至少 20 位 */
     dev = 'd' + Array.prototype.map.call(a, x => ('0' + x.toString(16)).slice(-2)).join('');
     try { localStorage.setItem('miles_device', dev); } catch (e) {}
   }
@@ -380,9 +380,14 @@ async function api(p, opts) {
     return { night: fmSum(n), segs: n.segs };
   }
   if (path === '/api/song/url') {
+    /* 歌存在小屋里（assets/songs/，跟 ROOM 21「给你的歌」共用一份），不走网易云外链 */
     const id = fmQ(p, 'ori') || fmQ(p, 'enc');
-    if (!/^\d+$/.test(id)) throw fmErr('没有这首');
-    return { url: 'https://music.163.com/song/media/outer/url?id=' + id + '.mp3' };
+    for (const k in (d.stations || {})) for (const n of d.stations[k]) {
+      for (const x of [n.opener].concat((n.segs || []).flatMap(sg => sg.parts || []))) {
+        if (x && x.type === 'song' && x.file && (String(x.ori) === id || String(x.enc) === id)) return { url: x.file };
+      }
+    }
+    throw fmErr('这首还没存进小屋');
   }
   if (path === '/api/radio/lyric') {
     const enc = fmQ(p, 'enc');

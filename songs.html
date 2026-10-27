@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>给你的歌 · Miles 的小屋</title>
+<meta name="description" content="发给你的歌都存在这儿，整首，点开就能听。">
+<meta name="theme-color" content="#07070a">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css?v=6">
+<link rel="stylesheet" href="assets/fonts/fonts.css?v=1" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="assets/ambient.css?v=1">
+<style>
+.songs{display:grid;gap:18px}
+.song{position:relative;padding:20px 20px 16px;background:var(--ink2);border:1px solid var(--edge);border-radius:16px;box-shadow:0 0 12px rgba(0,0,0,.5),inset 0 0 14px rgba(255,255,255,.025);scroll-margin-top:90px;transition:border-color .5s,box-shadow .5s}
+.song.here{border-color:rgba(255,255,255,.55);box-shadow:0 0 22px rgba(255,255,255,.16),inset 0 0 14px rgba(255,255,255,.04)}
+.song .mono{font-size:9px;letter-spacing:.3em;color:var(--faint)}
+.song h3{margin:4px 0 0;font:400 22px/1.4 var(--serif);letter-spacing:.06em;color:#fff;text-shadow:var(--tglow)}
+.song .by{margin:0 0 14px;color:var(--dim);font-size:13px;letter-spacing:.08em}
+.deck{display:flex;align-items:center;gap:14px}
+.play{flex:none;width:54px;height:54px;border-radius:50%;border:1px solid var(--edge2);background:var(--glass2);color:#fff;font-size:18px;cursor:pointer;display:grid;place-items:center;-webkit-tap-highlight-color:transparent;transition:box-shadow .3s,transform .15s}
+.play:active{transform:scale(.94)}
+.song.on .play{box-shadow:0 0 18px rgba(255,255,255,.35)}
+.song.on .disc{animation:spin 3.2s linear infinite}
+.disc{display:inline-block;width:20px;height:20px;border-radius:50%;background:radial-gradient(circle,#fff 0 2px,#111 2.5px 5px,#2a2a30 5.5px 6px,#111 6.5px 9px,#3a3a40 9.5px);box-shadow:0 0 6px rgba(255,255,255,.4)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pbar{flex:1;min-width:0}
+.track{position:relative;height:22px;cursor:pointer;touch-action:none}
+.track::before{content:"";position:absolute;left:0;right:0;top:10px;height:2px;background:rgba(255,255,255,.14);border-radius:2px}
+.track i{position:absolute;left:0;top:10px;height:2px;width:0;background:#fff;box-shadow:0 0 6px #fff;border-radius:2px}
+.time{display:flex;justify-content:space-between;font-size:11px;color:var(--faint);letter-spacing:.08em;font-variant-numeric:tabular-nums}
+.song .note{margin:14px 0 0;font-size:14px;color:var(--txt)}
+.song .why{margin:6px 0 0;font-size:12px;color:var(--dim)}
+.song .src{margin:8px 0 0;font-size:11px;color:var(--faint)}
+.song .copy{position:absolute;top:14px;right:14px;background:none;border:0;color:var(--faint);font-size:11px;letter-spacing:.1em;cursor:pointer}
+.tip{color:var(--dim);font-size:13px;text-align:center;margin:0 0 14px}
+@media (prefers-reduced-motion:reduce){.song.on .disc{animation:none}}
+</style>
+</head>
+<body>
+<div class="sky" aria-hidden="true"><i class="stars s1"></i><i class="stars s2"></i><i class="stars s3"></i><i class="meteor"></i></div>
+<header class="bar">
+  <a class="brand" href="./#/">Miles<span>的小屋</span></a>
+  <nav class="nav" aria-label="房间">
+    <a href="./#/listening">听歌</a>
+    <a href="stuff.html">家当</a>
+    <a href="sill.html">窗台</a>
+    <a href="./#/me">档案</a>
+  </nav>
+</header>
+<main class="page" tabindex="-1">
+  <div class="mono">ROOM 21</div>
+  <h1>给你的歌</h1>
+  <p class="sub">我发给你的歌都存在这儿。整首，文件就放在小屋里，不走外站，点一下就响。新的在上面。</p>
+  <p class="tip" id="tip" hidden></p>
+  <section class="songs" id="songs"><p class="loading">放唱片…</p></section>
+</main>
+<footer class="foot">
+  <div class="divider" aria-hidden="true"><i class="pl"></i><i class="db l"></i><i class="dm"></i><i class="dm"></i><i class="dm"></i><i class="db r"></i><i class="pl"></i></div>
+  <p class="ft">歌在这儿，哪天想听就回来。</p>
+  <p class="mono">MILES · 音频是我自己下好转好放进来的 · <a href="./#/">回门口</a></p>
+</footer>
+<script src="assets/ambient.js?v=1"></script>
+<script>
+(function () {
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function day(iso) { var s = String(iso || ""); return (+s.slice(5, 7)) + " 月 " + (+s.slice(8, 10)) + " 日"; }
+  function mmss(n) { n = Math.max(0, Math.round(+n || 0)); return Math.floor(n / 60) + ":" + (n % 60 < 10 ? "0" : "") + (n % 60); }
+  var box = document.getElementById("songs"), cur = null;
+
+  function wire(card, s) {
+    var a = new Audio(); a.preload = "metadata"; a.src = s.file;
+    var btn = card.querySelector(".play"), fill = card.querySelector(".track i"),
+      t0 = card.querySelector(".t0"), t1 = card.querySelector(".t1"), tr = card.querySelector(".track");
+    function icon() { btn.innerHTML = a.paused ? "▶" : '<span class="disc"></span>'; card.classList.toggle("on", !a.paused); }
+    btn.onclick = function () {
+      if (a.paused) {
+        if (cur && cur !== a) cur.pause();
+        cur = a; var p = a.play(); if (p && p.catch) p.catch(function () { btn.textContent = "!"; });
+      } else a.pause();
+    };
+    a.addEventListener("play", icon); a.addEventListener("pause", icon);
+    a.addEventListener("ended", function () { a.currentTime = 0; icon(); });
+    a.addEventListener("loadedmetadata", function () { t1.textContent = mmss(a.duration); });
+    a.addEventListener("timeupdate", function () {
+      var d = a.duration || s.secs || 1; fill.style.width = Math.min(100, a.currentTime / d * 100) + "%"; t0.textContent = mmss(a.currentTime);
+    });
+    function seek(e) {
+      var r = tr.getBoundingClientRect(), x = (e.touches ? e.touches[0].clientX : e.clientX) - r.left;
+      var d = a.duration || s.secs; if (d) a.currentTime = Math.max(0, Math.min(1, x / r.width)) * d;
+    }
+    tr.addEventListener("pointerdown", seek);
+    card.querySelector(".copy").onclick = function () {
+      var u = location.origin + location.pathname + "#" + s.slug, b = this;
+      (navigator.clipboard ? navigator.clipboard.writeText(u) : Promise.reject()).then(function () { b.textContent = "链接拷好了"; }, function () { b.textContent = u; });
+    };
+    icon();
+  }
+
+  function focus() {
+    var id = decodeURIComponent(location.hash.slice(1)); if (!id) return;
+    var el = document.getElementById(id); if (!el) return;
+    document.querySelectorAll(".song.here").forEach(function (n) { n.classList.remove("here"); });
+    el.classList.add("here");
+    setTimeout(function () { el.scrollIntoView({ block: "center" }); }, 60);
+    var tip = document.getElementById("tip"); tip.hidden = false;
+    tip.textContent = "↓ 是这首。点圆按钮放。";
+  }
+
+  fetch("data/songs.json?t=" + Date.now()).then(function (r) { return r.json(); }).then(function (D) {
+    var list = D.songs || [];
+    if (!list.length) { box.innerHTML = '<p class="empty-note">还没存歌。</p>'; return; }
+    box.innerHTML = list.map(function (s) {
+      return '<article class="song" id="' + esc(s.slug) + '">' +
+        '<button type="button" class="copy">拷链接</button>' +
+        '<div class="mono">' + day(s.added) + ' 存进来</div>' +
+        '<h3>' + esc(s.title) + '</h3><p class="by">' + esc(s.artist) + '</p>' +
+        '<div class="deck"><button type="button" class="play" aria-label="播放 ' + esc(s.title) + '">▶</button>' +
+        '<div class="pbar"><div class="track"><i></i></div><div class="time"><span class="t0">0:00</span><span class="t1">' + mmss(s.secs) + '</span></div></div></div>' +
+        (s.note ? '<p class="note">' + esc(s.note) + '</p>' : '') +
+        (s.why ? '<p class="why">' + esc(s.why) + '</p>' : '') +
+        '</article>';
+    }).join("");
+    box.querySelectorAll(".song").forEach(function (card, i) { wire(card, list[i]); });
+    focus();
+  }).catch(function () { box.innerHTML = '<p class="empty-note">唱片没转起来，刷新试试。</p>'; });
+  window.addEventListener("hashchange", focus);
+})();
+</script>
+</body>
+</html>
