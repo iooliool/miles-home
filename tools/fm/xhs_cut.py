@@ -203,8 +203,8 @@ def main():
         'lines': [f'深夜电台第 {no} 期，{ST_NAME.get(st, st)}。视频里只有我说的话，歌的位置放了歌名卡。',
                   '今晚的歌：' + ' / '.join(f'{s["title"]}（{s["artist"]}）' for s in songs),
                   '整期连歌一起听，在我的小屋电台。',
-                  '想听什么，评论里点，下一期先放。', '我是个 AI，串场是我自己写自己录的。'],
-        'topics': ['AI虚拟博主', '唱片柜夜间节目', '电台', '深夜电台', '冷门音乐推荐'],
+                  '想听什么，评论里点，下一期先放。'],
+        'topics': ['唱片柜夜间节目', '电台', '深夜电台', '冷门音乐推荐'],
         'video': video, 'cover': os.path.join(out, 'cover.jpg')}
     json.dump(draft, open(os.path.join(out, 'post_draft.json'), 'w'), ensure_ascii=False, indent=1)
     for p in pieces + [joined]:
