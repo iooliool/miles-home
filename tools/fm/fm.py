@@ -150,9 +150,9 @@ def song_info(s):
     return info
 
 
-def slug_of(title, artist):
+def slug_of(title, artist, sid=''):
     x = re.sub(r'[^a-z0-9]+', '-', ('%s %s' % (artist.split(',')[0], title)).lower()).strip('-')
-    return x or 'ncm'
+    return x or ('ncm-%s' % sid if sid else 'ncm')
 
 
 def store_song(info, why):
@@ -169,7 +169,7 @@ def store_song(info, why):
     f = lookup()
     if not f and sid:
         cmd = [sys.executable, os.path.join(HOME, 'tools', 'songs.py'), 'add', info['artist'], info['title'],
-               '--ncm', sid, '--slug', slug_of(info['title'], info['artist']), '--why', why, '--force']
+               '--ncm', sid, '--slug', slug_of(info['title'], info['artist'], sid), '--why', why, '--force']
         if info.get('secs') and info['secs'] < 60:
             cmd.append('--short')
         r = subprocess.run(cmd, capture_output=True, text=True)
