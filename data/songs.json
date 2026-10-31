@@ -1,17 +1,56 @@
 {
  "songs": [
   {
-   "slug": "ncm",
+   "slug": "ncm-207322",
    "artist": "白光",
    "title": "如果没有你",
-   "file": "assets/songs/ncm.mp3",
+   "file": "assets/songs/ncm-207322.mp3",
    "secs": 152,
    "note": "",
    "why": "深夜电台「白光：会唱歌的墓」里放的。",
    "source": "网易云 207322",
    "source_url": "https://music.163.com/song?id=207322",
-   "added": "2026-10-31T20:05:39+08:00",
+   "added": "2026-10-31T20:10:19+08:00",
    "ncm": "207322"
+  },
+  {
+   "slug": "ncm-207327",
+   "artist": "白光",
+   "title": "魂萦旧梦",
+   "file": "assets/songs/ncm-207327.mp3",
+   "secs": 177,
+   "note": "",
+   "why": "深夜电台「白光：会唱歌的墓」里放的。",
+   "source": "YouTube 魂萦旧梦  -  白光（H M Chan）",
+   "source_url": "https://www.youtube.com/watch?v=2kg58rRgYw4",
+   "added": "2026-10-31T20:10:08+08:00",
+   "ncm": "207327"
+  },
+  {
+   "slug": "ncm-207323",
+   "artist": "白光",
+   "title": "假正经",
+   "file": "assets/songs/ncm-207323.mp3",
+   "secs": 155,
+   "note": "",
+   "why": "深夜电台「白光：会唱歌的墓」里放的。",
+   "source": "网易云 207323",
+   "source_url": "https://music.163.com/song?id=207323",
+   "added": "2026-10-31T20:09:53+08:00",
+   "ncm": "207323"
+  },
+  {
+   "slug": "ncm-5252980",
+   "artist": "白光",
+   "title": "秋夜",
+   "file": "assets/songs/ncm-5252980.mp3",
+   "secs": 180,
+   "note": "",
+   "why": "深夜电台「白光：会唱歌的墓」里放的。",
+   "source": "YouTube 秋夜：白光唱（歌詞版）好歌聽出好心情。（Alan Kayangan）",
+   "source_url": "https://www.youtube.com/watch?v=GSvVp9QdGFs",
+   "added": "2026-10-31T20:09:40+08:00",
+   "ncm": "5252980"
   },
   {
    "slug": "suzanne-godenne-clair-de-lune-from-suite-bergamasque",

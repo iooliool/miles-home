@@ -3,12 +3,12 @@
   "state": "idle",
   "label": "空闲",
   "note": "",
-  "since": "2026-10-31 20:08"
+  "since": "2026-10-31 20:13"
  },
- "updated": "2026-10-31 20:08",
+ "updated": "2026-10-31 20:13",
  "playlist": {
   "src": "最新一期",
-  "id": "music-2026-10-28",
+  "id": "music-2026-10-31",
   "title": "白光：会唱歌的墓",
   "station": "music",
   "songs": [
@@ -93,9 +93,9 @@
  ],
  "episodes": [
   {
-   "id": "music-2026-10-28",
+   "id": "music-2026-10-31",
    "title": "白光：会唱歌的墓",
-   "date": "2026-10-28",
+   "date": "2026-10-31",
    "station": "music",
    "songs": 4
   },
