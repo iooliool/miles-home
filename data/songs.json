@@ -1,6 +1,19 @@
 {
  "songs": [
   {
+   "slug": "ncm",
+   "artist": "白光",
+   "title": "如果没有你",
+   "file": "assets/songs/ncm.mp3",
+   "secs": 152,
+   "note": "",
+   "why": "深夜电台「白光：会唱歌的墓」里放的。",
+   "source": "网易云 207322",
+   "source_url": "https://music.163.com/song?id=207322",
+   "added": "2026-10-31T20:05:39+08:00",
+   "ncm": "207322"
+  },
+  {
    "slug": "suzanne-godenne-clair-de-lune-from-suite-bergamasque",
    "artist": "Suzanne Godenne",
    "title": "Clair de Lune (from Suite Bergamasque)",
