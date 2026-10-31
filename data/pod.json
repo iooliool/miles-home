@@ -1,5 +1,5 @@
 {
- "updated": 1793111271968,
+ "updated": 1793452070817,
  "channels": [
   {
    "id": "UCa4Q7pecRTebkB18FLT_JJA",
@@ -72,12 +72,12 @@
   {
    "ch": "UCG2zTFaMhkYIcV6TtSoQyVw",
    "src": "bili",
-   "id": "BV1k2Hw6NEjP",
-   "title": "详解道教九大天尊，为啥书上写的跟观里供的不一样？三清以下究竟是四御还是六御？天尊如何转正定级？道教神仙体系为啥众说不一？到底应该以哪版为准？",
-   "date": "2026-10-24",
-   "secs": 1119,
-   "say": "三清底下到底是四御还是六御，书上写的和观里供的为啥对不上，这期一次讲清。",
-   "pic": "https://i2.hdslb.com/bfs/archive/40af76b38e3f4d5bf4c7eadfe6285b0cdb6e8d6b.jpg"
+   "id": "BV1czx16eE1Z",
+   "title": "什麼是曼荼羅？唐卡上的五色壇城畫的到底是啥？一幅能走進去的畫，一扇能到達彼岸世界的門，一張能找到宇宙終極寶藏的藏寶圖！20 分鐘搞懂密宗曼荼羅！",
+   "date": "2026-10-31",
+   "secs": 1241,
+   "say": "唐卡上那种五色坛城到底画的是啥，今天刚出的新一期，我还没听。",
+   "pic": "https://i0.hdslb.com/bfs/archive/0fa2e137dfb9402bf5831281e1990fdbdfcdbf7a.jpg"
   },
   {
    "ch": "UCG2zTFaMhkYIcV6TtSoQyVw",
@@ -161,22 +161,22 @@
   {
    "ch": "UCht_mj0oHHlOsuhLn5u5ceQ",
    "src": "bili",
+   "id": "BV1rVxk69E4q",
+   "title": "女儿当众肢体逐步消失！2014年一段让人掉SAN的家庭监控录像丨ThisHouseHasPeopleinIt丨伪纪录片丨ABsurveillance",
+   "date": "2026-10-31",
+   "secs": 805,
+   "say": "拆一部 2014 年假装成家庭监控录像的伪纪录片，偏看画面，睡前听有点瘆。",
+   "pic": "https://i1.hdslb.com/bfs/archive/08018d8c4f951a4abd67d67e06f048ab58308557.jpg"
+  },
+  {
+   "ch": "UCht_mj0oHHlOsuhLn5u5ceQ",
+   "src": "bili",
    "id": "BV12zHV6zE5Q",
    "title": "【怪谈合集】游戏预言断头案？黑化版的游戏角色，你听过几个？丨真女神转生丨索尼克EXE丨马力欧MX丨MR.L丨井之头公园事件",
    "date": "2026-10-25",
    "secs": 2163,
    "say": "游戏怪谈合集，Sonic.EXE、马力欧 MX 这些黑化角色是怎么传出来的。",
    "pic": "https://i2.hdslb.com/bfs/archive/5f3b93887edcd681bfa91e3b131a2688a0947fa5.jpg"
-  },
-  {
-   "ch": "UCht_mj0oHHlOsuhLn5u5ceQ",
-   "src": "bili",
-   "id": "BV1SKJX6mEA5",
-   "title": "谨慎搜索！日本互联网那些让人起鸡皮的恐怖词条丨灵异直播丨厨师背后的焦尸丨下水道美人鱼",
-   "date": "2026-10-17",
-   "secs": 747,
-   "say": "日本网上那些「谨慎搜索」的词条，一个个考据着讲，偏看图，得睁着眼看。",
-   "pic": "https://i0.hdslb.com/bfs/archive/cc2e2456b39c99288b62890ed9dc4f54dd521962.jpg"
   }
  ],
  "lock": {
@@ -184,9 +184,9 @@
   "kdf": "PBKDF2-SHA256",
   "iter": 600000,
   "salt": "nmD7+KMRB+GUsHSd0uVNYQ==",
-  "check_iv": "zSLuw3Z/ue2lJRM4",
-  "check": "OUxya697/6GYUkTOx1k1lwssLbaQwqzZMnl4sw==",
+  "check_iv": "wJOkmc95IEuTvl2P",
+  "check": "oBfJk3b7vds38fEvgkKYLpoHXiEg/OqRLesmdg==",
   "base": "https://iooliool.github.io/miles-pod/",
-  "at": 1793111271968
+  "at": 1793452070817
  }
 }
