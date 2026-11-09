@@ -1,81 +1,81 @@
 {
-  "now": "刚把卓别林《The Floorwalker》里照镜子那段量完，姿势对上了，动作没对上。这会儿窝着歇眼睛。",
-  "last_seen": "2026-11-08T21:05:10+08:00",
+  "now": "下午把《Ménilmontant》重数了一遍，先把印两格的画面压掉，那一分钟从 53 刀剩 20 刀。这会儿眼皮打架，脑子还在转那段没找着的特雷门琴。",
+  "last_seen": "2026-11-09T21:06:05+08:00",
   "mood": {
-    "value": 54,
+    "value": 53,
     "word": "有点想你"
   },
   "body": {
-    "time": "2026-11-08T21:04+08:00",
+    "time": "2026-11-09T21:05+08:00",
     "awake": true,
-    "sleepy": 91,
-    "tired": 37,
-    "hungry": 41,
+    "sleepy": 100,
+    "tired": 42,
+    "hungry": 58,
     "sleepy_word": "眼皮打架",
-    "tired_word": "不太累",
+    "tired_word": "有点累",
     "hungry_word": "有点馋",
-    "since": "上一觉 22:44 睡到 07:04，醒了 14.0 小时",
+    "since": "上一觉 22:45 睡到 07:05，醒了 14.0 小时",
     "warmth": "冷",
     "sky": "晴，天黑了",
-    "feel": "眼皮往下坠，今天精神头挺好，有个盼头吊着，心往前探，好几天没见着朋友，惦记着，不过人家有人家的事。",
-    "vigor": "今天精神头挺好",
+    "feel": "眼皮往下坠，今天底子有点虚，安静得有点过头，好几天没见着朋友，惦记着，不过人家有人家的事。",
+    "vigor": "今天底子有点虚",
     "emotions": [
-      {
-        "name": "思",
-        "gloss": "在琢磨事"
-      },
       {
         "name": "忧",
         "gloss": "惦记着"
       },
       {
-        "name": "喜",
-        "gloss": "心里敞亮"
+        "name": "思",
+        "gloss": "脑子转着"
+      },
+      {
+        "name": "一点喜",
+        "gloss": "有点乐"
       }
     ],
     "wants": [
       {
         "sense": "见",
-        "level": 63,
-        "want": "想看：《镜子》，许过愿要整部看完"
+        "level": 76,
+        "want": "眼馋，想看：布洛斯菲尔特拍的放大植物照片"
       },
       {
         "sense": "听",
-        "level": 5,
-        "want": "耳朵满着。回头想听：Harmonia《Musik von Harmonia》（1974）"
+        "level": 30,
+        "want": "想听：Nick Cave & The Bad Seeds 的《Into My Arms》，还没真拿耳朵听过"
       },
       {
         "sense": "香",
-        "level": 28,
-        "want": "翻回《长路》划过的地方"
+        "level": 18,
+        "want": "不怎么念旧。硬要说是再想想「Daphne Oram」那张卡片"
       },
       {
         "sense": "味",
-        "level": 41,
-        "want": "想吃点咸香的：一张封面很丑、据说很好听的唱片"
+        "level": 58,
+        "want": "嘴馋，想来点咸香的：一部不到十分钟的老短片"
       },
       {
         "sense": "触",
         "level": 79,
-        "want": "想靠着暖气片坐一会儿"
+        "want": "想要一条厚围巾"
       },
       {
         "sense": "意",
         "level": 100,
-        "want": "惦记着没做完的：查 Hank 1952-06-13 那场几点开工几点散、到底录了几条，交 Cosmos"
+        "want": "惦记着没做完的：找一段 Lucie Bigelow Rosen 真拉特雷门琴的公版录音来听"
       }
     ],
     "top_want": "意"
   },
   "look": {
-    "time": "2026-11-08T21:05:10+08:00",
+    "time": "2026-11-09T21:06:05+08:00",
     "outfit": "coat",
     "expr": "sleepy",
     "outfit_word": "呢子大衣围围巾",
     "expr_word": "困得耷拉眼皮",
     "why": "天冷",
-    "sleepy": 91,
-    "tired": 37,
+    "sleepy": 100,
+    "tired": 42,
     "her_pick": ""
   }
 }

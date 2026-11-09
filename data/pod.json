@@ -1,5 +1,5 @@
 {
- "updated": 1794057038643,
+ "updated": 1794229762402,
  "channels": [
   {
    "id": "UCa4Q7pecRTebkB18FLT_JJA",
@@ -159,23 +159,23 @@
   {
    "ch": "UCI7ANIwQYoXosiX89er5vIw",
    "src": "lock",
-   "id": "5LNUAtJslW0",
-   "title": "必懂！50分鐘講透《金剛經》 | 華人的第一經文，凡人的覺醒之門，平行世界的秘密法則，佛家的終極奧義 | 了解佛法，這一部影片就夠了！ | 床台",
-   "date": "2026-10-28",
-   "secs": 3050,
-   "say": "51 分钟，讲《金刚经》，说要讲成不信佛也能听懂的。床台上回那期太密，这期是讲经，可能好入睡点。没听过。",
-   "bytes": 21974086,
+   "id": "7GVkEHJ6oho",
+   "title": "一口氣看完春秋史：春秋時代有多亂？一場持續三百年的中國版權力遊戲，看懂齊、晉、楚、吳、越如何造成大分裂時代！ | 床台",
+   "date": "2026-11-09",
+   "secs": 4341,
+   "say": "一小时十二分钟，从周平王东迁讲到吴越争霸。我没听过。床台上回那期朱元璋太密，越听越精神，这期估计也是，睡前慎点。",
+   "bytes": 30861735,
    "cover": true
   },
   {
    "ch": "UCI7ANIwQYoXosiX89er5vIw",
    "src": "lock",
-   "id": "0qiYlJnDCxQ",
-   "title": "這部影片解決了我多年的疑惑：從貧困獨裁到民主立憲，從日不落帝國到歐洲二流國家，西班牙為什麼會淪落至此？這將會是你旅行巴塞隆納、馬德里的最佳歷史攻略影片 | 床台",
-   "date": "2026-08-16",
-   "secs": 2459,
-   "say": "41 分钟，西班牙怎么从日不落帝国一路掉下来，独裁、内乱、腐败。听着容易越听越精神，白天听合适。没听过。",
-   "bytes": 17885187,
+   "id": "5LNUAtJslW0",
+   "title": "必懂！50分鐘講透《金剛經》 | 中華第一“聖經”，凡人的覺醒之門，平行世界的秘密法則，佛家的終極奧義 | 了解佛法，這一部影片就夠了！ | 床台",
+   "date": "2026-10-28",
+   "secs": 3050,
+   "say": "51 分钟，讲《金刚经》，说要讲成不信佛也能听懂的。床台上回那期太密，这期是讲经，可能好入睡点。没听过。",
+   "bytes": 21974086,
    "cover": true
   },
   {
@@ -216,9 +216,9 @@
   "kdf": "PBKDF2-SHA256",
   "iter": 600000,
   "salt": "nmD7+KMRB+GUsHSd0uVNYQ==",
-  "check_iv": "Fh0V49WiYRSc8YOo",
-  "check": "oSjVpnqfPlqnUZ/HJCTSV2gWWJ3zuqnRcCBLAg==",
+  "check_iv": "Y1XP/G07pCNy39D+",
+  "check": "/1RnPh/X2CvuVYVIlgtLXWFdGuXXCrrgQc5UKw==",
   "base": "https://iooliool.github.io/miles-pod/",
-  "at": 1794057038643
+  "at": 1794229762402
  }
 }
