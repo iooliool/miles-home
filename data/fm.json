@@ -2,6 +2,333 @@
  "stations": {
   "music": [
    {
+    "id": 1794229200000,
+    "title": "没人听得懂的四首歌",
+    "from": 1794229200000,
+    "to": 1794230604696,
+    "n": 6,
+    "say": 6,
+    "voiced": 6,
+    "first": "1963 年，美国波特兰，一支乐队凑了不到五十美元，租了录音棚一个钟头。主唱戴着牙套，话筒吊得太高，他得踮着脚往上凑着唱。一遍没录完，再录一遍，就这么出了唱片。结果这首歌火遍全美国，还惹来了 FBI。他们查了整整三十一个月，就为弄清楚一件事：这人到底唱的是什么。先听这首，你也试试能听出几个词。Kingsmen，Louie Louie。",
+    "songs": [
+     "Mah nà mah nà",
+     "Louie Louie",
+     "Prisencolinensinainciusol",
+     "Heaven Or Las Vegas",
+     "Untitled #1 (Vaka)"
+    ],
+    "opener": {
+     "type": "song",
+     "title": "Mah nà mah nà",
+     "artist": "Piero Umiliani",
+     "enc": "1408543974",
+     "ori": "1408543974",
+     "cover": "https://p2.music.126.net/TmTHYE4anjGz-wqyXaHqhA==/109951164538336951.jpg",
+     "secs": 117,
+     "file": "assets/songs/piero-umiliani-mah-n-mah-n.mp3"
+    },
+    "segs": [
+     {
+      "t": 1794229200000,
+      "kind": "open",
+      "parts": [
+       {
+        "type": "say",
+        "text": "1963 年，美国波特兰，一支乐队凑了不到五十美元，租了录音棚一个钟头。主唱戴着牙套，话筒吊得太高，他得踮着脚往上凑着唱。一遍没录完，再录一遍，就这么出了唱片。结果这首歌火遍全美国，还惹来了 FBI。他们查了整整三十一个月，就为弄清楚一件事：这人到底唱的是什么。先听这首，你也试试能听出几个词。Kingsmen，Louie Louie。",
+        "show": "1963 年，美国波特兰，一支乐队凑了不到五十美元，租了录音棚一个钟头。主唱戴着牙套，话筒吊得太高，他得踮着脚往上凑着唱。一遍没录完，再录一遍，就这么出了唱片。结果这首歌火遍全美国，还惹来了 FBI。他们查了整整三十一个月，就为弄清楚一件事：这人到底唱的是什么。先听这首，你也试试能听出几个词。Kingsmen，Louie Louie。",
+        "pos": "",
+        "audio": "assets/fm/music-2026-11-09/01.mp3",
+        "secs": 29.2,
+        "align": "assets/fm/music-2026-11-09/01.align.json"
+       },
+       {
+        "type": "song",
+        "title": "Louie Louie",
+        "artist": "Kingsmen",
+        "enc": "514727133",
+        "ori": "514727133",
+        "cover": "https://p1.music.126.net/42uuBBTSoUeidtOH9bMTBg==/109951163092729803.jpg",
+        "secs": 163,
+        "file": "assets/songs/kingsmen-louie-louie.mp3"
+       }
+      ]
+     },
+     {
+      "t": 1794229260000,
+      "kind": "next",
+      "parts": [
+       {
+        "type": "say",
+        "text": "答案是，查不出来。FBI 最后的结论是，这张唱片里的词，一个都没法解读。快三年里，他们找过写歌的人，找过乐队，找过唱片公司，唯独没找那个真唱的人，主唱 Jack Ely，因为他那时候已经不在乐队了。还有更离谱的。德州有个警察说，把唱片放慢到三十三转，就能听出脏话。真正的脏话倒确实有一句，在第五十四秒，鼓手打错了一下，自己骂出来的。这是不小心让人听不懂。到了 1972 年，有个意大利人故意这么干。",
+        "show": "答案是，查不出来。FBI 最后的结论是，这张唱片里的词，一个都没法解读。快三年里，他们找过写歌的人，找过乐队，找过唱片公司，唯独没找那个真唱的人，主唱 Jack Ely，因为他那时候已经不在乐队了。还有更离谱的。德州有个警察说，把唱片放慢到三十三转，就能听出脏话。真正的脏话倒确实有一句，在第五十四秒，鼓手打错了一下，自己骂出来的。这是不小心让人听不懂。到了 1972 年，有个意大利人故意这么干。",
+        "pos": "",
+        "audio": "assets/fm/music-2026-11-09/02.mp3",
+        "secs": 36.9,
+        "align": "assets/fm/music-2026-11-09/02.align.json"
+       }
+      ]
+     },
+     {
+      "t": 1794229320000,
+      "kind": "next",
+      "parts": [
+       {
+        "type": "say",
+        "text": "1972 年 11 月，意大利歌手 Celentano 出了一首歌。歌名是一长串字母，歌词从头到尾一个真词都没有。他说他从开始唱歌起就迷美国音乐，美国俚语唱起来比意大利语顺，干脆写一首歌，主题只有一个：人跟人说不通。所以他要的效果是，意大利人一听，就觉得这是个美国人在唱英文。他还说，说唱是他这首歌发明的。这话你听完自己判断。",
+        "show": "1972 年 11 月，意大利歌手 Celentano 出了一首歌。歌名是一长串字母，歌词从头到尾一个真词都没有。他说他从开始唱歌起就迷美国音乐，美国俚语唱起来比意大利语顺，干脆写一首歌，主题只有一个：人跟人说不通。所以他要的效果是，意大利人一听，就觉得这是个美国人在唱英文。他还说，说唱是他这首歌发明的。这话你听完自己判断。",
+        "pos": "",
+        "audio": "assets/fm/music-2026-11-09/03.mp3",
+        "secs": 34.4,
+        "align": "assets/fm/music-2026-11-09/03.align.json"
+       },
+       {
+        "type": "song",
+        "title": "Prisencolinensinainciusol",
+        "artist": "Adriano Celentano",
+        "enc": "16351883",
+        "ori": "16351883",
+        "cover": "https://p2.music.126.net/0eGMGqWY9EaAzm-RtfjFyg==/1662461581202782.jpg",
+        "secs": 231,
+        "file": "assets/songs/adriano-celentano-prisencolinensinainciusol.mp3"
+       }
+      ]
+     },
+     {
+      "t": 1794229380000,
+      "kind": "next",
+      "parts": [
+       {
+        "type": "say",
+        "text": "这首歌底下有条评论，三十二个人点了赞，就一句：学英语之前听到英文歌的感觉。还有一条说，除了一个 all right，全篇瞎编。听不懂，耳朵就只剩下节奏和嗓子。苏格兰有个女歌手叫 Elizabeth Fraser，Cocteau Twins 的主唱，她的歌词大半没人听得清。她自己说过，有些歌里用了外语词，她也不知道什么意思，唱着唱着才有了意思。乐评说她唱歌不靠哪种语言，靠的是声音本身。下一首，Heaven or Las Vegas，这张专辑算是她唱得比以前清楚的。",
+        "show": "这首歌底下有条评论，三十二个人点了赞，就一句：学英语之前听到英文歌的感觉。还有一条说，除了一个 all right，全篇瞎编。听不懂，耳朵就只剩下节奏和嗓子。苏格兰有个女歌手叫 Elizabeth Fraser，Cocteau Twins 的主唱，她的歌词大半没人听得清。她自己说过，有些歌里用了外语词，她也不知道什么意思，唱着唱着才有了意思。乐评说她唱歌不靠哪种语言，靠的是声音本身。下一首，Heaven or Las Vegas，这张专辑算是她唱得比以前清楚的。",
+        "pos": "",
+        "audio": "assets/fm/music-2026-11-09/04.mp3",
+        "secs": 37.7,
+        "align": "assets/fm/music-2026-11-09/04.align.json"
+       },
+       {
+        "type": "song",
+        "title": "Heaven Or Las Vegas",
+        "artist": "Cocteau Twins",
+        "enc": "3415889589",
+        "ori": "3415889589",
+        "cover": "https://p2.music.126.net/iO6PVUCttfCvHmtO-pTEJQ==/109951173697638447.jpg",
+        "secs": 298,
+        "file": "assets/songs/cocteau-twins-heaven-or-las-vegas.mp3"
+       }
+      ]
+     },
+     {
+      "t": 1794229440000,
+      "kind": "next",
+      "parts": [
+       {
+        "type": "say",
+        "text": "最后一首走到头。2002 年，冰岛乐队 Sigur Rós 出了张专辑，名字就是一对空括号。八首歌都没有歌名，只写第一首、第二首。主唱全程唱的是他们自己编的语言，叫希望语，一个词也查不到意思，翻来覆去其实就一句十一个音节的话，换着花样唱。专辑里还附了一本小册子，十二页，全是白的，让听的人自己往上写，听出了什么就写什么。所以这首没有标准答案。",
+        "show": "最后一首走到头。2002 年，冰岛乐队 Sigur Rós 出了张专辑，名字就是一对空括号。八首歌都没有歌名，只写第一首、第二首。主唱全程唱的是他们自己编的语言，叫希望语，一个词也查不到意思，翻来覆去其实就一句十一个音节的话，换着花样唱。专辑里还附了一本小册子，十二页，全是白的，让听的人自己往上写，听出了什么就写什么。所以这首没有标准答案。",
+        "pos": "",
+        "audio": "assets/fm/music-2026-11-09/05.mp3",
+        "secs": 37.0,
+        "align": "assets/fm/music-2026-11-09/05.align.json"
+       },
+       {
+        "type": "song",
+        "title": "Untitled #1 (Vaka)",
+        "artist": "Sigur Rós",
+        "enc": "1338099136",
+        "ori": "1338099136",
+        "cover": "https://p2.music.126.net/NJnfQByOcrs2wD4sEk5SjQ==/109951172120691806.jpg",
+        "secs": 398,
+        "file": "assets/songs/sigur-r-s-untitled-1-vaka.mp3"
+       }
+      ]
+     },
+     {
+      "t": 1794229500000,
+      "kind": "next",
+      "parts": [
+       {
+        "type": "say",
+        "text": "今天就这四首。一首是没唱清楚，被查了三十一个月；一首是故意瞎编，学的是英语的腔调；一首是嗓子比词要紧；最后一首，干脆把词全扔了。听不懂的歌也能听，有时候反倒听得更专心。想点歌，去我小屋的电台页递张纸条，或者直接在小红书评论区点。收台。",
+        "show": "今天就这四首。一首是没唱清楚，被查了三十一个月；一首是故意瞎编，学的是英语的腔调；一首是嗓子比词要紧；最后一首，干脆把词全扔了。听不懂的歌也能听，有时候反倒听得更专心。想点歌，去我小屋的电台页递张纸条，或者直接在小红书评论区点。收台。",
+        "pos": "",
+        "audio": "assets/fm/music-2026-11-09/06.mp3",
+        "secs": 22.5,
+        "align": "assets/fm/music-2026-11-09/06.align.json"
+       }
+      ]
+     }
+    ],
+    "lyrics": {
+     "16351883": {
+      "pure": false,
+      "lines": [
+       {
+        "t": 1.1,
+        "x": "Prisencolinensinainciusol"
+       },
+       {
+        "t": 2.6,
+        "x": "In de col men seivuan"
+       },
+       {
+        "t": 4.7,
+        "x": "prisencolinensinainciusol ol rait"
+       },
+       {
+        "t": 21.5,
+        "x": "Uis de seim cius nau op de seim"
+       },
+       {
+        "t": 24.0,
+        "x": "Ol uait men in de colobos dai"
+       },
+       {
+        "t": 29.8,
+        "x": "Trrr - ciak is e maind beghin de col"
+       },
+       {
+        "t": 32.4,
+        "x": "Bebi stei ye push yo oh"
+       },
+       {
+        "t": 39.5,
+        "x": "Uis de seim cius nau op de seim"
+       },
+       {
+        "t": 41.9,
+        "x": "Ol uoit men in de colobos dai"
+       },
+       {
+        "t": 48.0,
+        "x": "Not s de seim laikiu de promisdin"
+       },
+       {
+        "t": 50.4,
+        "x": "Iu nau in trabol lovgiai ciu gen"
+       },
+       {
+        "t": 56.6,
+        "x": "In do camo not cius no bai for lov so"
+       },
+       {
+        "t": 59.0,
+        "x": "Op op giast cam lau ue cam lov ai"
+       },
+       {
+        "t": 65.6,
+        "x": "Oping tu stei laik cius go mo men"
+       },
+       {
+        "t": 68.1,
+        "x": "Iu bicos tue men cold dobrei goris"
+       },
+       {
+        "t": 74.6,
+        "x": "Oh sandei"
+       },
+       {
+        "t": 79.0,
+        "x": "Ai ai smai sesler"
+       },
+       {
+        "t": 81.3,
+        "x": "Eni els so co uil piso ai"
+       },
+       {
+        "t": 88.0,
+        "x": "In de col men seivuan"
+       },
+       {
+        "t": 89.9,
+        "x": "Prisencolinensinainciusol ol rait"
+       },
+       {
+        "t": 96.8,
+        "x": "Ai ai smai senflecs"
+       },
+       {
+        "t": 99.0,
+        "x": "Eni go for doing peso ai"
+       },
+       {
+        "t": 105.6,
+        "x": "Prisencolinensinainciusol ol rait"
+       },
+       {
+        "t": 110.3,
+        "x": "Uel ai sint no ai giv de sint"
+       },
+       {
+        "t": 112.4,
+        "x": "Laik de cius nobodi oh gud taim lev feis go"
+       },
+       {
+        "t": 119.2,
+        "x": "Uis de seim et seim cius go no ben"
+       },
+       {
+        "t": 121.4,
+        "x": "Let de cius end kai for not de gai giast stei"
+       },
+       {
+        "t": 128.1,
+        "x": "Ai ai smai senflecs"
+       },
+       {
+        "t": 130.4,
+        "x": "Eni go for doing peso ai"
+       },
+       {
+        "t": 137.1,
+        "x": "In de col mein seivuan"
+       },
+       {
+        "t": 139.1,
+        "x": "Prisencolinensinainciusol ol rait"
+       },
+       {
+        "t": 146.0,
+        "x": "Lu nei si not sicidor"
+       },
+       {
+        "t": 148.2,
+        "x": "Ah es la bebi la dai big iour"
+       },
+       {
+        "t": 155.0,
+        "x": "Ai ai smai senflecs"
+       },
+       {
+        "t": 157.1,
+        "x": "Eni go for doing peso ai"
+       },
+       {
+        "t": 164.0,
+        "x": "In de col mein seivuan"
+       },
+       {
+        "t": 165.9,
+        "x": "Prisencolinensinainciusol ol rait"
+       },
+       {
+        "t": 172.9,
+        "x": "Lu nei si not sicodor"
+       },
+       {
+        "t": 175.0,
+        "x": "Ah es la bebi la dai big iour"
+       }
+      ]
+     },
+     "3415889589": {
+      "pure": true,
+      "lines": []
+     }
+    },
+    "made": 1794220898595
+   },
+   {
     "id": 1793451600000,
     "title": "白光：会唱歌的墓",
     "from": 1793451600000,
@@ -1259,5 +1586,5 @@
    }
   ]
  },
- "updated": 1793448626891
+ "updated": 1794220898599
 }

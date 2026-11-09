@@ -3,30 +3,34 @@
   "state": "idle",
   "label": "空闲",
   "note": "",
-  "since": "2026-10-31 22:50"
+  "since": "2026-11-09 18:44"
  },
- "updated": "2026-10-31 22:50",
+ "updated": "2026-11-09 18:44",
  "playlist": {
   "src": "最新一期",
-  "id": "music-2026-10-31",
-  "title": "白光：会唱歌的墓",
+  "id": "music-2026-11-09",
+  "title": "没人听得懂的四首歌",
   "station": "music",
   "songs": [
    {
-    "title": "秋夜",
-    "artist": "白光"
+    "title": "Mah nà mah nà",
+    "artist": "Piero Umiliani"
    },
    {
-    "title": "假正经",
-    "artist": "白光"
+    "title": "Louie Louie",
+    "artist": "Kingsmen"
    },
    {
-    "title": "魂萦旧梦",
-    "artist": "白光"
+    "title": "Prisencolinensinainciusol",
+    "artist": "Adriano Celentano"
    },
    {
-    "title": "如果没有你",
-    "artist": "白光"
+    "title": "Heaven Or Las Vegas",
+    "artist": "Cocteau Twins"
+   },
+   {
+    "title": "Untitled #1 (Vaka)",
+    "artist": "Sigur Rós"
    }
   ]
  },
@@ -92,6 +96,13 @@
   }
  ],
  "episodes": [
+  {
+   "id": "music-2026-11-09",
+   "title": "没人听得懂的四首歌",
+   "date": "2026-11-09",
+   "station": "music",
+   "songs": 5
+  },
   {
    "id": "music-2026-10-31",
    "title": "白光：会唱歌的墓",

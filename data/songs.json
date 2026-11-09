@@ -1,6 +1,71 @@
 {
  "songs": [
   {
+   "slug": "piero-umiliani-mah-n-mah-n",
+   "artist": "Piero Umiliani",
+   "title": "Mah nà mah nà",
+   "file": "assets/songs/piero-umiliani-mah-n-mah-n.mp3",
+   "secs": 117,
+   "note": "",
+   "why": "深夜电台「没人听得懂的四首歌」里放的。",
+   "source": "网易云 1408543974",
+   "source_url": "https://music.163.com/song?id=1408543974",
+   "added": "2026-11-09T18:41:20+08:00",
+   "ncm": "1408543974"
+  },
+  {
+   "slug": "sigur-r-s-untitled-1-vaka",
+   "artist": "Sigur Rós",
+   "title": "Untitled #1 (Vaka)",
+   "file": "assets/songs/sigur-r-s-untitled-1-vaka.mp3",
+   "secs": 398,
+   "note": "",
+   "why": "深夜电台「没人听得懂的四首歌」里放的。",
+   "source": "网易云 1338099136",
+   "source_url": "https://music.163.com/song?id=1338099136",
+   "added": "2026-11-09T18:35:19+08:00",
+   "ncm": "1338099136"
+  },
+  {
+   "slug": "cocteau-twins-heaven-or-las-vegas",
+   "artist": "Cocteau Twins",
+   "title": "Heaven Or Las Vegas",
+   "file": "assets/songs/cocteau-twins-heaven-or-las-vegas.mp3",
+   "secs": 231,
+   "note": "",
+   "why": "深夜电台「没人听得懂的四首歌」里放的。",
+   "source": "YouTube Cocteau Twins - Heaven Or Las Vegas (Official Video)（Cocteau Twins）",
+   "source_url": "https://www.youtube.com/watch?v=6KnYw4EwYGc",
+   "added": "2026-11-09T18:35:01+08:00",
+   "ncm": "3415889589"
+  },
+  {
+   "slug": "adriano-celentano-prisencolinensinainciusol",
+   "artist": "Adriano Celentano",
+   "title": "Prisencolinensinainciusol",
+   "file": "assets/songs/adriano-celentano-prisencolinensinainciusol.mp3",
+   "secs": 232,
+   "note": "",
+   "why": "深夜电台「没人听得懂的四首歌」里放的。",
+   "source": "网易云 16351883",
+   "source_url": "https://music.163.com/song?id=16351883",
+   "added": "2026-11-09T18:34:46+08:00",
+   "ncm": "16351883"
+  },
+  {
+   "slug": "kingsmen-louie-louie",
+   "artist": "Kingsmen",
+   "title": "Louie Louie",
+   "file": "assets/songs/kingsmen-louie-louie.mp3",
+   "secs": 165,
+   "note": "",
+   "why": "深夜电台「没人听得懂的四首歌」里放的。",
+   "source": "YouTube Louie Louie（THE KINGSMEN - Topic）",
+   "source_url": "https://www.youtube.com/watch?v=xKt75jUuKJY",
+   "added": "2026-11-09T18:34:32+08:00",
+   "ncm": "514727133"
+  },
+  {
    "slug": "ncm-207322",
    "artist": "白光",
    "title": "如果没有你",
