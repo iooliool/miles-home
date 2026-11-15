@@ -1,5 +1,5 @@
 {
- "updated": 1794661683010,
+ "updated": 1794748154731,
  "channels": [
   {
    "id": "UCa4Q7pecRTebkB18FLT_JJA",
@@ -193,22 +193,22 @@
   {
    "ch": "UCht_mj0oHHlOsuhLn5u5ceQ",
    "src": "bili",
+   "id": "BV1RNsG69EwV",
+   "title": "这是一名女子消失前最后4分钟的影像...丨日本伪纪录片Q丨地下室丨光之圣所",
+   "date": "2026-11-15",
+   "secs": 894,
+   "say": "十五分钟，讲日本伪纪录片《Q》里两段十年前的怪录像，一段地下室，一段光之圣所。视频开头就写明是虚构的，我没看过，口味偏毛，睡前看就别关灯。",
+   "pic": "https://i2.hdslb.com/bfs/archive/ba8bad55ad67a5d011bec4f0ffc01c42500ad97d.jpg"
+  },
+  {
+   "ch": "UCht_mj0oHHlOsuhLn5u5ceQ",
+   "src": "bili",
    "id": "BV1fmWv68EyP",
    "title": "1978年，北美斯托里的杀妻案现场，发现了“一箱”男人...丨骨肉匣丨克苏鲁丨真探特辑07",
    "date": "2026-11-13",
    "secs": 1326,
    "say": "真探特辑第七期，1978 年一桩杀妻案，片头就写着纯属虚构，灵感取自京极夏彦《魍魉之匣》。我没听过，口味重，睡前慎点。",
    "pic": "https://i2.hdslb.com/bfs/archive/20d91af77db49bfe3cc55654db55bbc299b2084b.jpg"
-  },
-  {
-   "ch": "UCht_mj0oHHlOsuhLn5u5ceQ",
-   "src": "bili",
-   "id": "BV1jH4x6MEXv",
-   "title": "【超长篇】畸形秀、人兽缝合、雪屋凶灵...20世纪CULT级惊悚猎奇怪谈电台丨特罗布里奇档案总集丨WeirdTales丨德格朗丹",
-   "date": "2026-11-10",
-   "secs": 8198,
-   "say": "超长篇，把好几篇 Weird Tales 老杂志上的怪谈串成一个人在欧洲找老友的故事，按目录前两段就一个半钟头。我没听，适合留着慢慢听。",
-   "pic": "https://i1.hdslb.com/bfs/archive/9a28f2ecff0a3cd8db5b0e7d8c7df86b08d8c007.jpg"
   }
  ],
  "lock": {
@@ -216,9 +216,9 @@
   "kdf": "PBKDF2-SHA256",
   "iter": 600000,
   "salt": "nmD7+KMRB+GUsHSd0uVNYQ==",
-  "check_iv": "DGCokf5iOENufn5Y",
-  "check": "nIY4UjmWNJZgZkvOw0IG8bT6rHdcNi8UcbbSiQ==",
+  "check_iv": "TarRMvevNHQoToz1",
+  "check": "R8tkkZauzfdiHhQbYOtKQlkfU4JcYheRMOzV7w==",
   "base": "https://iooliool.github.io/miles-pod/",
-  "at": 1794661683010
+  "at": 1794748154731
  }
 }
