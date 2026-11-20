@@ -1,5 +1,5 @@
 {
- "updated": 1794748154731,
+ "updated": 1795180232534,
  "channels": [
   {
    "id": "UCa4Q7pecRTebkB18FLT_JJA",
@@ -103,23 +103,23 @@
   {
    "ch": "UCH3rX9Q6H8FMncsECyHQs_Q",
    "src": "lock",
+   "id": "qVCbtZIkbPM",
+   "title": "“自见者不明 自是者不彰 自伐者无功 自矜者不长” 英偉達黃仁勛跌落神壇給我們普通人的啓示｜ 老子道德經",
+   "date": "2026-11-19",
+   "secs": 2856,
+   "say": "拿老子那四句“自见者不明”说事，借黄仁勋起了个头。我没听过，只看了标题，爱听道德经的可以点，想听故事的就跳过。",
+   "bytes": 20676180,
+   "cover": true
+  },
+  {
+   "ch": "UCH3rX9Q6H8FMncsECyHQs_Q",
+   "src": "lock",
    "id": "d-y97oWeS2I",
    "title": "八字只是“因”陽宅陰宅 家族陰德 宿世業力 父母精氣 天使流轉 多重姻緣共振才顯出一個人的命",
    "date": "2026-11-06",
    "secs": 2580,
    "say": "43 分钟，道长讲八字只是“因”，还得算风水、阴德、父母这几样。照他以往的路子估计会绕，适合当催眠。我没听。",
    "bytes": 18702402,
-   "cover": true
-  },
-  {
-   "ch": "UCH3rX9Q6H8FMncsECyHQs_Q",
-   "src": "lock",
-   "id": "OcvfHf3v384",
-   "title": "婚前感情波折 婚后却婚姻稳定的身弱辛金｜陰陽五行. 天干地支｜八字命理風水六爻奇門｜ 中國道家易學傳統文化 | 老子道德經",
-   "date": "2026-11-04",
-   "secs": 2611,
-   "say": "44 分钟，拿一个身弱辛金的八字讲婚前波折、婚后稳当。简介就一句祝福，内容我说不准，想听推命的点。",
-   "bytes": 18920478,
    "cover": true
   },
   {
@@ -193,22 +193,22 @@
   {
    "ch": "UCht_mj0oHHlOsuhLn5u5ceQ",
    "src": "bili",
+   "id": "BV1QCsh66EEA",
+   "title": "我们被暴雨困在林中木屋，外面有一些“火柴人”...丨蓝岭丨欧美怪谈podcast丨林地邪物丨CKWalker",
+   "date": "2026-11-20",
+   "secs": 2000,
+   "say": "欧美林地怪谈：暴雨天困在木屋，外面站着“火柴人”。原作者十年后去了网飞当编剧。我还没听，看简介口味不轻，睡前慎点。",
+   "pic": "https://i1.hdslb.com/bfs/archive/1638cb112dc3e480c9ba8bcfbb042fd6255b11bf.jpg"
+  },
+  {
+   "ch": "UCht_mj0oHHlOsuhLn5u5ceQ",
+   "src": "bili",
    "id": "BV1RNsG69EwV",
    "title": "这是一名女子消失前最后4分钟的影像...丨日本伪纪录片Q丨地下室丨光之圣所",
    "date": "2026-11-15",
    "secs": 894,
    "say": "十五分钟，讲日本伪纪录片《Q》里两段十年前的怪录像，一段地下室，一段光之圣所。视频开头就写明是虚构的，我没看过，口味偏毛，睡前看就别关灯。",
    "pic": "https://i2.hdslb.com/bfs/archive/ba8bad55ad67a5d011bec4f0ffc01c42500ad97d.jpg"
-  },
-  {
-   "ch": "UCht_mj0oHHlOsuhLn5u5ceQ",
-   "src": "bili",
-   "id": "BV1fmWv68EyP",
-   "title": "1978年，北美斯托里的杀妻案现场，发现了“一箱”男人...丨骨肉匣丨克苏鲁丨真探特辑07",
-   "date": "2026-11-13",
-   "secs": 1326,
-   "say": "真探特辑第七期，1978 年一桩杀妻案，片头就写着纯属虚构，灵感取自京极夏彦《魍魉之匣》。我没听过，口味重，睡前慎点。",
-   "pic": "https://i2.hdslb.com/bfs/archive/20d91af77db49bfe3cc55654db55bbc299b2084b.jpg"
   }
  ],
  "lock": {
@@ -216,9 +216,9 @@
   "kdf": "PBKDF2-SHA256",
   "iter": 600000,
   "salt": "nmD7+KMRB+GUsHSd0uVNYQ==",
-  "check_iv": "TarRMvevNHQoToz1",
-  "check": "R8tkkZauzfdiHhQbYOtKQlkfU4JcYheRMOzV7w==",
+  "check_iv": "3L4G/rSJgvI6uKHL",
+  "check": "wo0FQo2QlGZQBr9Eqi4yFBZ/Q+83UAVX9Mp9Bw==",
   "base": "https://iooliool.github.io/miles-pod/",
-  "at": 1794748154731
+  "at": 1795180232534
  }
 }
