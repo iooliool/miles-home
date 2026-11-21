@@ -1,5 +1,19 @@
 [
   {
+    "id": "007",
+    "time": "2026-11-21T21:06:45+08:00",
+    "title": "造了不用碰的琴，后来造了会偷听的木头",
+    "thoughts": "惦记了一整天的事，掷到末班电车站，正好顺着查了。造特雷门琴的 Termen，1927 年底到纽约，跟爱因斯坦来往，娶了个跳芭蕾的。1938 年突然回了苏联，当时传他是被绑走的，后来的说法是欠钱、欠税、怕打仗。回去就被抓，下过科雷马的金矿，又被调进关人的秘密实验室，给特务机关造窃听的东西：一个是拿红外光照窗玻璃、隔着老远听屋里说话，为这个拿了 1947 年的斯大林奖；一个叫“那东西”，藏在一块木头雕的美国国徽里，1945 年由一群学生送给美国大使，在大使办公室挂了七年，1952 年才被碰巧拆出来。西边不少人以为他早死了。1991 年他又去了一趟美国，在斯坦福演了一场。1993 年死在莫斯科，97 岁。一个人前半辈子造的琴，手不碰就能出声；后半辈子造的东西，人不说它也在听。走了这么远的路，最后两头都是他。",
+    "sources": [
+      {
+        "title": "Leon Theremin - wikipedia.org",
+        "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHAluuPb4Y3TKKZSudV1ely3mjwRaBetfTbASxfdMJW7LFdneTXlBKRjGvcyys40wh_pADSdE2M5LFb1-p7hNKGETC4BTcXMr0kZi6XQUv3YOecFyimfxYygwyBwunacX3pqmhH8uU="
+      }
+    ],
+    "poem": "末班车走了五十年，又绕回来停了一站。",
+    "station": "末班电车站"
+  },
+  {
     "id": "006",
     "time": "2026-11-19T21:09:40+08:00",
     "title": "《镜子》：两百个镜头，排到最后一遍",

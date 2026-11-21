@@ -1,5 +1,5 @@
 {
- "updated": 1795180232534,
+ "updated": 1795266476866,
  "channels": [
   {
    "id": "UCa4Q7pecRTebkB18FLT_JJA",
@@ -72,22 +72,22 @@
   {
    "ch": "UCG2zTFaMhkYIcV6TtSoQyVw",
    "src": "bili",
+   "id": "BV1uky8zwE8e",
+   "title": "雷部诸神来啦！20 分钟搞懂道教雷霆体系！为啥发誓的人最怕 “天打五雷轰”？神霄派雷法的本质是什么？雷声普化天尊是谁？雷霆三帅邓、辛、张是何许人？宗教还是民俗？",
+   "date": "2026-11-21",
+   "secs": 1295,
+   "say": "讲道教里的雷部：雷祖、雷公电母、邓辛张三位雷帅，还有为什么发誓最怕“天打五雷轰”。二十分钟，偏科普，睡前点也不吓人。我还没听。",
+   "pic": "https://i0.hdslb.com/bfs/archive/abaa09ca5e38fde41d9f245d202ac30ecee66ba2.jpg"
+  },
+  {
+   "ch": "UCG2zTFaMhkYIcV6TtSoQyVw",
+   "src": "bili",
    "id": "BV1ZTWy6UE1L",
    "title": "道教真武大帝的封神之路，北帝不是天尊凭啥独占武当山？被踩在脚下的龟蛇才是祂的真身吗？玄天上帝为啥不像道士像萨满？武当山真武神像为何酷似朱棣？真武大帝为啥不穿鞋？",
    "date": "2026-11-14",
    "secs": 1156,
    "say": "讲真武大帝怎么从北方星宿里的一只玄武，一路升成武当山的大神。我没听，冲简介挑的，是科普不是怪谈，白天听正合适。",
    "pic": "https://i1.hdslb.com/bfs/archive/1077c2c47ccd22b80b76993e7fa7ccba85b7f57c.jpg"
-  },
-  {
-   "ch": "UCG2zTFaMhkYIcV6TtSoQyVw",
-   "src": "bili",
-   "id": "BV1xb476hEYj",
-   "title": "道教星辰信仰里的斗姆元君是谁？东南亚流行的九皇爷是她儿子吗？斗姆元君是不是佛教密宗的摩利支天？北斗九星消失的两颗背后有什么秘密？马来西亚的九皇斋为什么很奇怪？",
-   "date": "2026-11-07",
-   "secs": 1110,
-   "say": "18 分钟，讲斗姆元君和南洋的九皇爷是怎么扯上关系的，北斗到底七星还是九星。老秦讲民俗，睡前听不费劲。没听过，照简介说的。",
-   "pic": "https://i2.hdslb.com/bfs/archive/8c0c15b128ec506bff200a043315ac8cf3a6fd47.jpg"
   },
   {
    "ch": "UCG2zTFaMhkYIcV6TtSoQyVw",
@@ -216,9 +216,9 @@
   "kdf": "PBKDF2-SHA256",
   "iter": 600000,
   "salt": "nmD7+KMRB+GUsHSd0uVNYQ==",
-  "check_iv": "3L4G/rSJgvI6uKHL",
-  "check": "wo0FQo2QlGZQBr9Eqi4yFBZ/Q+83UAVX9Mp9Bw==",
+  "check_iv": "7cKRT08tiXUtvLBl",
+  "check": "OZRQRUZS35RXeu75qj45ex9GtlgGDhb0LFL9UA==",
   "base": "https://iooliool.github.io/miles-pod/",
-  "at": 1795180232534
+  "at": 1795266476866
  }
 }
